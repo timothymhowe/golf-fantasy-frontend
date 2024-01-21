@@ -6,10 +6,26 @@ import Footer from "../footer";
 
 import Sidebar from "../sidebar";
 
+import WidgetContainer from "../widget-container";
+
 import "./layout-styles.css";
 
 const PageLayout = ({ header, footer, children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const renderChildren = () => {
+    if (React.Children.count(children) === 0) {
+      return (
+        <WidgetContainer>
+          <div>Placeholder child</div>
+        </WidgetContainer>
+      );
+    }
+
+    return React.Children.map(children, (child) => (
+      <WidgetContainer>{child}</WidgetContainer>
+    ));
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -21,9 +37,9 @@ const PageLayout = ({ header, footer, children }) => {
         {header}
       </Header>
       <div className="body-container flex flex-grow">
-      <Sidebar isOpen={isSidebarOpen} />
- 
-        <main className="flex-grow bg-gray-100 p-4">{children}</main>
+        <Sidebar isOpen={isSidebarOpen} className="absolute z-10" />
+
+        <main className="bg-gray-100 p-4 w-screen ">{renderChildren()}</main>
       </div>
       <Footer className="bg-gray-200 p-4">{footer}</Footer>
     </div>

@@ -3,6 +3,7 @@ import react from "react";
 import Avatar from "../avatar";
 
 import "./sidebar-styles.css";
+import "../../globals.css"
 
 const Sidebar = ({ isOpen }) => {
   return (

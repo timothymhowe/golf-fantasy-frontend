@@ -21,6 +21,7 @@ const Header = ({isSidebarOpen, setIsSidebarOpen}) => {
         color="white"
         className="shadow-md md:hidden pancake-button focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-800"
       >
+        
         {isSidebarOpen ? (
     <svg
       xmlns="http://www.w3.org/2000/svg"
