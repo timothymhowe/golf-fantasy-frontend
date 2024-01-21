@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useState } from "react";
-import { Button } from "flowbite-react";
+// import { Button } from "flowbite-react";
 
 import Sidebar from "../sidebar";
 
@@ -15,7 +15,7 @@ const Header = ({isSidebarOpen, setIsSidebarOpen}) => {
   
   return (
     <header className="bg-green-800 text-white p-4 flex justify-between items-center">
-      <Button
+      <button
         onClick={toggleNav}
         variant="icon"
         color="white"
@@ -52,7 +52,7 @@ const Header = ({isSidebarOpen, setIsSidebarOpen}) => {
       />
     </svg>
   )}
-      </Button>
+      </button>
       <a href="#home" className="text-xl font-bold">
         Golf Pickem '24
       </a>
