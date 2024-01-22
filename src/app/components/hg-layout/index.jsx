@@ -5,6 +5,8 @@ import Header from "../header";
 import Footer from "../footer";
 
 import Sidebar from "../sidebar";
+import Pick from "../widgets/pick";
+import Leaderboard from "../widgets/leaderboard";
 
 import WidgetContainer from "../widget-container";
 
@@ -16,9 +18,19 @@ const PageLayout = ({ header, footer, children }) => {
   const renderChildren = () => {
     if (React.Children.count(children) === 0) {
       return (
-        <WidgetContainer>
-          <div>Placeholder child</div>
+      <>
+        <WidgetContainer title={"Your Pick"}>
+          <Pick hasMadePick={true} pick={"Sam Burns"} onChangePick={setIsSidebarOpen}/>
         </WidgetContainer>
+
+        <WidgetContainer title="Make a Pick">
+        <Pick hasMadePick={false} pick={""} onChangePick={setIsSidebarOpen}/>
+        </WidgetContainer>
+
+        <WidgetContainer title="League Leaderboard">
+          <Leaderboard />
+        </WidgetContainer>
+        </>
       );
     }
 
@@ -36,10 +48,9 @@ const PageLayout = ({ header, footer, children }) => {
       >
         {header}
       </Header>
-      <div className="body-container flex flex-grow">
-        <Sidebar isOpen={isSidebarOpen} className="absolute z-10" />
-
-        <main className="bg-gray-100 p-4 w-screen ">{renderChildren()}</main>
+      <div className="body-container flex flex-grow relative">
+        <Sidebar isOpen={isSidebarOpen} />
+        <main className="bg-gray-100 p-4 w-[100%] lg:max-w-[800px]" >{renderChildren()}</main>
       </div>
       <Footer className="bg-gray-200 p-4">{footer}</Footer>
     </div>
