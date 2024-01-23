@@ -16,14 +16,14 @@ const placeholder_data = [
 ];
 
 return (
-    <div className="max-h-[500px] overflow-auto">
+    <div className="max-h-[500px] w-[100%] overflow-auto">
       <table className="w-full table-auto text-sm divide-y divide-gray-300">
         <thead>
           <tr>
-            <th className="px-4 py-2 text-left">Rank</th>
+            <th className="px-4 py-2 text-left">#</th>
             <th className="px-4 py-2 text-left">Name</th>
             <th className="px-4 py-2 text-left">Score</th>
-            <th className="px-4 py-2 text-left">Missed Picks</th>
+            <th className="px-4 py-2 text-left">No Pick</th>
           </tr>
         </thead>
         <tbody className="text-gray-700">

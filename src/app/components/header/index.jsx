@@ -19,7 +19,7 @@ const Header = ({isSidebarOpen, setIsSidebarOpen}) => {
         onClick={toggleNav}
         variant="icon"
         color="white"
-        className="shadow-md rounded md:hidden pancake-button focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-800 p-2"
+        className="shadow-md rounded pancake-button focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-800 p-2"
       >
         
         {isSidebarOpen ? (

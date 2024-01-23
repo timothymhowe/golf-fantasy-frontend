@@ -48,9 +48,9 @@ const PageLayout = ({ header, footer, children }) => {
       >
         {header}
       </Header>
-      <div className="body-container flex flex-grow relative">
+      <div className="body-container flex flex-grow relative justify-end">
         <Sidebar isOpen={isSidebarOpen} />
-        <main className="bg-gray-100 p-4 w-[100%] lg:max-w-[800px]" >{renderChildren()}</main>
+        <main className="bg-gray-100 p-4 w-[100%] max-w-[600px] md:mx-auto" >{renderChildren()}</main>
       </div>
       <Footer className="bg-gray-200 p-4">{footer}</Footer>
     </div>
