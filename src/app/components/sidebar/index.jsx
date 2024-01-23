@@ -2,12 +2,14 @@
 import react from "react";
 import Avatar from "../avatar";
 
+import { Link } from "next/link";
+
 import "./sidebar-styles.css";
 
 const Sidebar = ({ isOpen }) => {
   return (
     <nav
-    className={`px-4 left-0 z-10 bg-white transform transition-transform duration-200 ease-in-out  ${
+    className={`px-4 left-0 z-10 bg-white transform transition-transform duration-200 ease-in-out ${
       isOpen ? "translate-x-0 open" : "-translate-x-full"
     } sidebar absolute inset-x-s0 top-0 h-[100%]`}
     >
@@ -19,17 +21,17 @@ const Sidebar = ({ isOpen }) => {
 
       <ul className="flex flex-col space-y-4 p-4 text-right">
         <li>
-          <a href="#home" className="text-black hover:text-blue-500">
+          <a href="/home" className="text-black hover:text-blue-500">
             Home
           </a>
         </li>
         <li>
-          <a href="#about" className="text-black hover:text-blue-500">
+          <a href="/about" className="text-black hover:text-blue-500">
             About
           </a>
         </li>
         <li>
-          <a href="#contact" className="text-black hover:text-blue-500">
+          <a href="/contact" className="text-black hover:text-blue-500">
             Contact
           </a>
         </li>
