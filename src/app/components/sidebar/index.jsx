@@ -5,6 +5,7 @@ import Avatar from "../avatar";
 import { Link } from "next/link";
 
 import "./sidebar-styles.css";
+import LogoutButton from "../logout-button";
 
 const Sidebar = ({ isOpen }) => {
   return (
@@ -21,7 +22,7 @@ const Sidebar = ({ isOpen }) => {
 
       <ul className="flex flex-col space-y-4 p-4 text-right">
         <li>
-          <a href="/home" className="text-black hover:text-blue-500">
+          <a href="/dashboard" className="text-black hover:text-blue-500">
             Home
           </a>
         </li>
@@ -39,6 +40,9 @@ const Sidebar = ({ isOpen }) => {
           <a href="https://docs.google.com/forms/d/e/1FAIpQLScqFE9p85yilbw00gtHi2-aKgXakE8GYg-W2borVuPaXvGapQ/viewform" className="text-black hover:text-blue-500">
             Legacy Google Form
           </a>
+        </li>
+        <li>
+          <LogoutButton />
         </li>
       </ul>
 

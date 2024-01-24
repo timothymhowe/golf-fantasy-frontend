@@ -47,7 +47,7 @@ const PageLayout = ({ header, footer, children }) => {
     }
 
     return React.Children.map(children, (child) => (
-      <WidgetContainer>{child}</WidgetContainer>
+      <WidgetContainer title={child.props.title || 'Default Title'}>{child}</WidgetContainer>
     ));
   };
 
