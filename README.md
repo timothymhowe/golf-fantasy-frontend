@@ -26,8 +26,8 @@ The Golf Fantasy website utilizes a MySQL database for storing and managing data
 
 ## Development Roadmap
 - 1/27/24: Alpha Release
-- 1/30/24: Beta Testing
-- 2/6/24: Full Release
+- 1/29/24: Beta Testing
+- 2/4/24: Full Release
 
 ## More Info
 
