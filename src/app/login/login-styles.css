@@ -1,8 +1,0 @@
-@keyframes flash {
-    0% { color: white; }
-    100% { color: red; }
-}
-
-.flash {
-    animation: flash 0.5s ease-out alternate;
-}

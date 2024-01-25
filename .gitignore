@@ -37,4 +37,16 @@ next-env.d.ts
 
 # Firebase config
 /src/config/firebaseConfig.js
-/firebaseConfig.js
+**/firebaseConfig.js
+
+##########
+# PYTHON #
+##########
+
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class
+
+# Virtualenv
+**/src/api/venv/
+**/.python-version

@@ -13,9 +13,18 @@ import WidgetContainer from "../widget-container";
 
 import "./layout-styles.css";
 
+/**
+ * 
+ * @param {*} param0 
+ * @returns 
+ */
 const PageLayout = ({ header, footer, children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  /**
+   * 
+   * @returns A placeholder list of widgets that will be rendered.  Only if no children are passed to the PageLayout component.
+   */
   const renderChildren = () => {
     if (React.Children.count(children) === 0) {
       return (

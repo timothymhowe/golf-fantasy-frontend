@@ -1,3 +1,4 @@
+
 import React, { createContext, useEffect, useState, useContext } from "react";
 
 import { onAuthStateChanged } from "firebase/auth";
@@ -8,13 +9,13 @@ import { AuthProvider, useAuth } from "../auth-provider";
 
 import { getAuth } from "firebase/auth";
 
-
-
-
 /**
+ * A component that renders its children only if the user is authenticated.
+ * If the user is not authenticated, it redirects to the login page.
  *
- * @param {*} param0
- * @returns
+ * @component
+ * @param {Object} props - The component props.
+ * @returns {JSX.Element} - The rendered component.
  */
 const GuardedPageNoAuth = ({ children }) => {
   const [loading, setLoading] = useState(true);
@@ -48,7 +49,6 @@ const GuardedPageNoAuth = ({ children }) => {
 
   return (
     <div>
-      {auth.currentUser.email}
       {children}
     </div>
   );

@@ -1,14 +1,22 @@
+
 "use client";
 
 import React from "react";
-import { useState } from "react";
-// import { Button } from "flowbite-react";
 
-import Sidebar from "../sidebar";
+import { useAuth } from "../auth-provider";
 
 import "./header-styles.css";
 
+/**
+ * Header component for the application.
+ *
+ * @component
+ * @param {boolean} isSidebarOpen - Indicates whether the sidebar is open or not.
+ * @param {function} setIsSidebarOpen - Function to set the state of the sidebar.
+ * @returns {JSX.Element} The rendered header component.
+ */
 const Header = ({isSidebarOpen, setIsSidebarOpen}) => {
+  const user = useAuth();
   const toggleNav = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
@@ -17,7 +25,7 @@ const Header = ({isSidebarOpen, setIsSidebarOpen}) => {
     <header className="bg-green-800 text-white p-2 flex justify-between items-center">
       <div className="flex-grow">
         
-        <button
+        {user && <button
           onClick={toggleNav}
           variant="icon"
           color="white"
@@ -55,7 +63,7 @@ const Header = ({isSidebarOpen, setIsSidebarOpen}) => {
         />
             </svg>
           )}
-        </button>
+        </button>}
       </div>
       <a href="#home" className="text-2xl font-bold pr-[2em]">
         Golf '24

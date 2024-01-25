@@ -20,7 +20,6 @@ const LogoutButton = () => {
     signOut(auth)
       .then(() => {
         console.log("User signed out.");
-        // router.push("/login");
       })
       .catch((error) => {
         console.log("Error signing out.");

@@ -26,10 +26,21 @@ export const useAuth = () => {
  */
 export const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+    
 
   useEffect(() => {
-    setAuth(getAuth(app));
+    const authInstance = getAuth(app);
+    if (authInstance) {
+      setAuth(authInstance);
+      setLoading(false);
+    }
   }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 };

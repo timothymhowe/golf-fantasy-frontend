@@ -1,22 +1,24 @@
-'ren'
-import react from "react";
+import React from "react";
 import Avatar from "../avatar";
 
-import { Link } from "next/link";
+import { useAuth } from "../auth-provider";
 
 import "./sidebar-styles.css";
 import LogoutButton from "../logout-button";
 
 const Sidebar = ({ isOpen }) => {
+  const auth = useAuth();
+
   return (
     <nav
-    className={`px-4 left-0 z-10 bg-white transform transition-transform duration-200 ease-in-out ${
-      isOpen ? "translate-x-0 open" : "-translate-x-full"
-    } sidebar absolute inset-x-s0 top-0 h-[100%]`}
+      className={`px-4 left-0 z-10 bg-white transform transition-transform duration-200 ease-in-out ${
+        isOpen ? "translate-x-0 open" : "-translate-x-full"
+      } sidebar absolute inset-x-s0 top-0 h-[100%]`}
     >
-
-      
       <Avatar />
+      <div className="text-center text-gray-700">
+        {auth.currentUser.email}
+      </div>
 
       <hr className="w-4/5 mx-auto border-gray-300 my-4" />
 
@@ -37,7 +39,10 @@ const Sidebar = ({ isOpen }) => {
           </a>
         </li>
         <li>
-          <a href="https://docs.google.com/forms/d/e/1FAIpQLScqFE9p85yilbw00gtHi2-aKgXakE8GYg-W2borVuPaXvGapQ/viewform" className="text-black hover:text-blue-500">
+          <a
+            href="https://docs.google.com/forms/d/e/1FAIpQLScqFE9p85yilbw00gtHi2-aKgXakE8GYg-W2borVuPaXvGapQ/viewform"
+            className="text-black hover:text-blue-500"
+          >
             Legacy Google Form
           </a>
         </li>
@@ -46,9 +51,7 @@ const Sidebar = ({ isOpen }) => {
         </li>
       </ul>
 
-      <div className="flex items-center justify-center mt-8">
-
-      </div>
+      <div className="flex items-center justify-center mt-8"></div>
     </nav>
   );
 };
