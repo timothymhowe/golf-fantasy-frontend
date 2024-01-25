@@ -1,3 +1,42 @@
+# Golf Fantasy Website
+
+This is a Golf Fantasy website built with Next.js, a Flask API, Firebase authentication, and MySQL storage.
+
+## Front End: React
+
+The front end of the Golf Fantasy website is built using Next.js, a React framework for server-side rendering and static site generation. Next.js provides a seamless development experience with features like automatic code splitting, hot module replacement, and server-side rendering.
+
+## Back End: Flask
+
+The back end of the Golf Fantasy website is built using Flask, a lightweight web framework for Python. Flask allows for easy development of RESTful APIs and provides a flexible and scalable architecture for building web applications.
+
+## Firebase Authentication
+
+Firebase Authentication is used for user authentication in the Golf Fantasy website. It provides a secure and easy-to-use authentication system, allowing users to sign up, sign in, and manage their account credentials.
+
+## Database: MySQL
+
+The Golf Fantasy website utilizes a MySQL database for storing and managing data. Here is a placeholder description of the DB structure:
+
+- `golfer` : Stores information about golf players, including their name, nationality, and ranking.
+- `league` : Represents the fantasy leagues created by users, containing details like league name, member, commisioner, and owner.
+- `user` : Contains information about registered users, such as their username, email, link to their avatar photo, etc.
+- `roles` : list of roles, permissions associated with those roles
+
+
+## Development Roadmap
+- 1/27/24: Alpha Release
+- 1/30/24: Beta Testing
+- 2/6/24: Full Release
+
+## More Info
+
+For more information on Next.js, Flask, Firebase Authentication, and Firebase Storage, refer to the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Flask Documentation](https://flask.palletsprojects.com/)
+- [Firebase Authentication Documentation](https://firebase.google.com/docs/auth)
+<!-- - [Firebase Storage Documentation](https://firebase.google.com/docs/storage)
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
@@ -33,4 +72,4 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details. -->
