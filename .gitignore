@@ -48,5 +48,9 @@ next-env.d.ts
 **/*$py.class
 
 # Virtualenv
-**/src/api/venv/
+**/src/api/env/
 **/.python-version
+
+# vscode project settings
+**/.vscode/
+.vscode/PythonImportHelper-v2-Completion.json
