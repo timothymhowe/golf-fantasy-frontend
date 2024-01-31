@@ -5,6 +5,8 @@ from sqlalchemy import text
 import argparse
 from getpass import getpass
 
+from src.api.models import *
+
 db = SQLAlchemy()
 CONFIG_STRING = 'mysql+mysqlconnector://root:eldrick@localhost/fantasy_golf'
 
