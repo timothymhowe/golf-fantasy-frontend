@@ -54,3 +54,8 @@ next-env.d.ts
 # vscode project settings
 **/.vscode/
 .vscode/PythonImportHelper-v2-Completion.json
+**/launch.json
+
+
+
+**/private*
