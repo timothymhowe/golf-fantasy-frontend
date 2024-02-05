@@ -4,8 +4,6 @@ from src.api.utils.db_connector import db, init_db
 
 from flask import Flask
 
-import pytz
-
 major_names = ["US OPEN", "MASTERS", "PGA CHAMPIONSHIP", "OPEN CHAMPIONSHIP"]
 
 

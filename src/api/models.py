@@ -1,9 +1,11 @@
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from src.api.utils.db_connector import db
+from utils.db_connector import db
 from datetime import time
 from sqlalchemy import DateTime
 from pytz import timezone, utc
+
+
 class User(db.Model):
     """
     Represents a user in the system.
@@ -35,13 +37,13 @@ class League(db.Model):
         id (int): The unique identifier for the league.
         name (str): The name of the league.
         scoring_format (str): The scoring format used in the league.
-        commissioner_id (int): The ID of the user who is the commissioner of the league.
+        is_active (bool): Indicates whether the league is active or not.
     """
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    scoring_format = db.Column(db.String(100), nullable=False)
-    commissioner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    scoring_format = db.Column(db.String(100), nullable=False, default="STANDARD")
+    is_active = db.Column(db.Boolean, nullable=False, default=True)
 
 
 class LeagueMember(db.Model):
@@ -81,7 +83,8 @@ class Pick(db.Model):
     timestamp = db.Column(
         db.DateTime, nullable=False, default=db.func.current_timestamp()
     )
-    player_name = db.Column(db.String(100), nullable=False)
+    golfer_name = db.Column(db.String(100))
+    golfer_id = (db.Column(db.String(9), db.ForeignKey("golfer.id"), nullable=False),)
     year = db.Column(db.Integer, nullable=False)
     tournament_id = db.Column(db.Integer, db.ForeignKey("tournament.id"))
 
@@ -113,7 +116,7 @@ class Tournament(db.Model):
     tournament_name = db.Column(db.String(100), nullable=False)
     tournament_format = db.Column(db.String(100), nullable=False, default="stroke")
     start_date = db.Column(db.Date, nullable=False)
-    start_time = db.Column(db.Time, nullable=False, default=time(8,30))
+    start_time = db.Column(db.Time, nullable=False, default=time(8, 30))
     time_zone = db.Column(db.String(50), nullable=False, default="America/New_York")
     location_raw = db.Column(db.String(100), nullable=True)
     end_date = db.Column(db.Date, nullable=False)
@@ -121,8 +124,6 @@ class Tournament(db.Model):
     city = db.Column(db.String(50), nullable=True)
     state = db.Column(db.String(50), nullable=True)
     is_major = db.Column(db.Boolean, nullable=False, default=False)
-    
-
 
     @hybrid_property
     def start_date_tz(self):
@@ -131,6 +132,7 @@ class Tournament(db.Model):
     @hybrid_property
     def end_date_tz(self):
         return utc.localize(self.end_date).astimezone(timezone(self.time_zone))
+
 
 class Golfer(db.Model):
     """
@@ -180,7 +182,7 @@ class TournamentGolfer(db.Model):
 class Role(db.Model):
     """
     Represents a role in the system.
-    
+
     Attributes:
         id (int): The unique identifier for the role.
         name (str): The name of the role.
@@ -192,20 +194,45 @@ class Role(db.Model):
 
 class ScoringRule(db.Model):
     """
-    Represents a scoring rule for a golf tournament.
+    Represents the scoring rule entry for a golf fantasy league.
 
     Attributes:
         id (int): The unique identifier for the scoring rule.
+        scoring_ruleset_id (int): The ID of the scoring ruleset that this rule belongs to.
         start_position (int): The starting position for the rule.
         end_position (int): The ending position for the rule.
         points (int): The number of points awarded for the rule.
     """
- 
+
     id = db.Column(db.Integer, primary_key=True)
+    scoring_ruleset_id = db.Column(db.Integer, db.ForeignKey("scoring_ruleset.id"), nullable=False)
     start_position = db.Column(db.Integer, nullable=False)
     end_position = db.Column(db.Integer, nullable=False)
     points = db.Column(db.Integer, nullable=False)
+    
 
+
+class ScoringRuleset(db.Model):
+    """
+    Represents a scoring ruleset for a golf tournament.
+
+    Attributes:
+        id (int): The unique identifier for the scoring ruleset.
+        name (str): The name of the scoring ruleset.
+        description (str): The description of the scoring ruleset.
+        major_multiplier (float): The multiplier applied to scores for major tournaments.
+        mdf_points (int): The points awarded for making the cut in a tournament.
+        mc_points (int): The points awarded for missing the cut in a tournament.
+        no_pick_points (int): The points deducted for not making any picks in a tournament.
+    """
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(255))
+    major_multiplier = db.Column(db.Float, nullable=False, default=1)
+    mdf_points = db.Column(db.Integer, nullable=False, default=5)
+    mc_points = db.Column(db.Integer, nullable=False, default=0)
+    no_pick_points = db.Column(db.Integer, nullable=False, default=-10)
 
 class UserScore(db.Model):
     """
@@ -217,7 +244,7 @@ class UserScore(db.Model):
         tournament_id (int): The foreign key referencing the tournament's ID.
         score (int): The score of the user in the tournament.
     """
-    
+
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     tournament_id = db.Column(
@@ -229,24 +256,27 @@ class UserScore(db.Model):
 class LegacyMember(db.Model):
     """
     Represents a legacy member in the system.
-    
+
     Attributes:
         id (int): The unique identifier for the legacy member.
         full_name (str): The full name of the legacy member.
         first_name (str): The first name of the legacy member.
         last_name (str): The last name of the legacy member.
     """
-    
+
     id = db.Column(db.Integer, primary_key=True)
-    full_name = db.Column(db.String(100))
+    user_name = db.Column(db.String(100), unique=True, nullable=False)
+    display_name = db.Column(db.String(100))
+    nickname = db.Column(db.String(100))
     first_name = db.Column(db.String(50))
     last_name = db.Column(db.String(50))
+    league_id = db.Column(db.Integer, db.ForeignKey("league.id"), nullable=False)
 
 
 class LegacyMemberPick(db.Model):
     """
     Represents a pick made by a legacy member for a tournament.
-    
+
     Attributes:
         id (int): The unique identifier for the pick.
         user_id (int): The ID of the legacy member who made the pick.
@@ -254,9 +284,43 @@ class LegacyMemberPick(db.Model):
         tournament_id (int): The ID of the tournament for which the pick is made.
         golfer_name (str): The name of the golfer chosen by the legacy member.
     """
-    
+
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("legacy_member.id"))
+    legacy_member_id = db.Column(db.Integer, db.ForeignKey("legacy_member.id"))
     week = db.Column(db.Integer)
     tournament_id = db.Column(db.Integer, db.ForeignKey("tournament.id"))
     golfer_name = db.Column(db.String(100))
+    golfer_id = db.Column(db.String(9), db.ForeignKey("golfer.id"))
+    no_pick = db.Column(db.Boolean, default=False, nullable=False)
+
+
+class LeagueCommisioner(db.Model):
+    """
+    Represents a league commissioner in the system.
+
+    Attributes:
+        id (int): The unique identifier for the league commissioner relation.
+        league_id (int): The ID of the league the commissioner belongs to.
+        user_id (int): The ID of the user associated with the commissioner.
+    """
+
+    id = db.Column(db.Integer, primary_key=True)
+    league_id = db.Column(db.Integer, db.ForeignKey("league.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+
+
+class TournamentGolferResult(db.Model):
+    """
+    Represents the result of a golfer in a tournament.
+
+    Attributes:
+        id (int): The unique identifier for the tournament golfer result.
+        tournament_golfer_id (int): The ID of the tournament golfer.
+        result (str): The result of the golfer in the tournament.
+    """
+
+    id = db.Column(db.Integer, primary_key=True)
+    tournament_golfer_id = db.Column(
+        db.Integer, db.ForeignKey("tournament_golfer.id"), nullable=False
+    )
+    result = db.Column(db.String(9), nullable=False)

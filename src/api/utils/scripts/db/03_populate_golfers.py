@@ -3,7 +3,6 @@ from src.api.models import Golfer
 from src.api.utils.db_connector import db, init_db
 from src.api.utils.functions.golf_id import generate_golfer_id
 import re
-from pytz import timezone
 
 from flask import Flask
 

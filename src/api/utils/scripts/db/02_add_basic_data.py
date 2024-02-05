@@ -1,15 +1,6 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-import importlib
-
-
+from src.api.utils.db_connector import db, init_db
 from src.api.models import Role
-
-app = Flask(__name__)
-CONFIG_STRING = 'mysql+mysqlconnector://root:eldrick@localhost/fantasy_golf'
-
-app.config['SQLALCHEMY_DATABASE_URI'] = CONFIG_STRING
-db = SQLAlchemy(app)
 
 def create_roles(db):
     """
@@ -33,9 +24,11 @@ def create_roles(db):
         
 
 if __name__ == "__main__":
+    app = Flask(__name__)
+    init_db(app)
     with app.app_context():
-
         create_roles(db)
+
         
      
         # commit the transaction
