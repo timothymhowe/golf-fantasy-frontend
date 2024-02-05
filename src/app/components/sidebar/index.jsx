@@ -17,7 +17,7 @@ const Sidebar = ({ isOpen }) => {
     >
       <Avatar />
       <div className="text-center text-gray-700">
-        {auth.currentUser.email}
+      {auth && auth.currentUser ? auth.currentUser.email : 'Loading...'}
       </div>
 
       <hr className="w-4/5 mx-auto border-gray-300 my-4" />

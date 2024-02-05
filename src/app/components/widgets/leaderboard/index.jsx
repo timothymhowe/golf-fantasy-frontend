@@ -1,19 +1,35 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../../auth-provider";
 
+// TODO: figure out why the auth request is being made twice.
 const Leaderboard = () => {
-  const placeholder_data = [
-    { rank: 1, name: "John", score: 100, missedPicks: 2 },
-    { rank: 2, name: "Jane", score: 90, missedPicks: 5 },
-    { rank: 3, name: "Bob", score: 80, missedPicks: 3 },
-    { rank: 4, name: "Alice", score: 75, missedPicks: 4 },
-    { rank: 5, name: "Charlie", score: 70, missedPicks: 1 },
-    { rank: 6, name: "David", score: 65, missedPicks: 2 },
-    { rank: 7, name: "Eve", score: 60, missedPicks: 3 },
-    { rank: 8, name: "Frank", score: 55, missedPicks: 4 },
-    { rank: 9, name: "Grace", score: 50, missedPicks: 1 },
-    { rank: 10, name: "Heidi", score: 45, missedPicks: 2 },
-    // Add more data as needed
-  ];
+  const auth = useAuth();
+  const [authToken, setAuthToken] = useState(null);
+  const [leaderboard, setLeaderboard] = useState([]);
+  
+  useEffect(() => {
+
+    if (auth.currentUser) {
+      auth.currentUser.getIdToken(true).then((idToken) => {
+        setAuthToken(idToken);
+      });
+    }
+  }, [auth.currentUser]);
+
+  useEffect(() => {
+    if (authToken) {
+      fetch("/api/league/scoreboard", {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setLeaderboard(data.data.leaderboard);
+        })
+        .catch((error) => console.error(error));
+    }
+  }, [authToken]);
 
   return (
     <>
@@ -28,7 +44,7 @@ const Leaderboard = () => {
             </tr>
           </thead>
           <tbody className="text-gray-700">
-            {placeholder_data.map((item) => (
+            {leaderboard.map((item) => (
               <tr
                 key={item.rank}
                 className="hover:bg-gray-200 transition-colors duration-200"

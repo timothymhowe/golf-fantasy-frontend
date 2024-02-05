@@ -1,19 +1,37 @@
-import React from "react";
+import React, { useEffect } from "react";
 import PickForm from "../../forms/pick-form";
 
+import { useAuth } from "../../auth-provider";
+
 const Pick = ({ hasMadePick, pick, onChangePick }) => {
+  const auth_token = useAuth();
+
+  // useEffect(() => {
+  //   if (auth_token) {
+  //     fetch("/api/pick/mypick", {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     })
+  //       .then((response) => response.json())
+  //       .then((data) => console.log(data))
+  //       .catch((error) => console.error(error));
+  //   }
+  // }, []);
+
   const placeholderImage =
     "https://a.espncdn.com/combiner/i?img=/i/headshots/golf/players/full/9938.png"; // Placeholder image URL
 
   const thisWeek = "Farmers Insurance Open";
   const weekNumber = "4";
 
-
   if (hasMadePick) {
     return (
       <div className="flex flex-col w-[100%] ">
         <div className="flex flex-row justify-left">
-          <div className="text-green-700 font-bold whitespace-nowrap pr-4">Week {weekNumber}:</div>
+          <div className="text-green-700 font-bold whitespace-nowrap pr-4">
+            Week {weekNumber}:
+          </div>
           <div className="text-grey-300 italic">{thisWeek}</div>
         </div>
         <div className="w-[100%] relative h-fill flex flex-row justify-between">
