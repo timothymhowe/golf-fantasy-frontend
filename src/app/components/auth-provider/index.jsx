@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { getAuth } from "firebase/auth";
+import { getAuth, onIdTokenChanged } from "firebase/auth";
 import { app } from "../../../config/firebaseConfig";
+import { set } from "date-fns";
 
 /**
  * Context for managing authentication state.
@@ -27,14 +28,25 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState(null);
   const [loading, setLoading] = useState(true);
-
-    
+  const [idToken, setIdToken] = useState(null);
 
   useEffect(() => {
     const authInstance = getAuth(app);
     if (authInstance) {
       setAuth(authInstance);
       setLoading(false);
+
+      // Set up a listener for ID token changes
+      const unsubscribe = onIdTokenChanged(authInstance, (user) => {
+        if (user) {
+          user.getIdToken().then(setIdToken);
+        } else {
+          setIdToken(null);
+        }
+      });
+
+      // Clean up the listener when the component unmounts
+      return () => unsubscribe();
     }
   }, []);
 
@@ -42,5 +54,5 @@ export const AuthProvider = ({ children }) => {
     return <div>Loading...</div>;
   }
 
-  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{auth,idToken}}>{children}</AuthContext.Provider>;
 };

@@ -3,33 +3,30 @@ import { useAuth } from "../../auth-provider";
 
 // TODO: figure out why the auth request is being made twice.
 const Leaderboard = () => {
-  const auth = useAuth();
-  const [authToken, setAuthToken] = useState(null);
+  const idToken = useAuth().idToken;
   const [leaderboard, setLeaderboard] = useState([]);
-  
-  useEffect(() => {
+  const [isLoaded, setIsLoaded] = useState(false);
 
-    if (auth.currentUser) {
-      auth.currentUser.getIdToken(true).then((idToken) => {
-        setAuthToken(idToken);
-      });
-    }
-  }, [auth.currentUser]);
-
+  // TODO: Clean up fetch, avoid potential race conditions, etc.
   useEffect(() => {
-    if (authToken) {
-      fetch("/api/league/scoreboard", {
+    const controller = new AbortController();
+    if (idToken) {
+      fetch("/api/league/scoreboard", {signal: controller.signal,
         headers: {
-          Authorization: `Bearer ${authToken}`,
+          Authorization: `Bearer ${idToken}`,
         },
       })
         .then((response) => response.json())
         .then((data) => {
           setLeaderboard(data.data.leaderboard);
+          setIsLoaded(true);
         })
         .catch((error) => console.error(error));
     }
-  }, [authToken]);
+    return () => {
+      controller.abort();
+    };
+  }, [idToken]);
 
   return (
     <>
@@ -44,7 +41,8 @@ const Leaderboard = () => {
             </tr>
           </thead>
           <tbody className="text-gray-700">
-            {leaderboard.map((item) => (
+          {isLoaded ? (
+            leaderboard.map((item) => (
               <tr
                 key={item.rank}
                 className="hover:bg-gray-200 transition-colors duration-200"
@@ -54,7 +52,26 @@ const Leaderboard = () => {
                 <td className="px-4 py-2">{item.score}</td>
                 <td className="px-4 py-2">{item.missedPicks}</td>
               </tr>
-            ))}
+            ))
+          ) : (
+            // Skeleton screen
+            [...Array(10)].map((_, index) => (
+              <tr key={index} className="animate-pulse">
+                <td className="px-4 py-2">
+                  <div className="h-5 bg-gray-300 rounded w-1/4"></div>
+                </td>
+                <td className="px-4 py-2">
+                  <div className="h-5 bg-gray-300 rounded w-3/4"></div>
+                </td>
+                <td className="px-4 py-2">
+                  <div className="h-5 bg-gray-300 rounded w-2/4"></div>
+                </td>
+                <td className="px-4 py-2">
+                  <div className="h-5 bg-gray-300 rounded w-1/4"></div>
+                </td>
+              </tr>
+            ))
+          )}
           </tbody>
         </table>
       </div>

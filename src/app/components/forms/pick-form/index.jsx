@@ -1,63 +1,105 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import AutocompleteGolfer from "../../drop-down/golfer";
+import { useAuth } from "../../auth-provider";
+import { set } from "date-fns";
 
-const PickForm = () => {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [selection, setSelection] = useState('');
+const PickForm = ({ selectedTournament,setIsOpen, triggerSubmit }) => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [selectedGolfer, setSelectedGolfer] = useState(null);
 
-    const handleNameChange = (e) => {
-        setName(e.target.value);
-    };
+  const {auth, idToken} = useAuth();
+  const user = auth.currentUser;
 
-    const handleEmailChange = (e) => {
-        setEmail(e.target.value);
-    };
+  const submitPick = async (tournamentId, golferId) => {
 
-    const handleSelectionChange = (e) => {
-        setSelection(e.target.value);
-    };
+    // if the user is authenticated, get the user's token and submit the pick
+    if (user) {
+      user.getIdToken().then(async (token) => {
+        try{
+        const response = await fetch("/api/pick/submit", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            tournament_id: tournamentId,
+            golfer_id: golferId,
+          }),
+        });
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Handle form submission logic here
-    };
+        if (!response.ok) {
+          throw new Error("Failed to submit pick");
+        }
+        const data = await response.json();
+        console.log(data);
 
-    const handleCancel = () => {
-        // Handle cancel logic here
-    };
+        // Trigger an update in the pick component, and close the modal
+        triggerSubmit();
+        setIsOpen(false);
+        return data;
 
-    return (
-        <form className="bg-white rounded px-8 pt-6 pb-8 mb-4 " onSubmit={handleSubmit}>
-            <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                type="text"
-                placeholder="Enter your name"
-                value={name}
-                onChange={handleNameChange}
-            />
-            <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mt-3 leading-tight focus:outline-none focus:shadow-outline"
-                type="text"
-                placeholder="Enter your email"
-                value={email}
-                onChange={handleEmailChange}
-            />
-            <select className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline mt-3" value={selection} onChange={handleSelectionChange}>
-                <option value="">Select an option</option>
-                <option value="option1">Option 1</option>
-                <option value="option2">Option 2</option>
-            </select>
-           
-           <div className='flex justify-end'>
-            <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 mr-1 rounded focus:outline-none focus:shadow-outline mt-3" type="button" onClick={handleCancel}>
-                Cancel
-            </button>
-            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 ml-1 rounded focus:outline-none focus:shadow-outline mt-3" type="submit">
-                Submit
-            </button>
-            </div>
-        </form>
-    );
+      } catch (error) {
+        console.error("Failed to submit pick", error);
+      }
+      });
+    }
+    
+  };
+
+  const handleSubmit = (e) => {
+    // TODO: Get the tournament ID from the selected tournament, rather than hardcode it
+    const tournamentId = 124;
+
+    e.preventDefault();
+    if (selectedGolfer) {
+      submitPick(tournamentId, selectedGolfer.id);
+    }
+  };
+
+  const handleCancel = () => {
+    // TODO: Handle cancel logic here
+    setIsOpen(false);
+  };
+
+  return (
+    <form className={formClasses} onSubmit={handleSubmit}>
+      <AutocompleteGolfer
+        selectedGolfer={selectedGolfer}
+        setSelectedGolfer={setSelectedGolfer}
+        selectedTournament={selectedTournament}
+        user={user}
+      />
+
+      <div className="flex justify-end">
+        <button className={cancelClasses} type="button" onClick={handleCancel}>
+          Cancel
+        </button>
+        <button
+          className={submitClasses(selectedGolfer)}
+          type="submit"
+          onClick={handleSubmit}
+        >
+          Submit
+        </button>
+      </div>
+    </form>
+  );
 };
 
 export default PickForm;
+const formClasses = "bg-white rounded px-8 pt-6 pb-8 mb-4";
+
+const cancelClasses =
+  "bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 mr-1 rounded focus:outline-none focus:shadow-outline mt-3";
+const submitClasses = (selectedGolfer) => {
+  const baseClasses =
+    " font-bold py-2 px-4 ml-1 rounded focus:outline-none focus:shadow-outline mt-3";
+
+  if (selectedGolfer) {
+    return "bg-blue-500 hover:bg-blue-700 text-white" + baseClasses;
+  } else {
+    return "bg-gray-400 disabled text-gray-200" + baseClasses;
+  }
+};

@@ -22,7 +22,7 @@ const Header = ({isSidebarOpen, setIsSidebarOpen}) => {
   };
   
   return (
-    <header className="bg-green-800 text-white p-2 flex justify-between items-center">
+    <header className="bg-gradient-to-b from-green-800 to-green-950 text-white p-2 flex justify-between items-center ">
       <div className="flex-grow">
         
         {user && <button
@@ -65,7 +65,7 @@ const Header = ({isSidebarOpen, setIsSidebarOpen}) => {
           )}
         </button>}
       </div>
-      <a href="#home" className="text-2xl font-bold pr-[2em]">
+      <a href="/dashboard" className="text-2xl font-bold pr-[2em]">
         Golf '24
       </a>
 

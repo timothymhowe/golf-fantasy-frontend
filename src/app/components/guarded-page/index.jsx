@@ -5,7 +5,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { redirect, useRouter } from "next/navigation";
 
 import { app } from "../../../config/firebaseConfig";
-import { AuthProvider, useAuth } from "../auth-provider";
+import { AuthProvider } from "../auth-provider";
 
 import { getAuth } from "firebase/auth";
 

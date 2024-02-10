@@ -12,51 +12,53 @@ import Scoresheet from "../widgets/scoresheet";
 import WidgetContainer from "../widget-container";
 
 import "./layout-styles.css";
+import { set } from "date-fns";
 
 /**
- * 
- * @param {*} param0 
- * @returns 
+ * Represents the layout of a page in the golf fantasy application.
+ *
+ * @component
+ * @param {Object} props - The properties of the PageLayout component.
+ * @param {React.ReactNode} props.header - The header component to be rendered.
+ * @param {React.ReactNode} props.footer - The footer component to be rendered.
+ * @param {React.ReactNode} props.children - The child components to be rendered within the layout.
+ * @returns {JSX.Element} The rendered PageLayout component.
  */
 const PageLayout = ({ header, footer, children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [pickTitle, setPickTitle] = useState(null);
 
   /**
-   * 
-   * @returns A placeholder list of widgets that will be rendered.  Only if no children are passed to the PageLayout component.
+   * Renders a placeholder list of widgets that will be rendered, only if no children are passed to the PageLayout component.
+   *
+   * @returns {JSX.Element} The rendered list of widgets.
    */
   const renderChildren = () => {
     if (React.Children.count(children) === 0) {
       return (
         <>
-          <WidgetContainer title={"Your Pick"}>
+          <WidgetContainer title={pickTitle}>
             <Pick
+              setTitle={setPickTitle}
               hasMadePick={true}
-              pick={"Sam Burns"}
-              onChangePick={setIsSidebarOpen}
             />
           </WidgetContainer>
+
           <WidgetContainer title="League Leaderboard">
             <Leaderboard />
           </WidgetContainer>
-          <WidgetContainer title="Make a Pick">
-            <Pick
-              hasMadePick={false}
-              pick={""}
-              onChangePick={setIsSidebarOpen}
-            />
-          </WidgetContainer>
 
           <WidgetContainer title="Scoring Rules">
-          <Scoresheet/>
-
+            <Scoresheet />
           </WidgetContainer>
         </>
       );
     }
 
     return React.Children.map(children, (child) => (
-      <WidgetContainer title={child.props.title || 'Default Title'}>{child}</WidgetContainer>
+      <WidgetContainer title={child.props.title || "Default Title"}>
+        {child}
+      </WidgetContainer>
     ));
   };
 
@@ -71,7 +73,7 @@ const PageLayout = ({ header, footer, children }) => {
       </Header>
       <div className="body-container relative justify-end flex-grow">
         <Sidebar isOpen={isSidebarOpen} />
-        <main className="overflow-auto flex-grow h-auto  p-4 w-full max-w-[600px] max-h-100vh  md:mx-auto ">
+        <main className="overflow-auto flex-grow h-auto  p-4 w-full max-w-[600px] max-h-100vh  md:mx-auto">
           {renderChildren()}
         </main>
       </div>

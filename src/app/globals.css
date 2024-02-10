@@ -31,3 +31,7 @@ body {
     text-wrap: balance;
   }
 }
+
+.font-verdana{
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
