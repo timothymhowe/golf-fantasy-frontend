@@ -1,7 +1,7 @@
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from utils.db_connector import db
-from datetime import time
+from datetime import datetime, time
 from sqlalchemy import DateTime
 from pytz import timezone, utc
 
@@ -12,7 +12,7 @@ class User(db.Model):
 
     Attributes:
         id (int): The unique identifier for the user.
-        firebase_uid (str): The Firebase UID associated with the user.
+        firebase_id (str): The Firebase UID associated with the user.
         display_name (str): The display name of the user.
         first_name (str): The first name of the user.
         last_name (str): The last name of the user.
@@ -21,7 +21,7 @@ class User(db.Model):
     """
 
     id = db.Column(db.Integer, primary_key=True)
-    firebase_uid = db.Column(db.String(255), unique=True, nullable=False)
+    firebase_id = db.Column(db.String(255), unique=True, nullable=False)
     display_name = db.Column(db.String(40), nullable=False)
     first_name = db.Column(db.String(40), nullable=False)
     last_name = db.Column(db.String(40), nullable=False)
@@ -70,23 +70,36 @@ class Pick(db.Model):
     Attributes:
         id (int): The unique identifier for the pick.
         league_member_id (int): The ID of the league member who made the pick.
-        timestamp (datetime): The timestamp when the pick was made.
+        timestamp_utc (datetime): The timestamp when the pick was made.
         player_name (str): The name of the player picked.
         year (int): The year of the tournament.
         tournament_id (int): The ID of the tournament for which the pick was made.
+        is_most_recent (bool): Whether this pick is the most recent pick for the league member.
     """
 
+    # TODO: optimize how we keep track of most recent picks.  For now, this is ok.
     id = db.Column(db.Integer, primary_key=True)
     league_member_id = db.Column(
         db.Integer, db.ForeignKey("league_member.id"), nullable=False
     )
-    timestamp = db.Column(
-        db.DateTime, nullable=False, default=db.func.current_timestamp()
-    )
-    golfer_name = db.Column(db.String(100))
-    golfer_id = (db.Column(db.String(9), db.ForeignKey("golfer.id"), nullable=False),)
+    timestamp_utc = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    golfer_id = db.Column(db.String(9), db.ForeignKey("golfer.id"), nullable=False)
     year = db.Column(db.Integer, nullable=False)
     tournament_id = db.Column(db.Integer, db.ForeignKey("tournament.id"))
+    is_most_recent = db.Column(db.Boolean, nullable=False, default=True)
+    # is_locked = db.Column(db.Boolean, nullable=False, default=False)
+    
+    # TODO: Determine if this is actually best practice, weird copilot suggestion/hallucination potentially...
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'league_member_id': self.league_member_id,
+            'tournament_id': self.tournament_id,
+            'golfer_id': self.golfer_id,
+            'year': self.year,
+            'is_most_recent': self.is_most_recent,
+            # Add any other fields you want to include in the dictionary
+        }
 
 
 class Tournament(db.Model):
@@ -116,7 +129,7 @@ class Tournament(db.Model):
     tournament_name = db.Column(db.String(100), nullable=False)
     tournament_format = db.Column(db.String(100), nullable=False, default="stroke")
     start_date = db.Column(db.Date, nullable=False)
-    start_time = db.Column(db.Time, nullable=False, default=time(8, 30))
+    start_time = db.Column(db.Time, nullable=False, default=time(7, 00))
     time_zone = db.Column(db.String(50), nullable=False, default="America/New_York")
     location_raw = db.Column(db.String(100), nullable=True)
     end_date = db.Column(db.Date, nullable=False)
@@ -125,6 +138,8 @@ class Tournament(db.Model):
     state = db.Column(db.String(50), nullable=True)
     is_major = db.Column(db.Boolean, nullable=False, default=False)
 
+
+    # TODO: Does this make sense to do?  I'm not sure if this is the best way to do this.
     @hybrid_property
     def start_date_tz(self):
         return utc.localize(self.start_date).astimezone(timezone(self.time_zone))
@@ -166,6 +181,8 @@ class TournamentGolfer(db.Model):
         is_active (bool): Whether the golfer is active in the tournament.
         is_alternate (bool): Whether the golfer is an alternate in the tournament.
         is_injured (bool): Whether the golfer is injured in the tournament.
+        timestamp (datetime): The timestamp when this record was most recently updated.
+        is_most_recent (bool): Whether this record is the most recent record for the golfer in the entry list.
     """
 
     id = db.Column(db.Integer, primary_key=True)
@@ -177,6 +194,11 @@ class TournamentGolfer(db.Model):
     is_active = db.Column(db.Boolean, nullable=False, default=True)
     is_alternate = db.Column(db.Boolean, nullable=False, default=False)
     is_injured = db.Column(db.Boolean, nullable=False, default=False)
+    timestamp_utc = db.Column(DateTime, default=datetime.utcnow)
+    is_most_recent = db.Column(db.Boolean, default=True, nullable=False)
+
+    def to_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
 class Role(db.Model):
@@ -205,11 +227,12 @@ class ScoringRule(db.Model):
     """
 
     id = db.Column(db.Integer, primary_key=True)
-    scoring_ruleset_id = db.Column(db.Integer, db.ForeignKey("scoring_ruleset.id"), nullable=False)
+    scoring_ruleset_id = db.Column(
+        db.Integer, db.ForeignKey("scoring_ruleset.id"), nullable=False
+    )
     start_position = db.Column(db.Integer, nullable=False)
     end_position = db.Column(db.Integer, nullable=False)
     points = db.Column(db.Integer, nullable=False)
-    
 
 
 class ScoringRuleset(db.Model):
@@ -233,6 +256,7 @@ class ScoringRuleset(db.Model):
     mdf_points = db.Column(db.Integer, nullable=False, default=5)
     mc_points = db.Column(db.Integer, nullable=False, default=0)
     no_pick_points = db.Column(db.Integer, nullable=False, default=-10)
+
 
 class UserScore(db.Model):
     """
@@ -324,3 +348,37 @@ class TournamentGolferResult(db.Model):
         db.Integer, db.ForeignKey("tournament_golfer.id"), nullable=False
     )
     result = db.Column(db.String(9), nullable=False)
+
+
+class GolferStats(db.Model):
+    """
+    Represents a record of stats of a golfer based on their performance in Tournaments, as well as pulled from apis.
+
+    Args:
+        db (_type_): _description_
+    """
+
+    #
+    id = db.Column(db.Integer, primary_key=True)
+    golfer_id = db.Column(db.String(9), db.ForeignKey("golfer.id"), nullable=False)
+
+    # stats
+
+
+class GolferRanking(db.Model):
+    """
+    Represents a record of stats of a golfer based on their performance in Tournaments, as well as pulled from apis.
+
+    Args:
+        db (_type_): _description_
+    """
+
+    #
+    id = db.Column(db.Integer, primary_key=True)
+    golfer_id = db.Column(db.String(9), db.ForeignKey("golfer.id"), nullable=False)
+
+    # OWGR
+    has_owgr = db.Column(db.Boolean, nullable=False, default=False)
+    owgr = db.Column(db.Integer)
+    is_most_recent = db.Column(db.Boolean, nullable=False, default=True)
+    timestamp_utc = db.Column(DateTime, default=datetime.utcnow)

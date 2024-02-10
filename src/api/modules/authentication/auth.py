@@ -31,13 +31,21 @@ def require_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         auth_header = request.headers.get('Authorization')
+        
+        # checks the validity of the auth header
         if not auth_header or ' ' not in auth_header:
             return jsonify({'error': 'Invalid authorization header'}), 401
         bearer, id_token = auth_header.split(' ')
+        
         if bearer.lower() != 'bearer':
             return jsonify({'error': 'Invalid authorization header'}), 401
         uid = verify_id_token(id_token)
+        
+        
         if uid is None:
             return jsonify({'error': 'Invalid token'}), 401
         return f(uid, *args, **kwargs)
+    
+        # TODO: Delete this, nephew.  Debug only
+        print(uid)
     return decorated
