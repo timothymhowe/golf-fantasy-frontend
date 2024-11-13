@@ -73,3 +73,23 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details. -->
+### Run the API
+
+To run the Flask API in development mode:
+
+1. Navigate to the `src/api` directory:
+2. Run `flask run dev`
+3. Hopefully it works
+
+
+### Run the frontend
+
+To run the frontend in development mode:
+
+1. Navigate to the root directory
+2. Install dependencies: `npm install`
+3. Run the development server: `npm run dev`
+
+
+
+
