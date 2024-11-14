@@ -62,3 +62,8 @@ next-env.d.ts
 **/private*
 
 /src/api/api_samples/*
+
+
+
+# image headshots
+/src/api/static/headshots/*
