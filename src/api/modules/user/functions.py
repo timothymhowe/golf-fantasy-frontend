@@ -1,5 +1,7 @@
 from sqlalchemy import desc, select
-from models import User, Pick, League, LeagueMember, db
+from models import User, Pick, LeagueMember
+
+from utils.db_connector import db
 
 # TODO: Deprecate this function and fully migrate to the pick module
 # Query for the most recent pick for the week by a user with a given UID

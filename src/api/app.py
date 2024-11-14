@@ -9,6 +9,9 @@ from utils.db_connector import db, init_db
 from apscheduler.schedulers.background import BackgroundScheduler
 from jobs.scheduler import update_database
 
+from dotenv import load_dotenv
+
+
 def create_app():
     app = Flask(__name__)
     init_db(app)
@@ -22,11 +25,6 @@ def create_app():
     app.register_blueprint(pick_bp, url_prefix="/pick")
     #   TODO: create a rate limiter for each user to prevent DDOS attacks, overuse, etc.
 
-
-
-
-
-
     @app.route("/")
     def hello():
         return "<p>Hello, World!</p>"
@@ -37,7 +35,9 @@ def start_scheduler():
     scheduler = BackgroundScheduler()
     scheduler.add_job(func=update_database, trigger="interval", seconds=3600)
     scheduler.start()
+    
 
+load_dotenv()
 app = create_app()
 start_scheduler()
 

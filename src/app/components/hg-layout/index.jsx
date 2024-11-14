@@ -40,7 +40,6 @@ const PageLayout = ({ header, footer, children }) => {
           <WidgetContainer title={pickTitle}>
             <Pick
               setTitle={setPickTitle}
-              hasMadePick={true}
             />
           </WidgetContainer>
 
@@ -48,9 +47,9 @@ const PageLayout = ({ header, footer, children }) => {
             <Leaderboard />
           </WidgetContainer>
 
-          <WidgetContainer title="Scoring Rules">
+          {/* <WidgetContainer title="Scoring Rules">
             <Scoresheet />
-          </WidgetContainer>
+          </WidgetContainer> */}
         </>
       );
     }

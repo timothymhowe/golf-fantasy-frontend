@@ -1,6 +1,7 @@
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from utils.db_connector import db
+# TODO: This is a hack to get the DB migration to work.  Fix this.
+from src.api.utils.db_connector import db
 from datetime import datetime, time
 from sqlalchemy import DateTime
 from pytz import timezone, utc
@@ -163,10 +164,12 @@ class Golfer(db.Model):
 
     id = db.Column(db.String(9), primary_key=True)
     sportcontent_api_id = db.Column(db.Integer, unique=True)
+    datagolf_id = db.Column(db.Integer, unique=True)
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
     full_name = db.Column(db.String(100), nullable=False)
     photo_url = db.Column(db.String(512))
+    
 
 
 class TournamentGolfer(db.Model):

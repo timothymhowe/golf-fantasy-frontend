@@ -76,10 +76,10 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 ### Run the API
 
 To run the Flask API in development mode:
-
-1. Navigate to the `src/api` directory:
-2. Run `flask run dev`
-3. Hopefully it works
+1. From the root directory, run `source .venv/bin/activate`
+2. Navigate to the `src/api` directory:
+3. Run `flask run dev`
+4. Hopefully it works
 
 
 ### Run the frontend

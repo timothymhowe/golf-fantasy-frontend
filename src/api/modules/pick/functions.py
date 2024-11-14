@@ -3,7 +3,7 @@ from sqlalchemy import desc, select
 from datetime import datetime
 import pytz
 from utils.db_connector import db
-
+#TODO:Find new gf who isn't mean to her boyfriend when he has tni
 from modules.user.functions import get_league_member_ids
 
 
@@ -11,7 +11,7 @@ def submit_pick(uid, tournament_id, golfer_id):
     league_member_ids = get_league_member_ids(uid)
 
     # TODO: URGENT LETS NOT DO HARDCODING
-    tournament_id = 124
+    # tournament_id = 124
     tournament = Tournament.query.get(tournament_id)
 
     # Combine date and time into a single datetime object
@@ -68,7 +68,6 @@ def submit_pick(uid, tournament_id, golfer_id):
 
     return saved_pick
 
-
 # Query for the most recent pick for the week by a user with a given UID
 def get_most_recent_pick(uid, tournament_id):
     """Get the most recent pick for a user.
@@ -80,17 +79,16 @@ def get_most_recent_pick(uid, tournament_id):
         Pick: The most recent pick for the user, or None if no pick is found.
     """
 
+    # TODO: refactor to allow for multiple leagues, rather than just the first
+    # league in the list
     league_member_ids = get_league_member_ids(uid)
     league_member_id = league_member_ids[0][0]
 
     # TODO: URGENT LETS NOT DO HARDCODING
-    tournament_id = 124
+    # tournament_id = 124
     # tournament = Tournament.query.get(tournament_id)
     stmt = (
-        select(
-            Pick,
-            Golfer
-        )
+        select(Pick, Golfer)
         .select_from(Pick)
         .join(Golfer, Pick.golfer_id == Golfer.id)
         .where(
@@ -100,28 +98,26 @@ def get_most_recent_pick(uid, tournament_id):
         )
     )
 
-    result = db.session.execute(stmt)   
+    result = db.session.execute(stmt)
     the_pick, the_golfer = result.fetchone()
-    
+
     if the_pick:
         print(str(the_pick))
         out = {
-            "first_name":the_golfer.first_name,
+            "first_name": the_golfer.first_name,
             "last_name": the_golfer.last_name,
             "full_name": the_golfer.full_name,
             "photo_url": the_golfer.photo_url,
             "golfer_id": the_pick.golfer_id,
             "tournament_id": the_pick.tournament_id,
-            
-        } 
+        }
         print(out)
         return out
         return {
-            "first_name":the_pick['first_name'],
-            "last_name": the_pick['last_name'],
-        "full_name": the_pick['full_name'],
-        "photo_url": the_pick['photo_url']
-            
+            "first_name": the_pick["first_name"],
+            "last_name": the_pick["last_name"],
+            "full_name": the_pick["full_name"],
+            "photo_url": the_pick["photo_url"],
         }
 
     raise Exception("No pick found for user for this tournament")

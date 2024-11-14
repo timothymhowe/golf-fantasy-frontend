@@ -2,10 +2,13 @@ from functools import wraps
 from flask import request, jsonify
 import firebase_admin
 from firebase_admin import auth, credentials
+import os
+import json
 
-# Initialize the Firebase Admin SDK
-# TODO: Replace this with environent variable because this is bad practice
-cred = credentials.Certificate('/Users/thowe/Downloads/golf-pickem-firebase-adminsdk-f2z45-a539dc64d9.json')
+key_string = os.getenv('FIREBASE_ADMIN_SDK_KEY')
+key = json.loads(key_string)
+
+cred = credentials.Certificate(key)
 default_app = firebase_admin.initialize_app(cred)
 
 def verify_id_token(id_token):

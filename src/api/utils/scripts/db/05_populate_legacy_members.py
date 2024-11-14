@@ -22,7 +22,7 @@ def create_league_and_members_and_picks_from_df(the_path):
     raw = pd.read_csv(
         the_path,
         header=0,
-        names=["display_name", "week_1", "week_2", "week_3", "week_4"],
+        names=["display_name", "week_1", "week_2", "week_3", "week_4", "week_5", "week_6","week_7"],
     )
 
     league = League(
@@ -52,6 +52,9 @@ def create_league_and_members_and_picks_from_df(the_path):
             "week_2",
             "week_3",
             "week_4",
+            "week_5",
+            "week_6",
+            "week_7",
         ]
     )
 

@@ -1,19 +1,17 @@
 from flask import Flask
+import os
+print(os.getcwd())
+
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 
 import argparse
 from getpass import getpass
 
+from src.api.utils.db_connector import db, init_db
 from src.api.models import *
 
-db = SQLAlchemy()
-CONFIG_STRING = 'mysql+mysqlconnector://root:eldrick@localhost/fantasy_golf'
 
-
-def init_db(app):
-    app.config['SQLALCHEMY_DATABASE_URI'] = CONFIG_STRING
-    db.init_app(app)
 
 
 if __name__ == "__main__":

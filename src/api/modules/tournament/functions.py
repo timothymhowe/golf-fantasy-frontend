@@ -69,11 +69,13 @@ def populate_drop_down(uid):
     upcoming_roster = TournamentGolfer.query.filter_by(
         tournament_id=tournament_id, is_most_recent=True
     ).all()
+    
+    
     return upcoming_roster
 
 
 # TODO: Ger rid of shortcut for first league_member_id
-# TODO: Implement lazy loading for the golfers not on the upcoming roster
+        # TODO: Implement lazy loading for the golfers not on the upcoming roster
 def get_golfers_with_roster_and_picks(tournament_id: int, uid: str):
     """Retrieve golfers with roster and picks information for a specific tournament.
 
@@ -146,3 +148,6 @@ FROM golfer
     ids = {"tournament_id": tournament_id}
     golfers = [dict(x) for x in result.mappings()]
     return {"ids": ids, "golfers": golfers}
+
+def get_is_tournament_live():
+    pass

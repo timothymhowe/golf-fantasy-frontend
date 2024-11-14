@@ -1,6 +1,7 @@
 from flask import Blueprint
 from modules.authentication.auth import require_auth
 
+from .functions import get_leaderboard
 
 TEMP_BOARD = {
     "status": "success",

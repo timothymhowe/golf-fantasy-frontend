@@ -24,10 +24,17 @@ def submit_my_pick(uid):
 @pick_bp.route('/current', methods=['GET'])
 @require_auth
 def get_current_pick(uid):
-    pick = get_most_recent_pick(uid,124)
+    tournament_id = request.args.get('tournament_id')
+    if tournament_id is None:
+        return jsonify({'error': 'No tournament_id provided'}), 400
+    
+    try:
+        pick = get_most_recent_pick(uid,tournament_id)
+    except Exception as e:
+        return jsonify({'error': 'Failed to retrieve pick'}), 500
     
     if pick is None:
-        return jsonify({'error': 'No pick found'}), 404
+        return jsonify({'error': 'No pick found'}), 400
     
      # Assuming the Pick model has a method to convert it to a dict for jsonify
     return jsonify(pick), 200
