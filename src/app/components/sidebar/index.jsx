@@ -7,7 +7,7 @@ import "./sidebar-styles.css";
 import LogoutButton from "../logout-button";
 
 const Sidebar = ({ isOpen }) => {
-  const auth = useAuth();
+  const { user } = useAuth();
 
   return (
     <nav
@@ -17,7 +17,7 @@ const Sidebar = ({ isOpen }) => {
     >
       <Avatar />
       <div className="text-center text-gray-700">
-      {auth && auth.currentUser ? auth.currentUser.email : 'Loading...'}
+        {user ? user.email : 'Loading...'}
       </div>
 
       <hr className="w-4/5 mx-auto border-gray-300 my-4" />

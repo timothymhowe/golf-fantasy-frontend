@@ -7,33 +7,27 @@ import { useRouter } from "next/navigation";
 import { signOut } from "firebase/auth";
 
 const LogoutButton = () => {
-  const auth = useAuth();
+  const { auth } = useAuth();
   const router = useRouter();
 
-  // try {
-  //     auth = getAuth(app);
-  // } catch (error) {
-  //     console.log(" Authentication error. SOURCE: SIGN OUT BUTTON");
-  //     console.log(error);
-  // }
-  const handleLogout = () => {
-    signOut(auth)
-      .then(() => {
-        console.log("User signed out.");
-      })
-      .catch((error) => {
-        console.log("Error signing out.");
-        console.log(error);
-      });
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      console.log("User signed out successfully");
+      router.replace('/login');
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
   };
 
   return (
     <button
       onClick={handleLogout}
       className="bg-green-500 hover:bg-green-700 text-white font-semibold py-2 px-4 border border-green-700 shadow-lg m-2 h-auto transition duration-500 ease-in-out rounded"
-    > Logout
+    >
+      Logout
     </button>
   );
 };
-
+ 
 export default LogoutButton;

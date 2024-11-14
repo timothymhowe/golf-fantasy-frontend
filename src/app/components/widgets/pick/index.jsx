@@ -9,7 +9,7 @@ import { zonedTimeToUtc, utcToZonedTime, format } from "date-fns-tz";
 import { set } from "date-fns";
 
 const Pick = ({ setTitle, onChangePick }) => {
-  const { auth, idToken } = useAuth();
+  const { user } = useAuth();
   const [weekData, setWeekData] = useState(null);
   const [pick, setPick] = useState(null);
   const [photoUrl, setPhotoUrl] = useState(null);
@@ -21,24 +21,45 @@ const Pick = ({ setTitle, onChangePick }) => {
 
   const placeholderImage = "/portrait_placeholder_75.png";
 
-  // TODO: Make this dynamic based on what week the user wants to pick for, currently it's just the current week.  Make sure to account for a race condition.
   useEffect(() => {
-    if (idToken) {
-      fetch("/api/tournament/upcoming", {
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          setWeekData(data);
-          setIsLoading(false);
+    const controller = new AbortController();
+
+    if (user) {
+      console.log("Fetching tournament data...");
+      user.getIdToken().then(token => {
+        console.log("Got token, making API call...");
+        fetch("/api/tournament/upcoming", {
+          signal: controller.signal,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         })
-        .catch((error) => {
-          console.error(error);
-        });
+          .then((response) => {
+            console.log("API Response:", response.status);
+            return response.json();
+          })
+          .then((data) => {
+            console.log("Tournament data received:", data);
+            setWeekData(data);
+            setIsLoading(false);
+          })
+          .catch((error) => {
+            if (!controller.signal.aborted) {
+              console.error("Error fetching tournament data:", error);
+              setIsLoading(false);
+            }
+          });
+      });
+    } else {
+      console.log("No user available for API call");
     }
-  }, [idToken]);
+
+    return () => controller.abort();
+  }, [user]);
+
+  useEffect(() => {
+    updateTitle();
+  }, [weekData]);
 
   /**
    * Helper function that updates the title of the widget
@@ -72,11 +93,10 @@ const Pick = ({ setTitle, onChangePick }) => {
   };
 
   useEffect(() => {
-    updateTitle();
     if (weekData) {
       fetch(`/api/pick/current?tournament_id=${weekData.id}`, {
         headers: {
-          Authorization: `Bearer ${idToken}`,
+          Authorization: `Bearer ${user.getIdToken()}`,
         },
       })
         .then((response) => response.json())

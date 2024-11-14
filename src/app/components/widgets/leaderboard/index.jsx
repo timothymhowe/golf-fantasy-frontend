@@ -1,32 +1,33 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../auth-provider";
 
-// TODO: figure out why the auth request is being made twice.
 const Leaderboard = () => {
-  const idToken = useAuth().idToken;
+  const { user, auth } = useAuth();
   const [leaderboard, setLeaderboard] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // TODO: Clean up fetch, avoid potential race conditions, etc.
   useEffect(() => {
     const controller = new AbortController();
-    if (idToken) {
-      fetch("/api/league/scoreboard", {signal: controller.signal,
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          setLeaderboard(data.data.leaderboard);
-          setIsLoaded(true);
+    if (user) {
+      user.getIdToken().then(token => {
+        fetch("/api/league/scoreboard", {
+          signal: controller.signal,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         })
-        .catch((error) => console.error(error));
+          .then((response) => response.json())
+          .then((data) => {
+            setLeaderboard(data.data.leaderboard);
+            setIsLoaded(true);
+          })
+          .catch((error) => console.error(error));
+      });
     }
     return () => {
       controller.abort();
     };
-  }, [idToken]);
+  }, [user]);
 
   return (
     <>
