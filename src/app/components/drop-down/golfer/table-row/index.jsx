@@ -1,9 +1,18 @@
-
-// DropdownItem.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Combobox } from "@headlessui/react";
 import { Tooltip } from "react-tooltip";
+import { getStorage, ref, getDownloadURL } from "firebase/storage";
 
+const getGolferPhotoUrl = async (datagolf_id) => {
+  try {
+    const storage = getStorage();
+    const photoRef = ref(storage, `thumbnails/${datagolf_id}_headshot_100x100.png`);
+    return await getDownloadURL(photoRef);
+  } catch (error) {
+    console.error("Error loading golfer photo:", error);
+    return "/portrait_placeholder_75.png";
+  }
+};
 
 /**
  * DropdownItem component represents an item in the dropdown list of the golfer table row.
@@ -15,8 +24,18 @@ import { Tooltip } from "react-tooltip";
  * @returns {JSX.Element} The rendered DropdownItem component.
  */
 const DropdownItem = ({ item }) => {
-  const isPlayingInTournament = item.is_playing_in_tournament ? true : false;
-  const hasBeenPicked = item.has_been_picked ? true : false;
+  console.log("DropdownItem received:", item);  // Debug log
+  
+  const [photoUrl, setPhotoUrl] = useState("/portrait_placeholder_75.png");
+  const isPlayingInTournament = item?.is_playing_in_tournament ?? false;  // Add null check
+  const hasBeenPicked = item?.has_been_picked ?? false;  // Add null check
+  
+  useEffect(() => {
+    console.log("DataGolf ID:", item?.datagolf_id);  // Debug log
+    if (item?.datagolf_id) {  // Add null check
+      getGolferPhotoUrl(item.datagolf_id).then(setPhotoUrl);
+    }
+  }, [item?.datagolf_id]);
   
   return (
     <Combobox.Option key={item.id} value={item} className={optionClasses}>
@@ -25,7 +44,12 @@ const DropdownItem = ({ item }) => {
         style={{ gridTemplateColumns: "auto 10fr 1fr 1fr" }}
       >
         <div className="h-[38px] w-[38px]">
-          <img src={getImageUrl(item.photo_url)} className={imageClasses} />
+          <img 
+            src={photoUrl} 
+            className={imageClasses} 
+            alt={item.full_name}
+            loading="lazy"  // Add lazy loading for performance
+          />
         </div>
         <div
           className={nameContainerClasses}
@@ -73,8 +97,17 @@ export default DropdownItem;
  * @returns
  */
 export const SelectedGolfer = ({ golfer, setSelectedGolfer }) => {
-  const isPlayingInTournament = golfer.is_playing_in_tournament ? true : false;
-  const hasBeenPicked = golfer.has_been_picked ? true : false;
+  console.log("SelectedGolfer received:", golfer);  // Debug log
+  
+  const [photoUrl, setPhotoUrl] = useState("/portrait_placeholder_75.png");
+  const isPlayingInTournament = golfer?.is_playing_in_tournament ?? false;  // Add null check
+  const hasBeenPicked = golfer?.has_been_picked ?? false;  // Add null check
+
+  useEffect(() => {
+    if (golfer?.datagolf_id) {
+      getGolferPhotoUrl(golfer.datagolf_id).then(setPhotoUrl);
+    }
+  }, [golfer?.datagolf_id]);
 
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
 
@@ -88,7 +121,12 @@ export const SelectedGolfer = ({ golfer, setSelectedGolfer }) => {
         style={{ gridTemplateColumns: "auto 2fr 2fr" }}
       >
         <div className="h-[38px] w-[38px]">
-          <img src={getImageUrl(golfer.photo_url)}className={imageClasses} />
+          <img 
+            src={photoUrl} 
+            className={imageClasses} 
+            alt={golfer.full_name}
+            loading="lazy"
+          />
         </div>{" "}
         <div
           className={nameContainerClasses}
@@ -164,6 +202,3 @@ function generateTextClasses(
 
   return classes;
 }
-
-const getImageUrl = (url) =>
-    url ? url : "/portrait_placeholder_75.png";

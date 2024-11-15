@@ -67,3 +67,6 @@ next-env.d.ts
 
 # image headshots
 /src/api/static/headshots/*
+
+# Sensitive development scripts
+src/api/utils/scripts/db/06_create_dev_user.py

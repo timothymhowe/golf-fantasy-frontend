@@ -1,13 +1,13 @@
 import React from "react";
 import Avatar from "../avatar";
-
 import { useAuth } from "../auth-provider";
-
 import "./sidebar-styles.css";
 import LogoutButton from "../logout-button";
 
 const Sidebar = ({ isOpen }) => {
   const { user } = useAuth();
+
+  console.log('Auth user data:', user);
 
   return (
     <nav
@@ -15,9 +15,12 @@ const Sidebar = ({ isOpen }) => {
         isOpen ? "translate-x-0 open" : "-translate-x-full"
       } sidebar absolute inset-x-s0 top-0 h-[100%]`}
     >
-      <Avatar />
+      <Avatar 
+        avatarUrl={user?.photoURL}
+        displayName={user?.displayName}
+      />
       <div className="text-center text-gray-700">
-        {user ? user.email : 'Loading...'}
+        {user?.displayName || user?.email || 'Loading...'}
       </div>
 
       <hr className="w-4/5 mx-auto border-gray-300 my-4" />

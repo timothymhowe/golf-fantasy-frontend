@@ -38,17 +38,22 @@ def require_auth(f):
         # checks the validity of the auth header
         if not auth_header or ' ' not in auth_header:
             return jsonify({'error': 'Invalid authorization header'}), 401
-        bearer, id_token = auth_header.split(' ')
+
+        # Split on first space only
+        parts = auth_header.split(' ', 1)
+        if len(parts) != 2:
+            return jsonify({'error': 'Invalid authorization header format'}), 401
+            
+        bearer, id_token = parts
         
         if bearer.lower() != 'bearer':
             return jsonify({'error': 'Invalid authorization header'}), 401
+            
         uid = verify_id_token(id_token)
-        
         
         if uid is None:
             return jsonify({'error': 'Invalid token'}), 401
+            
         return f(uid, *args, **kwargs)
     
-        # TODO: Delete this, nephew.  Debug only
-        print(uid)
     return decorated

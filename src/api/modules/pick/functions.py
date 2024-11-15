@@ -70,40 +70,30 @@ def submit_pick(uid, tournament_id, golfer_id):
 
 # Query for the most recent pick for the week by a user with a given UID
 def get_most_recent_pick(uid, tournament_id):
-    """Get the most recent pick for a user.
+    try:
+        league_member_ids = get_league_member_ids(uid)
+        league_member_id = league_member_ids[0][0]
 
-    Args:
-        uid (int): The user ID.
-
-    Returns:
-        Pick: The most recent pick for the user, or None if no pick is found.
-    """
-
-    # TODO: refactor to allow for multiple leagues, rather than just the first
-    # league in the list
-    league_member_ids = get_league_member_ids(uid)
-    league_member_id = league_member_ids[0][0]
-
-    # TODO: URGENT LETS NOT DO HARDCODING
-    # tournament_id = 124
-    # tournament = Tournament.query.get(tournament_id)
-    stmt = (
-        select(Pick, Golfer)
-        .select_from(Pick)
-        .join(Golfer, Pick.golfer_id == Golfer.id)
-        .where(
-            Pick.league_member_id == league_member_id,
-            Pick.tournament_id == tournament_id,
-            Pick.is_most_recent,
+        stmt = (
+            select(Pick, Golfer)
+            .select_from(Pick)
+            .join(Golfer, Pick.golfer_id == Golfer.id)
+            .where(
+                Pick.league_member_id == league_member_id,
+                Pick.tournament_id == tournament_id,
+                Pick.is_most_recent == True
+            )
         )
-    )
 
-    result = db.session.execute(stmt)
-    the_pick, the_golfer = result.fetchone()
+        result = db.session.execute(stmt)
+        row = result.fetchone()
+        
+        if row is None:
+            return None
+            
+        the_pick, the_golfer = row
 
-    if the_pick:
-        print(str(the_pick))
-        out = {
+        return {
             "first_name": the_golfer.first_name,
             "last_name": the_golfer.last_name,
             "full_name": the_golfer.full_name,
@@ -111,14 +101,7 @@ def get_most_recent_pick(uid, tournament_id):
             "golfer_id": the_pick.golfer_id,
             "tournament_id": the_pick.tournament_id,
         }
-        print(out)
-        return out
-        return {
-            "first_name": the_pick["first_name"],
-            "last_name": the_pick["last_name"],
-            "full_name": the_pick["full_name"],
-            "photo_url": the_pick["photo_url"],
-        }
 
-    raise Exception("No pick found for user for this tournament")
-    return None
+    except Exception as e:
+        print(f"Error in get_most_recent_pick: {str(e)}")
+        raise

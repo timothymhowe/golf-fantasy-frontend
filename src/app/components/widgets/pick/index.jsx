@@ -94,26 +94,28 @@ const Pick = ({ setTitle, onChangePick }) => {
 
   useEffect(() => {
     if (weekData) {
-      fetch(`/api/pick/current?tournament_id=${weekData.id}`, {
-        headers: {
-          Authorization: `Bearer ${user.getIdToken()}`,
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data);
-          setPick(data);
-          setPhotoUrl(
-            data.photo_url ? data.photo_url + "?w=250" : placeholderImage
-          );
-          setIsLoading(false);
-          if (!data?.error) {
-            setHasMadePick(true);
-          }
+      user.getIdToken().then(token => {
+        fetch(`/api/pick/current?tournament_id=${weekData.id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         })
-        .catch((error) => {
-          console.error(error);
-        });
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
+            setPick(data);
+            setPhotoUrl(
+              data.photo_url ? data.photo_url + "?w=250" : placeholderImage
+            );
+            setIsLoading(false);
+            if (!data?.error) {
+              setHasMadePick(true);
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      });
     }
   }, [weekData, submitTrigger]);
 

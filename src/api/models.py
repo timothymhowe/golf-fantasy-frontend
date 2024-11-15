@@ -1,7 +1,8 @@
 from sqlalchemy.ext.hybrid import hybrid_property
 
-# TODO: This is a hack to get the DB migration to work.  Fix this.
-from src.api.utils.db_connector import db
+# TODO: This is a hack to get the DB migration to work.  Fix this. when running the migration scripts, imports need to be relative to the root, so src.api.etc.etc.etc
+# TODO: Is it though?  Or does it just work.  when 
+from utils.db_connector import db
 from datetime import datetime, time
 from sqlalchemy import DateTime
 from pytz import timezone, utc

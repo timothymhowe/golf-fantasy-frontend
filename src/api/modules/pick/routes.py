@@ -29,12 +29,13 @@ def get_current_pick(uid):
         return jsonify({'error': 'No tournament_id provided'}), 400
     
     try:
-        pick = get_most_recent_pick(uid,tournament_id)
+        pick = get_most_recent_pick(uid, tournament_id)
+        if pick is None:
+            # This is a valid state - user just hasn't made a pick yet
+            return jsonify({'error': 'No pick found'}), 404
+        
+        return jsonify(pick), 200
+        
     except Exception as e:
-        return jsonify({'error': 'Failed to retrieve pick'}), 500
-    
-    if pick is None:
-        return jsonify({'error': 'No pick found'}), 400
-    
-     # Assuming the Pick model has a method to convert it to a dict for jsonify
-    return jsonify(pick), 200
+        print(f"Error getting current pick: {str(e)}")
+        return jsonify({'error': 'Server error getting pick'}), 500

@@ -7,73 +7,58 @@ import { firestoreDb } from "../../../../config/firebaseConfig";
 import { serverTimestamp, collection,addDoc } from "firebase/firestore";
 
 /**
- * 
- * @param {*} param0 
- * @returns 
+ * PickForm Component - Handles golfer selection and pick submission
+ * @param {Object} weekData - Tournament data for the current week
+ * @param {Function} setIsOpen - Controls modal visibility
+ * @param {Function} triggerSubmit - Callback to trigger parent update
  */
 const PickForm = ({ weekData, setIsOpen, triggerSubmit }) => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [selectedGolfer, setSelectedGolfer] = useState(null);
-
   const { auth, idToken } = useAuth();
   const user = auth.currentUser;
 
-  const submitPick = async (tournamentId, golferId, leagueId) => {
-    // TODO: Get the league ID from the selected league, rather than hardcode it
-    if (!leagueId) {
-      leagueId = "19";
-    }
-    // if the user is authenticated, get the user's token and submit the pick
-    if (user) {
-      try {
-        // Add pick to Firestore
-        const docRef = await addDoc(collection(firestoreDb,"Picks"), 
-        {
-          timestamp_utc: serverTimestamp(),
-          user_id: user.uid,
-          league_id: leagueId,
+  /**
+   * Submits pick to both Firestore and legacy database
+   * @param {number} tournamentId - Tournament identifier
+   * @param {number} golferId - Selected golfer's ID
+   * @param {string} leagueId - League identifier (optional)
+   */
+  const submitPick = async (tournamentId, golferId, leagueId = "19") => {
+    if (!user) return;
+
+    try {
+      // Submit to Firestore
+      const docRef = await addDoc(collection(firestoreDb, "Picks"), {
+        timestamp_utc: serverTimestamp(),
+        user_id: user.uid,
+        league_id: leagueId,
+        tournament_id: tournamentId,
+        golfer_id: golferId,
+      });
+      console.log("Firestore document written with ID:", docRef.id);
+
+      // Submit to legacy database
+      const token = await user.getIdToken();
+      const response = await fetch("/api/pick/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
           tournament_id: tournamentId,
           golfer_id: golferId,
-        });
-        console.log("Document written with ID: ", docRef.id);
-      } catch (error) {
-        console.log("Error adding document to Firestore: ", error);
-
-        // Handle the error appropriately
-        alert(
-          "There was an error submitting your pick to Firestore.  Please try again."
-        );
-      }
-      // If the pick is successfully added to Firestore, update the relational db (legacy code TODO: deprecate this call to the db directly.
-      user.getIdToken().then(async (token) => {
-        try {
-          const response = await fetch("/api/pick/submit", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              tournament_id: tournamentId,
-              golfer_id: golferId,
-            }),
-          });
-
-          if (!response.ok) {
-            throw new Error("Failed to submit pick");
-          }
-          const data = await response.json();
-          console.log(data);
-
-          // Trigger an update in the pick component, and close the modal
-          triggerSubmit();
-          setIsOpen(false);
-          return data;
-        } catch (error) {
-          console.error("Failed to submit pick", error);
-        }
+        }),
       });
+
+      if (!response.ok) throw new Error("Failed to submit pick");
+      
+      const data = await response.json();
+      triggerSubmit();
+      setIsOpen(false);
+      return data;
+    } catch (error) {
+      console.error("Failed to submit pick", error);
     }
   };
 
@@ -96,7 +81,7 @@ const PickForm = ({ weekData, setIsOpen, triggerSubmit }) => {
       <AutocompleteGolfer
         selectedGolfer={selectedGolfer}
         setSelectedGolfer={setSelectedGolfer}
-        selectedTournament={weekData.id}
+        selectedTournament={weekData}
         user={user}
       />
 
