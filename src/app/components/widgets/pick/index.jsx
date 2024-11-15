@@ -8,6 +8,8 @@ import { useAuth } from "../../auth-provider";
 import { zonedTimeToUtc, utcToZonedTime, format } from "date-fns-tz";
 import { set } from "date-fns";
 
+import { getStorage, ref, getDownloadURL } from "firebase/storage";
+
 const Pick = ({ setTitle, onChangePick }) => {
   const { user } = useAuth();
   const [weekData, setWeekData] = useState(null);
@@ -20,6 +22,31 @@ const Pick = ({ setTitle, onChangePick }) => {
   const [submitTrigger, setSubmitTrigger] = useState(false);
 
   const placeholderImage = "/portrait_placeholder_75.png";
+
+  /**
+   * Gets the golfer's photo URL from Firebase Storage
+   * Uses higher resolution 200x200 images for the pick display
+   * 
+   * TODO: Performance Optimization Needed
+   * - Implement caching for frequently viewed picks
+   * - Add loading state transitions for image loads
+   * - Consider preloading images for likely picks
+   * - Add error boundary for failed image loads
+   * - Investigate CDN configuration for faster loading
+   * 
+   * @param {string} datagolf_id - The golfer's DataGolf ID
+   * @returns {Promise<string>} URL to the golfer's photo or placeholder
+   */
+  const getGolferPhotoUrl = async (datagolf_id) => {
+    try {
+      const storage = getStorage();
+      const photoRef = ref(storage, `headshots/thumbnails/${datagolf_id}_headshot_200x200.png`);
+      return await getDownloadURL(photoRef);
+    } catch (error) {
+      console.error("Error loading golfer photo:", error);
+      return "/portrait_placeholder_75.png";
+    }
+  };
 
   useEffect(() => {
     const controller = new AbortController();
@@ -101,19 +128,34 @@ const Pick = ({ setTitle, onChangePick }) => {
           },
         })
           .then((response) => response.json())
-          .then((data) => {
-            console.log(data);
+          .then(async (data) => {
+            console.log("Raw pick data:", data);  // See full pick data
+            console.log("DataGolf ID:", data?.datagolf_id);  // Check if datagolf_id exists
             setPick(data);
-            setPhotoUrl(
-              data.photo_url ? data.photo_url + "?w=250" : placeholderImage
-            );
+            
+            if (data && data.datagolf_id) {
+              try {
+                const url = await getGolferPhotoUrl(data.datagolf_id);
+                console.log("Firebase URL:", url);  // See what URL we get
+                setPhotoUrl(url);
+              } catch (error) {
+                console.error("Error getting photo URL:", error);
+                setPhotoUrl("/portrait_placeholder_75.png");
+              }
+            } else {
+              console.log("No datagolf_id found in pick data");  // Debug why we're using placeholder
+              setPhotoUrl("/portrait_placeholder_75.png");
+            }
+            
             setIsLoading(false);
             if (!data?.error) {
               setHasMadePick(true);
             }
           })
           .catch((error) => {
-            console.error(error);
+            console.error("Error fetching pick:", error);
+            setPhotoUrl("/portrait_placeholder_75.png");
+            setIsLoading(false);
           });
       });
     }

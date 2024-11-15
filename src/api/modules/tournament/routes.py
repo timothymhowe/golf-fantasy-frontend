@@ -34,12 +34,12 @@ def get_dd_data(uid):
         JSON response with golfer data and tournament IDs
     """
     tournament_id = request.args.get('tournament_id')
-    print("\n=== DD Endpoint Debug ===")
-    print(f"UID: {uid}")
-    print(f"Tournament ID: {tournament_id}")
+    # print("\n=== DD Endpoint Debug ===")
+    # print(f"UID: {uid}")
+    # print(f"Tournament ID: {tournament_id}")
     
     dd = get_golfers_with_roster_and_picks(tournament_id, uid)
-    print(f"DD Result: {dd}")
+    # print(f"DD Result: {dd}")
     
     if dd is None:
         return jsonify({'error': 'No upcoming roster found'}), 404

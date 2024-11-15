@@ -1,15 +1,23 @@
 from modules.tournament.functions import get_upcoming_tournament
 from utils.db_connector import db
 from models import TournamentGolfer, Golfer
-
 from utils.functions.golf_id import generate_golfer_id
-
 from sqlalchemy import and_
+import requests
 import json
+from datetime import datetime
+from os import getenv
+from dotenv import load_dotenv
 
+"""
+Updates tournament field data using DataGolf API.
+More accurate and timely than SportContent API.
+Maintains historical records with is_most_recent flag.
+"""
 
-with open("api_samples/sportcontentapi/entries_body.json") as f:
-    data = json.load(f)
+load_dotenv()  # Load ze secret documents!
+DATAGOLF_KEY = getenv('DATAGOLF_KEY')  # Retrieve ze code from ze safe
+DATAGOLF_FIELD_URL = "https://api.datagolf.com/field-updates"
 
 
 def update_tournament_entries():
@@ -24,47 +32,55 @@ def update_tournament_entries():
     existing_ids = set(golfer_dict.values())
     
     try:
-        # print(upcoming_tournament["id"])
-        # print(upcoming_tournament["sportcontent_api_id"])
-        # print("Tournament Entries: ",
-        #     [(x["first_name"], x["last_name"]) for x in data["results"]["entry_list"]]
-        # )
+        # Make DataGolf API request
+        response = requests.get(
+            DATAGOLF_FIELD_URL,
+            params={
+                "tour": "pga",
+                "file_format": "json",
+                "key": DATAGOLF_KEY
+            }
+        )
+        data = response.json()
+        
+        if not data.get("field"):
+            print("No field data available")
+            return None
 
-        # TODO: Make this less sketchy, it's hardcoded but that string format could change potentiall.
-        year = data["results"]["tournament"]["start_date"][:4]
-        print(year)
+        year = str(datetime.now().year)
 
-        for x in data["results"]["entry_list"]:
+        for player in data["field"]:
+            dg_id = player.get("dg_id")
+            full_name = player["player_name"]
             
-            # First, eheck to make sure each golfer is already in the fantasy database, and if not, add them to it.
-            new_sportcontent_api_id = x["player_id"]
-            if new_sportcontent_api_id not in golfer_dict.keys():
-                print(f"adding golfer {x['first_name']} {x['last_name']} to database")
-                # add the unknown golfer to the database
+            # Try to find golfer by DataGolf ID first
+            existing_golfer = Golfer.query.filter_by(datagolf_id=dg_id).first()
+            
+            # Fall back to name matching if no golfer found by ID
+            if not existing_golfer:
+                existing_golfer = Golfer.query.filter_by(full_name=full_name).first()
+            
+            if not existing_golfer:
+                print(f"adding golfer {full_name} to database")
+                first_name, last_name = full_name.split(" ", 1)
+                
                 new_golfer = Golfer(
-                    id=generate_golfer_id(x["first_name"], x["last_name"], existing_ids),
-                    sportcontent_api_id=new_sportcontent_api_id,
-                    first_name=x["first_name"],
-                    last_name=x["last_name"],
-                    full_name=f"{x['first_name']} {x['last_name']}",
+                    id=generate_golfer_id(first_name, last_name, existing_ids),
+                    datagolf_id=dg_id,
+                    first_name=first_name,
+                    last_name=last_name,
+                    full_name=full_name,
                 )
                 db.session.add(new_golfer)
                 db.session.commit()
+                existing_ids.add(new_golfer.id)
+            elif not existing_golfer.datagolf_id and dg_id:
+                # Update the DataGolf ID if we don't have one
+                existing_golfer.datagolf_id = dg_id
+                db.session.add(existing_golfer)
+                db.session.commit()
 
-                # get the new id from the database
-                new_golfer_id = (
-                    Golfer.query.with_entities(Golfer.id, Golfer.sportcontent_api_id)
-                    .where(Golfer.sportcontent_api_id == new_sportcontent_api_id)
-                    .first()
-                )
-
-                # update the golfer dict
-                golfer_dict[new_sportcontent_api_id] = new_golfer_id
-                existing_ids = set(golfer_dict.values())
-
-        # now that we know that every golfer is in the dict, and has an entry in the database, we can update the Tournament Entry records
-
-        # First, set is_most_recent to False for all TournamentGolfer rows for this tournament ID this year
+        # Update tournament entries
         TournamentGolfer.query.filter(
             and_(
                 TournamentGolfer.tournament_id == upcoming_tournament["id"],
@@ -72,18 +88,21 @@ def update_tournament_entries():
             )
         ).update({TournamentGolfer.is_most_recent: False})
 
-        #  Then, add the new records
-        for x in data["results"]["entry_list"]:
-            converted_golfer_id = golfer_dict[x["player_id"]]
-
-            tg = TournamentGolfer(
-                tournament_id=upcoming_tournament["id"],
-                golfer_id=converted_golfer_id,
-                year=year,
-                is_active=True
-            )
-
-            db.session.add(tg)
+        # Add new entries
+        for player in data["field"]:
+            golfer = (Golfer.query.filter_by(datagolf_id=player["dg_id"])
+                     .or_(Golfer.query.filter_by(full_name=player["player_name"]))
+                     .first())
+            
+            if golfer:
+                tg = TournamentGolfer(
+                    tournament_id=upcoming_tournament["id"],
+                    golfer_id=golfer.id,
+                    year=year,
+                    is_most_recent=True,
+                    is_active=True
+                )
+                db.session.add(tg)
 
         db.session.commit()
         print("Tournament entries updated.")

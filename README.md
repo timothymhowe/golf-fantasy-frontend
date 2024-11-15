@@ -91,5 +91,17 @@ To run the frontend in development mode:
 3. Run the development server: `npm run dev`
 
 
+## TODO List
+
+### Performance Optimizations
+- [ ] Optimize golfer photo loading in dropdown
+  - [ ] Implement client-side caching for Firebase Storage URLs
+  - [ ] Preload images for frequently accessed golfers
+  - [ ] Configure Firebase Storage CDN settings
+  - [ ] Add loading states/skeletons for images
+  - [ ] Consider implementing lazy loading for off-screen images
+  - [ ] Investigate batch loading strategies for golfer photos
+
+
 
 

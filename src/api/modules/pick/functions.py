@@ -1,5 +1,5 @@
 from models import Pick, Tournament, Golfer
-from sqlalchemy import desc, select
+from sqlalchemy import desc, select, text
 from datetime import datetime
 import pytz
 from utils.db_connector import db
@@ -70,6 +70,25 @@ def submit_pick(uid, tournament_id, golfer_id):
 
 # Query for the most recent pick for the week by a user with a given UID
 def get_most_recent_pick(uid, tournament_id):
+    """
+    Retrieves the most recent pick for a user in a specific tournament.
+    Joins with the Golfer table to get complete golfer information.
+    
+    Args:
+        uid (str): Firebase user ID
+        tournament_id (int): ID of the tournament
+        
+    Returns:
+        dict: Pick data including golfer details, or None if no pick exists
+        Keys:
+            - first_name: Golfer's first name
+            - last_name: Golfer's last name
+            - full_name: Golfer's full name
+            - photo_url: URL to golfer's photo
+            - golfer_id: Internal golfer ID
+            - tournament_id: Tournament ID
+            - datagolf_id: DataGolf's ID for the golfer
+    """
     try:
         league_member_ids = get_league_member_ids(uid)
         league_member_id = league_member_ids[0][0]
@@ -100,8 +119,58 @@ def get_most_recent_pick(uid, tournament_id):
             "photo_url": the_golfer.photo_url,
             "golfer_id": the_pick.golfer_id,
             "tournament_id": the_pick.tournament_id,
+            "datagolf_id": the_golfer.datagolf_id
         }
 
     except Exception as e:
         print(f"Error in get_most_recent_pick: {str(e)}")
         raise
+
+def get_current_pick(tournament_id: int, uid: str):
+    try:
+        league_member_ids = get_league_member_ids(uid)
+        if not league_member_ids:
+            return None
+            
+        league_member_id = league_member_ids[0][0]
+        
+        # Let's add some debug prints
+        print(f"Getting pick for tournament_id: {tournament_id}, league_member_id: {league_member_id}")
+        
+        sql_query = text("""
+            SELECT 
+                g.id,
+                g.full_name,
+                g.first_name,
+                g.last_name,
+                g.datagolf_id,  -- This field exists in the model
+                p.id as pick_id,
+                p.created_at as pick_created_at
+            FROM pick p
+            JOIN golfer g ON p.golfer_id = g.id
+            WHERE p.tournament_id = :tournament_id
+            AND p.league_member_id = :league_member_id
+            AND p.is_most_recent = TRUE
+        """)
+        
+        result = db.session.execute(
+            sql_query,
+            {
+                "tournament_id": tournament_id,
+                "league_member_id": league_member_id
+            }
+        )
+        
+        pick = result.mappings().first()
+        if pick is None:
+            print("No pick found")
+            return {"error": "No pick found"}
+            
+        pick_dict = dict(pick)
+        print(f"Found pick data: {pick_dict}")  # Let's see what we get
+            
+        return pick_dict
+        
+    except Exception as e:
+        print(f"Error getting current pick: {str(e)}")
+        return {"error": str(e)}

@@ -3,10 +3,20 @@ import { Combobox } from "@headlessui/react";
 import { Tooltip } from "react-tooltip";
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
 
+/**
+ * Gets the golfer's photo URL from Firebase Storage
+ * TODO: Performance Optimization Needed
+ * - Implement caching for photo URLs
+ * - Consider preloading images for top N golfers
+ * - Investigate using Firebase Storage CDN configuration
+ * - Add loading state/skeleton for images
+ * @param {string} datagolf_id - The golfer's DataGolf ID
+ * @returns {Promise<string>} The photo URL or placeholder
+ */
 const getGolferPhotoUrl = async (datagolf_id) => {
   try {
     const storage = getStorage();
-    const photoRef = ref(storage, `thumbnails/${datagolf_id}_headshot_100x100.png`);
+    const photoRef = ref(storage, `headshots/thumbnails/${datagolf_id}_headshot_100x100.png`);
     return await getDownloadURL(photoRef);
   } catch (error) {
     console.error("Error loading golfer photo:", error);
