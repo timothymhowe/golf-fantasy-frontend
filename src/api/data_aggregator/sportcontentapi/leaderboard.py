@@ -1,41 +1,51 @@
 import requests
 from data_aggregator.sportcontentapi.headers import headers
-from src.api.data_aggregator.sportcontentapi.leaderboard import get_tournament_leaderboard
-from src.api.utils.scripts.private_imports import raw
 
 url = "https://golf-leaderboard-data.p.rapidapi.com/leaderboard/"
 
 def get_tournament_leaderboard_raw(tournament_id:int):
     """
-    Retrieves the leaderboard for a specific tournament as a JSON object, with the data in raw format.
+    Retrieves the leaderboard for a specific tournament as a JSON object.
 
     Args:
-        tournament_id (str): The ID of the tournament. This is the ID used by the SportContentAPI, which gets stored as sportcontentapi_id in the database.
+        tournament_id (int): The ID of the tournament. This is the id used by SPORTCONTENTAPI, 
+        which gets stored as tournament.sportcontentapi_id in the database.
 
     Returns:
-        dict: The leaderboard data in JSON format.
+        dict: The leaderboard data in JSON format or None if request fails.
     """
-    
-    query_url = url + f"{tournament_id}"
-    response = requests.get(query_url, headers=headers)
-    return response.json()
+    try:
+        query_url = f"{url}{tournament_id}"
+        response = requests.get(query_url, headers=headers)
+        response.raise_for_status()
+        raw_data = response.json()
+        return raw_data
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching tournament leaderboard: {e}")
+        return None
 
 def get_tournament_leaderboard_clean(tournament_id:int):
     """
-    Retrieves the leaderboard for a specific tournament as a JSON object, with the data cleaned and formatted.
+    Retrieves and cleans the leaderboard data for a specific tournament.
 
     Args:
-        tournament_id (str): The ID of the tournament. This is the ID used by the SportContentAPI, which gets stored as sportcontentapi_id in the database.
+        tournament_id (int): The ID of the tournament.
 
     Returns:
-        dict: The cleaned and formatted leaderboard data in JSON format.
+        list: The cleaned leaderboard results or None if no data available.
     """
-    
     raw_data = get_tournament_leaderboard_raw(tournament_id)
+    if not raw_data or 'results' not in raw_data:
+        return None
     
-    return raw_data['results']
-    
+    # Extract the leaderboard array from the nested structure
+    return raw_data['results']['leaderboard']
 
 if __name__ == "__main__":
-    # TODO: for testing purposes.  Remove when done
-    print(get_tournament_leaderboard_raw("640"))
+    test_tournament_id = 25
+    results = get_tournament_leaderboard_clean(test_tournament_id)
+    if results:
+        print(f"Found {len(results)} player results")
+        # Print first result as sample
+        print("\nSample result:")
+        print(results[0])

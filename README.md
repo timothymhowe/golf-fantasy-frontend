@@ -103,5 +103,11 @@ To run the frontend in development mode:
   - [ ] Investigate batch loading strategies for golfer photos
 
 
+- [ ] Move scoring system to database
+  - Currently hardcoded in `src/api/jobs/calculate_points/calculate_points.py`
+  - Should be configurable per league/season
+  - Reference tables: League, ScoringRuleset, ScoringRule
+
+
 
 

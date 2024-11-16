@@ -70,3 +70,6 @@ next-env.d.ts
 
 # Sensitive development scripts
 src/api/utils/scripts/db/06_create_dev_user.py
+
+# Legacy data imports
+src/api/data/legacy_imports/2024_squilliam.csv

@@ -1,3 +1,4 @@
+# TODO: Potentially fix these imports
 from modules.tournament.functions import get_upcoming_tournament
 from utils.db_connector import db
 from models import TournamentGolfer, Golfer
@@ -15,8 +16,8 @@ More accurate and timely than SportContent API.
 Maintains historical records with is_most_recent flag.
 """
 
-load_dotenv()  # Load ze secret documents!
-DATAGOLF_KEY = getenv('DATAGOLF_KEY')  # Retrieve ze code from ze safe
+load_dotenv() 
+DATAGOLF_KEY = getenv('DATAGOLF_KEY')  
 DATAGOLF_FIELD_URL = "https://api.datagolf.com/field-updates"
 
 

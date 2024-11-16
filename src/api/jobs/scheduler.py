@@ -1,12 +1,48 @@
 from models import Tournament
 from datetime import datetime
 from flask import Flask
+from pytz import timezone
 from utils.db_connector import db, init_db
 
 from jobs.update_field.update_field import update_tournament_entries
+from jobs.calculate_points.calculate_points import update_tournament_entries_and_results
 
-app = Flask (__name__)
+app = Flask(__name__)
 init_db(app)
+
+def schedule_updates(scheduler):
+    """Schedule all database updates"""
+    
+    # Schedule field updates (keeping existing schedule)
+    scheduler.add_job(
+        update_tournament_entries,
+        "cron",
+        day_of_week="wed",
+        hour=8,
+        timezone=timezone("America/New_York")
+    )
+    
+    # Schedule results and points calculation
+    scheduler.add_job(
+        update_results_and_points,
+        "cron",
+        day_of_week="mon",
+        hour=8,
+        timezone=timezone("America/New_York")
+    )
+
+def update_results_and_points():
+    """Update tournament results and calculate points"""
+    print("Updating tournament results and calculating points.")
+    with app.app_context():
+        tournament = get_upcoming_tournament()
+        if tournament:
+            success = update_tournament_entries_and_results(tournament['id'])
+            if success:
+                print("Tournament results and points updated successfully")
+            else:
+                print("Failed to update tournament results and points")
+
 def get_upcoming_tournament():
     # Query the database for the tournament that has the closest start date in the future
     upcoming_tournament = (
@@ -38,3 +74,26 @@ def update_database():
         update_tournament_entries()
         # next_tourney = get_upcoming_tournament()
         # print(next_tourney['sportcontent_api_id'])
+
+def force_update():
+    """Force immediate update of tournament entries and results"""
+    print("Forcing immediate update of tournament entries and results.")
+    with app.app_context():
+        # Update field
+        print("\nUpdating tournament entries...")
+        update_tournament_entries()
+        
+        # Update results and points
+        print("\nUpdating tournament results and points...")
+        tournament = get_upcoming_tournament()
+        if tournament:
+            success = update_tournament_entries_and_results(tournament['id'])
+            if success:
+                print("Tournament results and points updated successfully")
+            else:
+                print("Failed to update tournament results and points")
+        else:
+            print("No upcoming tournament found")
+
+if __name__ == "__main__":
+    force_update()

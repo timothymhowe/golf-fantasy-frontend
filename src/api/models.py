@@ -262,7 +262,7 @@ class ScoringRuleset(db.Model):
     no_pick_points = db.Column(db.Integer, nullable=False, default=-10)
 
 
-class UserScore(db.Model):
+class LeagueMemberTournamentScore(db.Model):
     """
     Represents the score of a user in a tournament.
 
@@ -274,7 +274,7 @@ class UserScore(db.Model):
     """
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    league_member_id = db.Column(db.Integer, db.ForeignKey("league_member.id"), nullable=False)
     tournament_id = db.Column(
         db.Integer, db.ForeignKey("tournament.id"), nullable=False
     )
