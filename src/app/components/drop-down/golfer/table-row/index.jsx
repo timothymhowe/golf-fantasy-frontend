@@ -84,14 +84,25 @@ const DropdownItem = ({ item }) => {
             {item.first_name}
           </span>
         </div>
-
+        {!isPlayingInTournament ? (
+            <a
+              data-tooltip-id="not-playing-tip"
+              data-tooltip-content="This golfer is not in the tournament field."
+              className="cursor-pointer mx-1 font-md"
+            >
+              ⚠️
+              <Tooltip id="not-playing-tip" />
+            </a>
+          ): (
+            <span className="mx-1">&nbsp;</span> 
+          )}
         <a
           data-tooltip-id="has-been-picked-tip"
           data-tooltip-content="You've already picked this golfer before."
-          className="cursor-pointer  mx-2 font-md"
+          className="cursor-pointer  mx-1 font-md"
         >
           {/* TODO: Switch this back to being the correct boolean, from !isPlayingInTournament to hasBeenPicked  */}
-          {!isPlayingInTournament ? "⚠️" : ""}
+          {hasBeenPicked ? "🚫" : ""}
           <Tooltip id="has-been-picked-tip" />
         </a>
       </div>
