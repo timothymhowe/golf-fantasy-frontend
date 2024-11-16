@@ -386,3 +386,39 @@ class GolferRanking(db.Model):
     owgr = db.Column(db.Integer)
     is_most_recent = db.Column(db.Boolean, nullable=False, default=True)
     timestamp_utc = db.Column(DateTime, default=datetime.utcnow)
+
+
+
+class Schedule(db.Model):
+    """
+    Represents a PGA Tour schedule for a given year.
+    """
+    __tablename__ = 'schedule'
+
+    id = db.Column(db.Integer, primary_key=True)
+    year = db.Column(db.Integer, nullable=False)
+    schedule_name = db.Column(db.String(100), nullable=False)
+
+    
+    # Relationship to schedule tournaments
+    tournaments = db.relationship('ScheduleTournament', back_populates='schedule')
+
+class ScheduleTournament(db.Model):
+    """
+    Links tournaments to a schedule in chronological order.
+    """
+    __tablename__ = 'schedule_tournament'
+
+    id = db.Column(db.Integer, primary_key=True)
+    schedule_id = db.Column(db.Integer, db.ForeignKey('schedule.id'), nullable=False)
+    tournament_id = db.Column(db.Integer, db.ForeignKey('tournament.id'), nullable=False)
+    week_number = db.Column(db.Integer, nullable=False)
+    
+    # Relationships
+    schedule = db.relationship('Schedule', back_populates='tournaments')
+    tournament = db.relationship('Tournament')
+    
+    # Unique constraint to ensure a tournament only appears once in a schedule
+    __table_args__ = (
+        db.UniqueConstraint('schedule_id', 'tournament_id', name='uix_schedule_tournament'),
+    )
