@@ -1,5 +1,5 @@
 from sqlalchemy import desc, select
-from models import User, Pick, LeagueMember
+from models import User, Pick, LeagueMember, Tournament, TournamentGolfer, TournamentGolferResult, Golfer, LeagueMemberTournamentScore
 
 from utils.db_connector import db
 
@@ -92,4 +92,117 @@ def get_league_member_ids(uid):
         league_member_ids = league_member_result.fetchall()
         return league_member_ids
     return None
+   
+   
+def get_detailed_pick_history_by_member(league_member_id: int):
+    """
+    Get detailed pick history for a league member including tournament results and scoring.
     
+    Args:
+        league_member_id (int): ID of the league member
+    
+    Returns:
+        dict: Summary of member's pick history with scoring details
+    """
+    # Get league member and associated user
+    league_member = (db.session.query(LeagueMember)
+        .join(User, LeagueMember.user_id == User.id)
+        .filter(LeagueMember.id == league_member_id)
+        .first())
+    
+    if not league_member:
+        return None
+        
+    total_points = 0
+    history = []
+    
+    # Get all picks for this league member
+    picks = (db.session.query(
+            Pick,
+            Tournament.tournament_name,
+            Tournament.is_major,
+            Golfer.first_name,
+            Golfer.last_name,
+            TournamentGolferResult.result,
+            LeagueMemberTournamentScore.score,
+            LeagueMemberTournamentScore.is_no_pick,
+            LeagueMemberTournamentScore.is_duplicate_pick
+        )
+        .join(Tournament, Pick.tournament_id == Tournament.id)
+        .join(Golfer, Pick.golfer_id == Golfer.id)
+        .outerjoin(TournamentGolfer, 
+            (TournamentGolfer.tournament_id == Pick.tournament_id) & 
+            (TournamentGolfer.golfer_id == Pick.golfer_id))
+        .outerjoin(TournamentGolferResult, TournamentGolfer.id == TournamentGolferResult.tournament_golfer_id)
+        .outerjoin(LeagueMemberTournamentScore,
+            (LeagueMemberTournamentScore.tournament_id == Pick.tournament_id) &
+            (LeagueMemberTournamentScore.league_member_id == league_member_id))
+        .filter(Pick.league_member_id == league_member_id)
+        .order_by(Tournament.start_date)
+        .all())
+    
+    # Print header
+    print("\n{:<30} {:<25} {:<15} {:<10}".format('TOURNAMENT', 'GOLFER', 'POSITION', 'POINTS'))
+    print("-" * 80)
+    
+    for pick in picks:
+        points = pick.score / 100 if pick.score is not None else 0
+        total_points += points
+        
+        entry = {
+            'tournament': pick.tournament_name,
+            'is_major': pick.is_major,
+            'golfer': f"{pick.first_name} {pick.last_name}",
+            'position': pick.result or 'N/A',
+            'points': f"{points:.2f}",
+            'no_pick': pick.is_no_pick,
+            'duplicate_pick': pick.is_duplicate_pick
+        }
+        history.append(entry)
+        
+        # Format tournament name with MAJOR indicator if applicable
+        tournament_display = f"{pick.tournament_name} {'(MAJOR)' if pick.is_major else ''}"
+        
+        # Format status based on conditions
+        status = "NO PICK" if pick.is_no_pick else "DUPLICATE" if pick.is_duplicate_pick else pick.result
+        
+        # Print row in table format
+        print("{:<30} {:<25} {:<15} {:<10.2f}".format(
+            tournament_display[:30],
+            f"{pick.first_name} {pick.last_name}"[:25],
+            str(status)[:15],
+            points
+        ))
+    
+    print("-" * 80)
+    print("{:<71} {:<10.2f}".format("TOTAL POINTS:", total_points))
+    
+    return {
+        'user': league_member.user.display_name,
+        'total_points': total_points,
+        'pick_history': history
+    }
+
+if __name__ == "__main__":
+    from flask import Flask
+    from utils.db_connector import init_db
+    
+    # Initialize Flask app and database connection
+    app = Flask(__name__)
+    init_db(app)
+    
+    # Run within app context
+    with app.app_context():
+        try:
+            # Get user input
+            league_member_id = input("Enter League_member_id to check pick history: ")
+            
+            # Get and display history
+            history = get_detailed_pick_history_by_member(int(league_member_id))
+            
+            if history is None:
+                print(f"\nNo user found with UID: {league_member_id}")
+            
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            db.session.rollback()

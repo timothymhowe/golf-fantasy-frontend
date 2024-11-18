@@ -272,6 +272,8 @@ class LeagueMemberTournamentScore(db.Model):
         tournament_id (int): The foreign key referencing the tournament's ID
         tournament_golfer_result_id (int): The foreign key referencing the tournament golfer result
         score (int): The score of the member in the tournament
+        is_no_pick (bool): Whether this score was from not making a pick
+        is_duplicate_pick (bool): Whether this score was from making a duplicate pick
     """
 
     id = db.Column(db.Integer, primary_key=True)
@@ -283,6 +285,8 @@ class LeagueMemberTournamentScore(db.Model):
         nullable=True  # Nullable because of no-pick scenarios
     )
     score = db.Column(db.Integer, nullable=False, default=0)
+    is_no_pick = db.Column(db.Boolean, nullable=False, default=False)
+    is_duplicate_pick = db.Column(db.Boolean, nullable=False, default=False)
 
     # Add relationship to access result directly
     result = db.relationship("TournamentGolferResult")
@@ -429,6 +433,7 @@ class ScheduleTournament(db.Model):
     schedule_id = db.Column(db.Integer, db.ForeignKey('schedule.id'), nullable=False)
     tournament_id = db.Column(db.Integer, db.ForeignKey('tournament.id'), nullable=False)
     week_number = db.Column(db.Integer, nullable=False)
+    allow_duplicate_picks = db.Column(db.Boolean, nullable=False, default=False)
     
     # Relationships
     schedule = db.relationship('Schedule', back_populates='tournaments')

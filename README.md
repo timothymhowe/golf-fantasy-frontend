@@ -108,6 +108,14 @@ To run the frontend in development mode:
   - Should be configurable per league/season
   - Reference tables: League, ScoringRuleset, ScoringRule
 
+- [ ] Cache league standings
+  - [ ] Create LeagueStandingsCache table
+  - [ ] Update cache when tournament scores change
+  - [ ] Update cache when league membership changes
+  - [ ] Add cache timestamp tracking
+  - [ ] Add cache invalidation logic
+  - [ ] Add monitoring for cache freshness
+
 
 ### API Integrations
 - [ ] Implement Firestore caching layer for DataGolf API

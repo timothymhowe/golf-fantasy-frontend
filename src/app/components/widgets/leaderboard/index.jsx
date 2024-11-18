@@ -50,7 +50,8 @@ const Leaderboard = () => {
               >
                 <td className="px-4 py-2">{item.rank}</td>
                 <td className="px-4 py-2">{item.name}</td>
-                <td className="px-4 py-2">{item.score}</td>
+                {/* Display score as float, rather than big ass int. */}
+                <td className="px-4 py-2">{item.score / 100}</td> 
                 <td className="px-4 py-2">{item.missedPicks}</td>
               </tr>
             ))
