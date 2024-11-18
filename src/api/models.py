@@ -264,21 +264,28 @@ class ScoringRuleset(db.Model):
 
 class LeagueMemberTournamentScore(db.Model):
     """
-    Represents the score of a user in a tournament.
+    Represents the score of a league member in a tournament.
 
     Attributes:
-        id (int): The unique identifier for the user score.
-        user_id (int): The foreign key referencing the user's ID.
-        tournament_id (int): The foreign key referencing the tournament's ID.
-        score (int): The score of the user in the tournament.
+        id (int): The unique identifier for the score
+        league_member_id (int): The foreign key referencing the league member's ID
+        tournament_id (int): The foreign key referencing the tournament's ID
+        tournament_golfer_result_id (int): The foreign key referencing the tournament golfer result
+        score (int): The score of the member in the tournament
     """
 
     id = db.Column(db.Integer, primary_key=True)
     league_member_id = db.Column(db.Integer, db.ForeignKey("league_member.id"), nullable=False)
-    tournament_id = db.Column(
-        db.Integer, db.ForeignKey("tournament.id"), nullable=False
+    tournament_id = db.Column(db.Integer, db.ForeignKey("tournament.id"), nullable=False)
+    tournament_golfer_result_id = db.Column(
+        db.Integer, 
+        db.ForeignKey("tournament_golfer_result.id"), 
+        nullable=True  # Nullable because of no-pick scenarios
     )
     score = db.Column(db.Integer, nullable=False, default=0)
+
+    # Add relationship to access result directly
+    result = db.relationship("TournamentGolferResult")
 
 
 class LegacyMember(db.Model):
@@ -339,19 +346,28 @@ class LeagueCommisioner(db.Model):
 
 class TournamentGolferResult(db.Model):
     """
-    Represents the result of a golfer in a tournament.
+    Represents a golfer's result in a tournament.
 
     Attributes:
-        id (int): The unique identifier for the tournament golfer result.
-        tournament_golfer_id (int): The ID of the tournament golfer.
-        result (str): The result of the golfer in the tournament.
+        id (int): The unique identifier for the result
+        tournament_golfer_id (int): Foreign key to TournamentGolfer
+        result (str): The finishing position (e.g., "1", "T2", "CUT", etc.)
+        status (str): The player's status (e.g., "active", "complete", "cut", "wd", "dq")
+        score_to_par (int): The player's score relative to par (can be null for CUT/WD/DQ)
     """
 
     id = db.Column(db.Integer, primary_key=True)
     tournament_golfer_id = db.Column(
-        db.Integer, db.ForeignKey("tournament_golfer.id"), nullable=False
+        db.Integer, 
+        db.ForeignKey("tournament_golfer.id"), 
+        nullable=False
     )
     result = db.Column(db.String(9), nullable=False)
+    status = db.Column(db.String(20), nullable=False, default='complete')
+    score_to_par = db.Column(db.Integer, nullable=True)
+
+    # Relationship to tournament_golfer
+    tournament_golfer = db.relationship("TournamentGolfer", backref="results")
 
 
 class GolferStats(db.Model):
