@@ -24,10 +24,6 @@ The Golf Fantasy website utilizes a MySQL database for storing and managing data
 - `roles` : list of roles, permissions associated with those roles
 
 
-## Development Roadmap
-- 1/27/24: Alpha Release
-- 1/29/24: Beta Testing
-- 2/4/24: Full Release
 
 ## More Info
 
@@ -107,6 +103,29 @@ To run the frontend in development mode:
   - Currently hardcoded in `src/api/jobs/calculate_points/calculate_points.py`
   - Should be configurable per league/season
   - Reference tables: League, ScoringRuleset, ScoringRule
+
+  ### Authentication & Onboarding
+- [ ] Create user onboarding flow
+  - [ ] Design simple registration form
+  - [ ] Implement Firebase authentication
+  - [ ] Add email verification
+  - [ ] Create user profile in database after successful auth
+  - [ ] Redirect to league selection/creation
+
+### New Homepage Widgets
+- [ ] User Pick History Widget
+  - [ ] Create component to display all historical picks
+  - [ ] Show tournament name, date, golfer picked, and result
+  - [ ] Add sorting/filtering options
+  - [ ] Include visual indicators for good/bad picks
+
+- [ ] League Standings Timeline Visualization
+  - [ ] Create line graph component using D3 or Chart.js
+  - [ ] Plot each league member's points over time
+  - [ ] Add interactive tooltips showing exact scores
+  - [ ] Include tournament markers on x-axis
+  - [ ] Add legend for member identification
+  - [ ] Implement zoom/pan for longer timeframes
 
 - [ ] Cache league standings
   - [ ] Create LeagueStandingsCache table
