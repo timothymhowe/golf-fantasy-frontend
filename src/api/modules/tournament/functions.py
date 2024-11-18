@@ -1,6 +1,6 @@
 from models import Tournament, TournamentGolfer, Golfer, Pick, User, LeagueMember
 from datetime import datetime
-from sqlalchemy import text
+from sqlalchemy import text, case, desc, and_
 from utils.db_connector import db
 import logging
 
@@ -93,49 +93,46 @@ def get_golfers_with_roster_and_picks(tournament_id: int, uid: str):
             
         league_member_id = league_member_ids[0][0]
         
-        # Updated query to use MySQL's TINYINT instead of BOOLEAN
-        sql_query = text("""
-            SELECT 
-                g.id,
-                g.full_name,
-                g.first_name,
-                g.last_name,
-                g.photo_url,
-                g.datagolf_id,
-                CASE
-                    WHEN p.golfer_id IS NOT NULL THEN 1
-                    ELSE 0
-                END AS has_been_picked,
-                CASE
-                    WHEN tg.tournament_id = :tournament_id THEN 1
-                    ELSE 0
-                END AS is_playing_in_tournament
-            FROM golfer g
-            LEFT OUTER JOIN pick p ON 
-                g.id = p.golfer_id 
-                AND p.is_most_recent = TRUE
-                AND p.league_member_id = :league_member_id
-            LEFT OUTER JOIN tournament_golfer tg ON 
-                g.id = tg.golfer_id
-                AND tg.is_most_recent = TRUE 
-            ORDER BY 
-                is_playing_in_tournament DESC,
-                g.full_name ASC
-        """)
-        
-        result = db.session.execute(
-            sql_query,
-            {
-                "league_member_id": league_member_id, 
-                "tournament_id": tournament_id
-            }
-        )
-        
-        golfers = [dict(x) for x in result.mappings()]
+        # Get all golfers with their tournament and pick status
+        golfers = (Golfer.query
+            .outerjoin(
+                TournamentGolfer,
+                and_(
+                    Golfer.id == TournamentGolfer.golfer_id,
+                    TournamentGolfer.tournament_id == tournament_id,
+                    TournamentGolfer.is_most_recent == True
+                )
+            )
+            .outerjoin(
+                Pick,
+                and_(
+                    Golfer.id == Pick.golfer_id,
+                    Pick.league_member_id == league_member_id,
+                    Pick.is_most_recent == True
+                )
+            )
+            .add_columns(
+                TournamentGolfer.tournament_id.isnot(None).label('is_playing_in_tournament'),
+                Pick.id.isnot(None).label('has_been_picked')
+            )
+            .order_by(
+                desc('is_playing_in_tournament'),
+                Golfer.full_name
+            )
+            .all())
         
         return {
             "ids": {"tournament_id": tournament_id},
-            "golfers": golfers
+            "golfers": [{
+                'id': golfer.id,
+                'full_name': golfer.full_name,
+                'first_name': golfer.first_name,
+                'last_name': golfer.last_name,
+                'photo_url': golfer.photo_url,
+                'datagolf_id': golfer.datagolf_id,
+                'has_been_picked': bool(has_been_picked),
+                'is_playing_in_tournament': bool(is_playing_in_tournament)
+            } for golfer, is_playing_in_tournament, has_been_picked in golfers]
         }
         
     except Exception as e:
@@ -143,4 +140,5 @@ def get_golfers_with_roster_and_picks(tournament_id: int, uid: str):
         return None
 
 def get_is_tournament_live():
+    pass
     pass

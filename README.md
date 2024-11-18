@@ -109,5 +109,31 @@ To run the frontend in development mode:
   - Reference tables: League, ScoringRuleset, ScoringRule
 
 
+### API Integrations
+- [ ] Implement Firestore caching layer for DataGolf API
+  - [ ] Create Firestore collections for:
+    - [ ] Tournament fields
+    - [ ] Live scoring data
+    - [ ] Player rankings
+    - [ ] Tournament schedules
+    - [ ] Historical results
+  - [ ] Implement API-to-Firestore sync jobs
+  - [ ] Update API endpoints to read from Firestore first
+  - [ ] Add timestamp tracking for data freshness
+  - [ ] Implement intelligent refresh logic
+  - [ ] Add backup/restore functionality
+  - [ ] Set up monitoring for sync jobs
+
+- [ ] Migrate to DataGolf API as primary data source
+  - [ ] Replace SportContent API calls with DataGolf equivalents
+  - [ ] Implement comprehensive player mapping system
+  - [ ] Add DataGolf player IDs to golfer table
+  - [ ] Update tournament field management
+  - [ ] Update live scoring integration
+  - [ ] Add historical data import
+  - [ ] Add odds and statistics integration
+  - [ ] Implement proper error handling for API limits
+
+
 
 

@@ -22,6 +22,21 @@ DATAGOLF_FIELD_URL = "https://api.datagolf.com/field-updates"
 
 
 def update_tournament_entries():
+    """Update tournament entries for upcoming tournament, keeping database clean
+    
+    TODO/WARNINGS:
+    1. Current implementation relies heavily on DataGolf API which may not have complete player coverage
+    2. Some players might be missing due to:
+       - Different name formats between DataGolf and our database
+       - Players not in DataGolf rankings
+       - Alternates or late additions to field
+    3. Need to implement:
+       - Better name matching logic
+       - Multiple data source integration
+       - Handling of alternates and field changes
+       - Manual override capability for missing players
+    """
+    
     upcoming_tournament = get_upcoming_tournament()
     if upcoming_tournament is None:
         print("No upcoming tournament!")
