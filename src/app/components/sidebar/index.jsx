@@ -37,8 +37,8 @@ const Sidebar = ({ isOpen }) => {
           </a>
         </li>
         <li>
-          <a href="/contact" className="text-black hover:text-blue-500">
-            Contact
+          <a href="/settings/profile" className="text-black hover:text-blue-500">
+            Profile
           </a>
         </li>
         <li>
@@ -46,6 +46,8 @@ const Sidebar = ({ isOpen }) => {
             href="https://docs.google.com/forms/d/e/1FAIpQLScqFE9p85yilbw00gtHi2-aKgXakE8GYg-W2borVuPaXvGapQ/viewform"
             className="text-black hover:text-blue-500"
           >
+
+            
             Legacy Google Form
           </a>
         </li>

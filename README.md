@@ -162,5 +162,13 @@ To run the frontend in development mode:
   - [ ] Implement proper error handling for API limits
 
 
+### Security Improvements
 
+#### Firebase Storage Rules
+Current rules allow public read access to all profile images. Need to implement more granular access:
+- Restrict profile image access to:
+  - The image owner
+  - Members of the same league
+  - League commissioners
+- Current temporary rules:
 
