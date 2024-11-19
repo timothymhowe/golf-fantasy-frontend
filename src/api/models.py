@@ -443,3 +443,50 @@ class ScheduleTournament(db.Model):
     __table_args__ = (
         db.UniqueConstraint('schedule_id', 'tournament_id', name='uix_schedule_tournament'),
     )
+
+class LeagueInviteCode(db.Model):
+    """
+    Represents an invite code for joining a league.
+
+    Attributes:
+        id (int): The unique identifier for the invite code
+        code (str): The actual invite code string
+        league_id (int): The ID of the league this code is for
+        created_by_id (int): The user ID who created this code
+        created_at (datetime): When the code was created
+        expires_at (datetime): When the code expires (nullable)
+        is_active (bool): Whether this code can still be used
+        max_uses (int): Maximum number of times this code can be used (nullable)
+        usage_count (int): How many times this code has been used
+        role_id (int): The role to assign to users who join with this code
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(12), unique=True, nullable=False)
+    league_id = db.Column(db.Integer, db.ForeignKey("league.id"), nullable=False)
+    created_by_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    expires_at = db.Column(db.DateTime, nullable=True)
+    is_active = db.Column(db.Boolean, nullable=False, default=True)
+    max_uses = db.Column(db.Integer, nullable=True)  # null means unlimited
+    usage_count = db.Column(db.Integer, nullable=False, default=0)
+    role_id = db.Column(db.Integer, db.ForeignKey("role.id"), nullable=False)
+
+class InviteCodeUsage(db.Model):
+    """
+    Tracks the usage history of invite codes.
+
+    Attributes:
+        id (int): The unique identifier for the usage record
+        invite_code_id (int): The ID of the invite code that was used
+        user_id (int): The ID of the user who used the code
+        used_at (datetime): When the code was used
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    invite_code_id = db.Column(db.Integer, db.ForeignKey("league_invite_code.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    used_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    # Prevent double usage by same user
+    __table_args__ = (
+        db.UniqueConstraint('invite_code_id', 'user_id', name='uix_invite_code_usage'),
+    )
