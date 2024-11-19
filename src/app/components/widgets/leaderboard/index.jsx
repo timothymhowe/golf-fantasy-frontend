@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../auth-provider";
+import PickHistoryModal from '../../pick-history-modal';
 
 const Leaderboard = () => {
   const { user, auth } = useAuth();
   const [leaderboard, setLeaderboard] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [selectedMember, setSelectedMember] = useState(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -49,7 +51,17 @@ const Leaderboard = () => {
                 className="hover:bg-gray-200 transition-colors duration-200"
               >
                 <td className="px-4 py-2">{item.rank}</td>
-                <td className="px-4 py-2">{item.name}</td>
+                <td className="px-4 py-2">
+                  <button 
+                    onClick={() => {
+                      console.log('Clicked member:', item);  // Debug log
+                      setSelectedMember(item);
+                    }}
+                    className="hover:text-blue-600 hover:underline text-left w-full"
+                  >
+                    {item.name}
+                  </button>
+                </td>
                 {/* Display score as float, rather than big ass int. */}
                 <td className="px-4 py-2">{item.score / 100}</td> 
                 <td className="px-4 py-2">{item.missedPicks}</td>
@@ -84,6 +96,13 @@ const Leaderboard = () => {
           className="object-contain w-full h-full"
         />
       </div>
+      
+      <PickHistoryModal 
+        isOpen={!!selectedMember}
+        onClose={() => setSelectedMember(null)}
+        memberId={selectedMember?.id}
+        memberName={selectedMember?.name}
+      />
     </>
   );
 };
