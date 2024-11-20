@@ -204,7 +204,7 @@ if __name__ == "__main__":
             league_member_id = input("Enter League_member_id to check pick history: ")
             
             # Get and display history
-            history = get_detailed_pick_history_by_member(league_member_id)
+            history = get_detailed_pick_history_by_member(int(league_member_id))
             
             if history is None:
                 print(f"\nNo user found with UID: {league_member_id}")
