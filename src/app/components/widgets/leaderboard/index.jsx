@@ -10,26 +10,38 @@ const Leaderboard = () => {
 
   useEffect(() => {
     const controller = new AbortController();
-    if (user) {
+    
+    // Only proceed if user is fully initialized
+    if (user?.getIdToken) {  // Check if user has required methods
       user.getIdToken().then(token => {
-        fetch("/api/league/scoreboard", {
-          signal: controller.signal,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            setLeaderboard(data.data.leaderboard);
-            setIsLoaded(true);
+        // Only make the fetch if we haven't been aborted
+        if (!controller.signal.aborted) {
+          fetch("/api/league/scoreboard", {
+            signal: controller.signal,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           })
-          .catch((error) => console.error(error));
+            .then((response) => response.json())
+            .then((data) => {
+              if (!controller.signal.aborted) {  // Check again before setting state
+                setLeaderboard(data.data.leaderboard);
+                setIsLoaded(true);
+              }
+            })
+            .catch((error) => {
+              if (!controller.signal.aborted) {
+                console.error(error);
+              }
+            });
+        }
       });
     }
+
     return () => {
       controller.abort();
     };
-  }, [user]);
+  }, [user?.uid]); // Only depend on user.uid instead of entire user object
 
   return (
     <>

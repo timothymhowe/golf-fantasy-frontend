@@ -7,19 +7,50 @@ import PageLayout from '../../components/hg-layout';
 import GuardedPage from '../../components/guarded-page';
 import Image from 'next/image';
 
+/**
+ * ProfileSettings Component
+ * Allows users to update their profile information including display name and profile picture
+ * 
+ * TODO: 
+ * - Implement image size validation and compression
+ * - Add file type validation
+ * - Consider adding image cropping functionality
+ * - Add loading state for image upload
+ * - Consider implementing image optimization before upload (max size: 1MB)
+ * 
+ * @component
+ * @returns {JSX.Element} The ProfileSettings component
+ */
 export default function ProfileSettings() {
   const { user } = useAuth();
+  
+  // Component state
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
   const fileInputRef = useRef(null);
   const [imagePreview, setImagePreview] = useState(user?.photoURL || null);
   
+  /**
+   * Form data state containing user profile information
+   * @type {Object}
+   * @property {string} displayName - User's display name
+   * @property {string} firstName - User's first name
+   * @property {string} lastName - User's last name
+   * @property {File} [imageFile] - Optional profile image file to upload
+   */
   const [formData, setFormData] = useState({
     displayName: user?.displayName || '',
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
   });
 
+  /**
+   * Handles form submission for profile updates
+   * Uploads new profile image if provided and updates user profile
+   * 
+   * @async
+   * @param {React.FormEvent<HTMLFormElement>} e - Form submission event
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -51,13 +82,31 @@ export default function ProfileSettings() {
     }
   };
 
+  /**
+   * Triggers file input click when profile image is clicked
+   */
   const handleImageClick = () => {
     fileInputRef.current?.click();
   };
 
+  /**
+   * Handles profile image selection
+   * Creates a preview URL and stores the file for upload
+   * 
+   * TODO: Add image size validation (max 1MB)
+   * TODO: Add file type validation (jpg, png only)
+   * 
+   * @param {React.ChangeEvent<HTMLInputElement>} e - File input change event
+   */
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
+      // TODO: Validate file size
+      // if (file.size > 1024 * 1024) {
+      //   setMessage({ type: 'error', text: 'Image must be less than 1MB' });
+      //   return;
+      // }
+      
       // Update form data with the new image file
       setFormData(prev => ({ ...prev, imageFile: file }));
       
@@ -76,7 +125,7 @@ export default function ProfileSettings() {
             
             <div className="bg-white shadow rounded-lg p-6">
               <form className="space-y-6" onSubmit={handleSubmit}>
-                {/* Profile Image */}
+                {/* Profile Image Section */}
                 <div className="flex flex-col items-center space-y-4">
                   <div 
                     onClick={handleImageClick}
@@ -107,7 +156,7 @@ export default function ProfileSettings() {
                   />
                 </div>
 
-                {/* Display Name */}
+                {/* Form Fields */}
                 <div>
                   <label htmlFor="displayName" className="block text-sm font-medium text-gray-700">
                     Display Name
@@ -122,7 +171,6 @@ export default function ProfileSettings() {
                   />
                 </div>
 
-                {/* First Name */}
                 <div>
                   <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
                     First Name
@@ -137,7 +185,6 @@ export default function ProfileSettings() {
                   />
                 </div>
 
-                {/* Last Name */}
                 <div>
                   <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
                     Last Name

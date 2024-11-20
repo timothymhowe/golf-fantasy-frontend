@@ -60,3 +60,24 @@ def scoreboard(uid):
             "status": "error",
             "message": f"Server error: {str(e)}"
         }), 500
+
+@league_bp.route('/membership', methods=['GET'])
+@require_auth
+def check_membership(uid):
+    try:
+        logging.info(f"Checking league membership for user {uid}")
+        league_member_ids = get_league_member_ids(uid)
+        
+        has_league = bool(league_member_ids)  # Convert to boolean
+        logging.info(f"User {uid} has league: {has_league}")
+        
+        return jsonify({
+            "hasLeague": has_league
+        })
+        
+    except Exception as e:
+        logging.error(f"Error checking league membership: {str(e)}", exc_info=True)
+        return jsonify({
+            "message": "Error checking league membership",
+            "error": str(e)
+        }), 500

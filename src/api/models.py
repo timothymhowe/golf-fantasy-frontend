@@ -461,7 +461,7 @@ class LeagueInviteCode(db.Model):
         role_id (int): The role to assign to users who join with this code
     """
     id = db.Column(db.Integer, primary_key=True)
-    code = db.Column(db.String(12), unique=True, nullable=False)
+    code = db.Column(db.String(20), unique=True, nullable=False)
     league_id = db.Column(db.Integer, db.ForeignKey("league.id"), nullable=False)
     created_by_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)

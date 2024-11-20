@@ -2,6 +2,9 @@ from sqlalchemy import desc, select
 from models import User, Pick, LeagueMember, Tournament, TournamentGolfer, TournamentGolferResult, Golfer, LeagueMemberTournamentScore
 
 from utils.db_connector import db
+import logging
+
+logger = logging.getLogger(__name__)
 
 # TODO: Deprecate this function and fully migrate to the pick module
 # Query for the most recent pick for the week by a user with a given UID
@@ -105,7 +108,7 @@ def get_detailed_pick_history_by_member(league_member_id: int):
         dict: Summary of member's pick history with scoring details
     """
     # Get league member and associated user
-    league_member = (db.session.query(LeagueMember)
+    league_member = (db.session.query(LeagueMember, User)
         .join(User, LeagueMember.user_id == User.id)
         .filter(LeagueMember.id == league_member_id)
         .first())
@@ -136,14 +139,10 @@ def get_detailed_pick_history_by_member(league_member_id: int):
         .outerjoin(TournamentGolferResult, TournamentGolfer.id == TournamentGolferResult.tournament_golfer_id)
         .outerjoin(LeagueMemberTournamentScore,
             (LeagueMemberTournamentScore.tournament_id == Pick.tournament_id) &
-            (LeagueMemberTournamentScore.league_member_id == league_member_id))
-        .filter(Pick.league_member_id == league_member_id)
+            (LeagueMemberTournamentScore.league_member_id == league_member.id))
+        .filter(Pick.league_member_id == league_member.id)
         .order_by(Tournament.start_date)
         .all())
-    
-    # Print header
-    print("\n{:<30} {:<25} {:<15} {:<10}".format('TOURNAMENT', 'GOLFER', 'POSITION', 'POINTS'))
-    print("-" * 80)
     
     for pick in picks:
         points = pick.score / 100 if pick.score is not None else 0
@@ -160,28 +159,36 @@ def get_detailed_pick_history_by_member(league_member_id: int):
         }
         history.append(entry)
         
-        # Format tournament name with MAJOR indicator if applicable
-        tournament_display = f"{pick.tournament_name} {'(MAJOR)' if pick.is_major else ''}"
-        
-        # Format status based on conditions
+        # Print detailed information
+        major_str = "(MAJOR)" if pick.is_major else ""
         status = "NO PICK" if pick.is_no_pick else "DUPLICATE" if pick.is_duplicate_pick else pick.result
-        
-        # Print row in table format
-        print("{:<30} {:<25} {:<15} {:<10.2f}".format(
-            tournament_display[:30],
-            f"{pick.first_name} {pick.last_name}"[:25],
-            str(status)[:15],
-            points
-        ))
+        print(f"{pick.tournament_name} {major_str}")
+        print(f"  Pick: {pick.first_name} {pick.last_name}")
+        print(f"  Position: {status}")
+        print(f"  Points: {points:.2f}")
+        print("------------------")
     
-    print("-" * 80)
-    print("{:<71} {:<10.2f}".format("TOTAL POINTS:", total_points))
+    print(f"\nTotal Points: {total_points:.2f}")
     
     return {
-        'user': league_member.user.display_name,
+        'user': league_member.User.display_name,
         'total_points': total_points,
         'pick_history': history
     }
+
+def get_db_user_id(firebase_id: str) -> int:
+    """Convert Firebase UID to database user ID"""
+    logger.debug(f"Looking up database ID for Firebase UID: {firebase_id}")
+    
+    user = User.query.filter_by(firebase_uid=firebase_id).first()
+    if not user:
+        logger.error(f"No database user found for Firebase UID: {firebase_id}")
+        raise ValueError("User not found in database")
+        
+    logger.debug(f"Found database user ID: {user.id}")
+    return user.id
+
+def create_user_in_database(firebase_id: str, email: str, display_name: str):
 
 if __name__ == "__main__":
     from flask import Flask
@@ -198,7 +205,7 @@ if __name__ == "__main__":
             league_member_id = input("Enter League_member_id to check pick history: ")
             
             # Get and display history
-            history = get_detailed_pick_history_by_member(int(league_member_id))
+            history = get_detailed_pick_history_by_member(league_member_id)
             
             if history is None:
                 print(f"\nNo user found with UID: {league_member_id}")

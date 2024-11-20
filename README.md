@@ -98,6 +98,13 @@ To run the frontend in development mode:
   - [ ] Consider implementing lazy loading for off-screen images
   - [ ] Investigate batch loading strategies for golfer photos
 
+- [ ] Optimize dashboard data loading
+  - [ ] Consolidate multiple API calls into single dashboard endpoint
+  - [ ] Implement server-side data aggregation
+  - [ ] Add proper caching strategy for dashboard data
+  - [ ] Consider implementing real-time updates for leaderboard
+  - [ ] Add loading states for individual widgets
+  - [ ] Monitor and optimize database queries
 
 - [ ] Move scoring system to database
   - Currently hardcoded in `src/api/jobs/calculate_points/calculate_points.py`
@@ -171,4 +178,17 @@ Current rules allow public read access to all profile images. Need to implement 
   - Members of the same league
   - League commissioners
 - Current temporary rules:
+
+### Technical Debt & Improvements
+- [ ] Implement robust API client solution
+  - [ ] Replace direct fetch calls with TanStack Query
+  - [ ] Set up centralized API client service
+  - [ ] Add request/response interceptors
+  - [ ] Implement proper error handling
+  - [ ] Add request caching
+  - [ ] Add request deduplication
+  - [ ] Add retry logic
+  - [ ] Add request cancellation
+  - [ ] Add proper TypeScript types
+  - [ ] Set up monitoring and logging
 

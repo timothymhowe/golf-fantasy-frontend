@@ -26,6 +26,8 @@ export const useAuth = () => {
 
 /**
  * Provider component for the authentication context.
+ * Manages user authentication state and provides it to child components.
+ * 
  * @param {Object} props - The component props.
  * @param {React.ReactNode} props.children - The child components.
  * @returns {JSX.Element} The authentication provider component.
@@ -41,7 +43,6 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     });
 
-    // Cleanup subscription
     return () => unsubscribe();
   }, [auth]);
 

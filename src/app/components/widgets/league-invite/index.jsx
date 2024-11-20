@@ -1,16 +1,20 @@
 import { useState } from 'react';
+import { useAuth } from '../../auth-provider';
+import { useRouter } from 'next/navigation';
 
 /**
  * League Invite Component
  * Displays a form for users to enter a league invite code
  * 
- * @param {Function} onSubmitCode - Callback function to handle invite code submission
+ * @param {Function} onSuccess - Callback function to handle successful league join
  */
-const LeagueInvitePrompt = ({ onSubmitCode }) => {
+const LeagueInvitePrompt = ({ onSuccess }) => {
   // State management for form
   const [inviteCode, setInviteCode] = useState('');
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { user } = useAuth();
+  const router = useRouter();
 
   /**
    * Handle form submission
@@ -22,7 +26,23 @@ const LeagueInvitePrompt = ({ onSubmitCode }) => {
     setIsLoading(true);
 
     try {
-      await onSubmitCode(inviteCode.trim());
+      const token = await user.getIdToken();
+      const response = await fetch('/api/commish/join', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ code: inviteCode.trim() }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to join league');
+      }
+
+      onSuccess?.(); // Notify parent of success
+      router.refresh();
     } catch (error) {
       setError(error.message);
     } finally {
