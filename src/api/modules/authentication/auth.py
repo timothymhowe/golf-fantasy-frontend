@@ -4,9 +4,20 @@ import firebase_admin
 from firebase_admin import auth, credentials
 import os
 import json
+from dotenv import load_dotenv
 
+# Get the key string
 key_string = os.getenv('FIREBASE_ADMIN_SDK_KEY')
-key = json.loads(key_string)
+
+try:
+
+    
+ 
+    key = json.loads(key_string)
+except json.JSONDecodeError as e:
+    print(f"JSON Error at position {e.pos}: {e.msg}")
+    print(f"Near text: {key_string[max(0, e.pos-20):min(len(key_string), e.pos+20)]}")
+    raise
 
 cred = credentials.Certificate(key)
 default_app = firebase_admin.initialize_app(cred)

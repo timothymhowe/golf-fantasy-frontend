@@ -30,6 +30,7 @@ google-resumable-media==2.7.0
 googleapis-common-protos==1.62.0
 grpcio==1.60.0
 grpcio-status==1.60.0
+gunicorn==23.0.0
 httplib2==0.22.0
 idna==3.6
 itsdangerous==2.1.2
@@ -39,6 +40,7 @@ msgpack==1.0.7
 multidict==6.0.5
 mysql-connector-python==8.3.0
 numpy==1.26.3
+packaging==24.2
 pandas==2.2.0
 proto-plus==1.23.0
 protobuf==4.25.2
