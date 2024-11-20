@@ -188,7 +188,6 @@ def get_db_user_id(firebase_id: str) -> int:
     logger.debug(f"Found database user ID: {user.id}")
     return user.id
 
-def create_user_in_database(firebase_id: str, email: str, display_name: str):
 
 if __name__ == "__main__":
     from flask import Flask

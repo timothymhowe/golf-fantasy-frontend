@@ -210,6 +210,17 @@ const SignUpForm = () => {
         </div>
 
         <div className={FIELD_CONTAINER_CLASS}>
+          <label htmlFor="passwordConfirm" className={SIGNUP_LABEL_CLASS}>Confirm Password:</label>
+          <input
+            id="passwordConfirm"
+            type="password"
+            value={passwordConfirm}
+            onChange={(e) => setPasswordConfirm(e.target.value)}
+            className={SIGNUP_INPUT_CLASS}
+          />
+        </div>
+
+        <div className={FIELD_CONTAINER_CLASS}>
           <label htmlFor="Avatar URL" className={SIGNUP_LABEL_CLASS}>Avatar URL (optional):</label>
           <input
             id="avatar_url"
