@@ -38,12 +38,22 @@ const Pick = ({ setTitle, onChangePick }) => {
    * @returns {Promise<string>} URL to the golfer's photo or placeholder
    */
   const getGolferPhotoUrl = async (datagolf_id) => {
+    if (!datagolf_id) {
+      console.log("No datagolf_id provided for pick photo");
+      return "/portrait_placeholder_75.png";
+    }
+  
     try {
       const storage = getStorage();
       const photoRef = ref(storage, `headshots/thumbnails/${datagolf_id}_headshot_200x200.png`);
-      return await getDownloadURL(photoRef);
+      const url = await getDownloadURL(photoRef);
+      return url;
     } catch (error) {
-      console.error("Error loading golfer photo:", error);
+      if (error.code === 'storage/object-not-found') {
+        console.log(`Valid golfer ID ${datagolf_id} but no photo found in storage`);
+      } else {
+        console.error("Unexpected error loading golfer photo:", error);
+      }
       return "/portrait_placeholder_75.png";
     }
   };
