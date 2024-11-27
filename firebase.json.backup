@@ -1,0 +1,25 @@
+{
+  "hosting": {
+    "public": "out",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/",
+        "destination": "/dashboard"
+      },
+      {
+        "source": "/api/**",
+        "destination": "https://your-backend-url.com/api/**"
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+    "cleanUrls": true
+  }
+}

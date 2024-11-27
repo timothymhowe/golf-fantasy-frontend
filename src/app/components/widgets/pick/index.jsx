@@ -204,14 +204,12 @@ const Pick = ({ setTitle, onChangePick }) => {
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}
                 onClose={() => setIsOpen(false)}
-                children={
-                  <PickForm
-                    weekData={weekData}
-                    setIsOpen={setIsOpen}
-                    triggerSubmit={() => setSubmitTrigger(!submitTrigger)}
-                  ></PickForm>
-                }
-              ></FormModal>
+                
+              >  <PickForm
+              weekData={weekData}
+              setIsOpen={setIsOpen}
+              triggerSubmit={() => setSubmitTrigger(!submitTrigger)}
+            ></PickForm></FormModal>
             </div>
           </div>
           <hr />
@@ -252,14 +250,12 @@ const Pick = ({ setTitle, onChangePick }) => {
               isOpen={isOpen}
               setIsOpen={setIsOpen}
               onClose={() => setIsOpen(false)}
-              children={
-                <PickForm
-                  weekData={weekData}
-                  setIsOpen={setIsOpen}
-                  triggerSubmit={() => setSubmitTrigger(!submitTrigger)}
-                ></PickForm>
-              }
-            ></FormModal>
+            > 
+            <PickForm
+            weekData={weekData}
+            setIsOpen={setIsOpen}
+            triggerSubmit={() => setSubmitTrigger(!submitTrigger)}
+          ></PickForm></FormModal>
           </div>
         </div>
         <hr />

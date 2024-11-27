@@ -11,7 +11,7 @@ const MyPicks = () => {
 
     if (user) {
       user.getIdToken().then(token => {
-        fetch("/api/members/me/picks", {
+        fetch("/api/user/history", {
           signal: controller.signal,
           headers: {
             Authorization: `Bearer ${token}`,

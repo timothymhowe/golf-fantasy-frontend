@@ -1,10 +1,11 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, updateProfile } from "firebase/auth";
 import { useRouter } from 'next/navigation';
-import { app } from "../../../../config/firebaseConfig";
-import { createUserInDatabase } from "../../../utils/database";
 
+import { useFirebase } from '../../firebase-provider';
+import { createUserInDatabase } from "../../../utils/database";
+import Image from "next/image";
 const ERROR_MESSAGES = {
   'auth/email-already-in-use': "An account with this email already exists.",
   'auth/weak-password': "Password should be at least 6 characters.",
@@ -27,6 +28,7 @@ const FIELD_CONTAINER_CLASS = "flex flex-col space-y-1";
 const BUTTON_BASE_CLASS = "font-sans h-10 rounded-md font-medium px-4 transition-colors duration-200";
 
 const SignUpForm = () => {
+
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -35,8 +37,9 @@ const SignUpForm = () => {
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [error, setError] = useState(null);
+
+  const { auth } = useFirebase();
   const router = useRouter();
-  const auth = getAuth(app);
 
   const validateForm = () => {
     if (!firstName || !lastName || !email || !password || !passwordConfirm) {
@@ -66,6 +69,9 @@ const SignUpForm = () => {
     }
 
     try {
+     
+      if (!auth) throw new Error('Auth not initialized');
+      
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       
       await updateProfile(userCredential.user, {
@@ -84,9 +90,15 @@ const SignUpForm = () => {
 
   const handleGoogleSignUp = async () => {
     try {
+      if (!auth) throw new Error('Auth not initialized');
+      
       const provider = new GoogleAuthProvider();
       provider.addScope('profile');
       provider.addScope('email');
+      
+      provider.setCustomParameters({
+        prompt: 'select_account'
+      });
       
       const result = await signInWithPopup(auth, provider);
       
@@ -111,8 +123,7 @@ const SignUpForm = () => {
     } catch (error) {
       // Only log non-user-initiated errors
       if (error.code !== 'auth/popup-closed-by-user' && 
-          error.code !== 'auth/cancelled-popup-request' &&
-          error.code !== 'auth/google-sign-in-cancelled') {
+          error.code !== 'auth/cancelled-popup-request') {
         console.error("Google signup error:", error.code, error.message);
         setError(ERROR_MESSAGES[error.code] || ERROR_MESSAGES.default);
       } else {
@@ -143,7 +154,7 @@ const SignUpForm = () => {
         onClick={handleGoogleSignUp}
         className={`${BUTTON_BASE_CLASS} w-full border border-white/20 hover:bg-white/5 text-white flex items-center justify-center space-x-2 mb-6`}
       >
-        <img src="/google-logo.svg" alt="Google" className="w-5 h-5" />
+        <Image src="/google-logo.svg" alt="Google" className="w-5 h-5" width={20} height={20}/>
         <span>Continue with Google</span>
       </button>
 

@@ -1,11 +1,7 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getFirestore } from "firebase/firestore";
+import { initializeApp, getApps } from "firebase/app";
 import { getAuth } from "firebase/auth";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
+import { getFirestore } from "firebase/firestore";
+import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -17,19 +13,30 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
+let firebase = {
+  app: null,
+  auth: null,
+  firestore: null,
+  analytics: null,
+};
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-let analytics;
-
-if (typeof window !== "undefined") {
-  analytics = getAnalytics(app);
+if (typeof window !== 'undefined') {
+  if (!getApps().length) {
+    firebase.app = initializeApp(firebaseConfig);
+    firebase.auth = getAuth(firebase.app);
+    firebase.firestore = getFirestore(firebase.app);
+    firebase.analytics = getAnalytics(firebase.app);
+  } else {
+    firebase.app = getApps()[0];
+    firebase.auth = getAuth(firebase.app);
+    firebase.firestore = getFirestore(firebase.app);
+    firebase.analytics = getAnalytics(firebase.app);
+  }
 }
 
+export default firebase;
 
-// TODO: Configure security in firestore console
-const auth = getAuth(app);  // Add this line
-const firestoreDb = getFirestore(app);
-
-export { app, analytics, firestoreDb};
-export default firebaseConfig;
+// For backward compatibility with your existing code
+export const app = firebase.app;
+export const auth = firebase.auth;
+export const firestoreDb = firebase.firestore;

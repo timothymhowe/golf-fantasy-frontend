@@ -8,6 +8,8 @@ const StyledBackground = ({ children, backgroundImage }) => {
         src={backgroundImage}
         alt="Background"
         fill
+        width={1000}
+        height={600}
         priority  // This loads the image first
         className="object-cover"
         quality={75}  // Default is 75, lower means smaller file

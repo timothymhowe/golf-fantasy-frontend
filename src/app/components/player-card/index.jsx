@@ -1,5 +1,6 @@
 import React from "react";
 import ReactTooltip from "react-tooltip-latest";
+import Image from "next/image";
 
 
 // TODO: Low priority, fully implement this feature.
@@ -10,20 +11,20 @@ import ReactTooltip from "react-tooltip-latest";
  */
 const GolferNameWithTooltip = ({ golfer }) => {
   // TODO: Remove this placeholder data and replace it with the golfer prop
-  const golfer = {
-    name: "John Doe",
-    info: "John Doe is a professional golfer with numerous wins under his belt.",
-    image: "/public/portrait_placeholder_75.png",
-    results: [
-      { tournament: "Tournament 1", result: "1st" },
-      { tournament: "Tournament 2", result: "2nd" },
-      { tournament: "Tournament 3", result: "3rd" },
-      { tournament: "Tournament 4", result: "4th" },
+  // const golfer = {
+  //   name: "John Doe",
+  //   info: "John Doe is a professional golfer with numerous wins under his belt.",
+  //   image: "/public/portrait_placeholder_75.png",
+  //   results: [
+  //     { tournament: "Tournament 1", result: "1st" },
+  //     { tournament: "Tournament 2", result: "2nd" },
+  //     { tournament: "Tournament 3", result: "3rd" },
+  //     { tournament: "Tournament 4", result: "4th" },
 
-      { tournament: "Tournament 5", result: "3rd" },
-      // Add more results as needed
-    ],
-  };
+  //     { tournament: "Tournament 5", result: "3rd" },
+  //     // Add more results as needed
+  //   ], 
+  // };
   return (
     <div>
       <p data-tip data-for={golfer.name}>
@@ -36,7 +37,9 @@ const GolferNameWithTooltip = ({ golfer }) => {
         clickable={true}
       >
         <div className="flex">
-          <img
+          <Image
+          width={100}
+          height={100}
             src={golfer.image}
             alt={golfer.name}
             className="w-20 h-20 mr-4"

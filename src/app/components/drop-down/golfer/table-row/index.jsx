@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Combobox } from "@headlessui/react";
 import { Tooltip } from "react-tooltip";
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
+import Image from "next/image";
 
 /**
  * Gets the golfer's photo URL from Firebase Storage
@@ -84,7 +85,9 @@ const DropdownItem = ({ item }) => {
         style={{ gridTemplateColumns: "auto 10fr 1fr 1fr" }}
       >
         <div className="h-[38px] w-[38px]">
-          <img 
+          <Image 
+          width={100}
+          height={100}
             src={photoUrl} 
             className={imageClasses} 
             alt={item.full_name}
@@ -172,7 +175,9 @@ export const SelectedGolfer = ({ golfer, setSelectedGolfer }) => {
         style={{ gridTemplateColumns: "auto 2fr 2fr" }}
       >
         <div className="h-[38px] w-[38px]">
-          <img 
+          <Image 
+          width={100}
+          height={100}
             src={photoUrl} 
             className={imageClasses} 
             alt={golfer.full_name}
