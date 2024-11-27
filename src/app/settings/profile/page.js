@@ -1,11 +1,12 @@
 "use client"
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../components/auth-provider';
 import { updateProfile } from 'firebase/auth';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import PageLayout from '../../components/hg-layout';
 import GuardedPage from '../../components/guarded-page';
 import Image from 'next/image';
+import Avatar from '../../components/avatar';
 
 /**
  * ProfileSettings Component
@@ -22,13 +23,13 @@ import Image from 'next/image';
  * @returns {JSX.Element} The ProfileSettings component
  */
 export default function ProfileSettings() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   
   // Component state
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
   const fileInputRef = useRef(null);
-  const [imagePreview, setImagePreview] = useState(user?.photoURL || null);
+  const [imagePreview, setImagePreview] = useState(null);
   
   /**
    * Form data state containing user profile information
@@ -39,10 +40,22 @@ export default function ProfileSettings() {
    * @property {File} [imageFile] - Optional profile image file to upload
    */
   const [formData, setFormData] = useState({
-    displayName: user?.displayName || '',
-    firstName: user?.firstName || '',
-    lastName: user?.lastName || '',
+    displayName: '',
+    firstName: '',
+    lastName: '',
   });
+
+  // Update form data and image preview when user data is available
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        displayName: user.displayName || '',
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+      });
+      setImagePreview(user.photoURL || null);
+    }
+  }, [user]);
 
   /**
    * Handles form submission for profile updates
@@ -125,25 +138,30 @@ export default function ProfileSettings() {
             
             <div className="bg-white shadow rounded-lg p-6">
               <form className="space-y-6" onSubmit={handleSubmit}>
+
+
                 {/* Profile Image Section */}
                 <div className="flex flex-col items-center space-y-4">
                   <div 
                     onClick={handleImageClick}
-                    className="relative w-32 h-32 rounded-full overflow-hidden cursor-pointer group"
+                    className="relative w-32 h-32 rounded-full overflow-hidden cursor-pointer group ring-2 ring-white shadow-2xl"
                   >
                     {imagePreview ? (
-                      <Image
-                        src={imagePreview}
-                        alt="Profile"
-                        fill
-                        className="object-cover"
-                      />
+                      <div className="relative w-32 h-32 rounded-full overflow-hidden">
+                        <Image
+                          src={imagePreview}
+                          alt="Profile"
+                          fill
+                          className="object-cover rounded-full"
+                          sizes="(max-width: 128px) 100vw, 128px"
+                        />
+                      </div>
                     ) : (
-                      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                      <div className="w-full h-full bg-gray-200 flex items-center justify-center rounded-full">
                         <span className="text-gray-400">No Image</span>
                       </div>
                     )}
-                    <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
                       <span className="text-white text-sm">Change Photo</span>
                     </div>
                   </div>
