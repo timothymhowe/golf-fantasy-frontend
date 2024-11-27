@@ -54,7 +54,7 @@ const LeagueInvitePrompt = ({ onSuccess }) => {
     <div className="bg-white rounded-lg p-6 max-w-md w-full">
       <h2 className="text-2xl font-bold mb-4">Join a League</h2>
       <p className="text-gray-600 mb-6">
-        Enter an invite code to join a league. Don't have one? Ask your league commissioner for an invite code.
+        Enter an invite code to join a league. Don&apos;t have one? Ask your league commissioner for an invite code.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-4">

@@ -9,7 +9,10 @@
     "lint": "next lint",
     "build-css": "postcss ./src/styles.css -o ./dist/styles.css",
     "release": "semantic-release",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "firebase:emulate": "firebase emulators:start --only hosting",
+    "firebase:deploy": "firebase deploy --only hosting",
+    "dev:firebase": "npm run build && npm run firebase:emulate"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.18",
@@ -21,7 +24,7 @@
     "firebase": "^10.7.2",
     "firebaseui": "^6.1.0",
     "flowbite": "^2.2.1",
-    "next": "^15.0.3",
+    "next": "15",
     "react": "^18",
     "react-dom": "^18",
     "react-spinners": "^0.13.8",

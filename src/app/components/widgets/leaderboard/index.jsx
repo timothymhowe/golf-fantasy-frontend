@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../auth-provider";
 import PickHistoryModal from '../../pick-history-modal';
+import Image from "next/image";
 
 const Leaderboard = () => {
   const { user, auth } = useAuth();
@@ -102,7 +103,9 @@ const Leaderboard = () => {
         </table>
       </div>
       <div className="hidden md:block">
-        <img
+        <Image
+          width={100}
+          height={100}
           src="/scoring.png"
           alt="Scoring"
           className="object-contain w-full h-full"

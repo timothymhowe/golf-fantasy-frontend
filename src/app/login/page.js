@@ -24,7 +24,7 @@ const LoginPage = () => {
     <div className="min-h-screen bg-black flex flex-col items-center justify-center px-6">
       <div className="w-full max-w-[1000px] flex flex-col mb-4">
         <h1 className="text-white text-6xl font-bold leading-[0.9]">
-          Golf Pick'em
+          Golf Pick&apos;em
         </h1>
       </div>
       

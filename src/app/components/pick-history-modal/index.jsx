@@ -42,7 +42,7 @@ const PickHistoryModal = ({ isOpen, onClose, memberId, memberName }) => {
 
         <div className={dialogStyles}>
           <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">{memberName}'s Pick History</h2>
+            <h2 className="text-2xl font-bold mb-4">{memberName}&apos;s Pick History</h2>
             
             {isLoading ? (
               <div className="flex justify-center py-8">

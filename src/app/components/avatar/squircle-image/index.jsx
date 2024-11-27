@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ClipLoader } from "react-spinners";
+import Image from "next/image";
 
 /**
  * SquircleImage component displays an image with rounded square corners and loading state
@@ -14,26 +15,46 @@ const SquircleImage = ({
   photoUrl, 
   alt = "Player photo" 
 }) => {
-  console.log("SquircleImage received photoUrl:", photoUrl);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [imageUrl, setImageUrl] = useState(null);
 
-  // Handle image load error
-  const handleError = (e) => {
-    console.error("Image load error:", e);
+  useEffect(() => {
+    // Start loading state when photoUrl changes
+    setLoading(true);
+    
+    if (!photoUrl) {
+      setImageUrl("/portrait_placeholder_75.png");
+      setLoading(false);
+    } else {
+      // Verify the image exists before setting it
+      const img = new window.Image();
+      img.src = photoUrl;
+      
+      img.onload = () => {
+        setImageUrl(photoUrl);
+        setLoading(false);
+        setError(false);
+      };
+      
+      img.onerror = () => {
+        console.error("Failed to load image:", photoUrl);
+        setImageUrl("/portrait_placeholder_75.png");
+        setError(true);
+        setLoading(false);
+      };
+    }
+  }, [photoUrl]);
+
+  const handleError = () => {
+    console.error("Image load error, falling back to placeholder");
     setError(true);
-    setLoading(false);
-  };
-
-  // Handle image load success
-  const handleLoad = () => {
-    console.log("Image loaded successfully");
+    setImageUrl("/portrait_placeholder_75.png");
     setLoading(false);
   };
 
   return (
     <div className="relative w-24 h-[100px] rounded-[31px] shadow-md pointer-events-none">
-      {/* Define the squircle shape */}
       <svg className="absolute w-full h-full">
         <defs>
           <clipPath id="squircle">
@@ -45,7 +66,6 @@ const SquircleImage = ({
         </defs>
       </svg>
 
-      {/* Loading spinner */}
       {loading && (
         <div className="absolute w-full h-full flex items-center justify-center">
           <ClipLoader 
@@ -57,21 +77,21 @@ const SquircleImage = ({
         </div>
       )}
 
-      {/* Image with squircle clip path */}
-      <img
-        src={error ? "/portrait_placeholder_75.png" : photoUrl}
-        alt={alt}
-        className={`absolute w-24 h-[100px] object-cover top-[4px] ${
-          loading ? "hidden" : ""
-        }`}
-        style={{
-          clipPath: "url(#squircle)",
-          backgroundImage:
-            "linear-gradient(to right, rgba(211,211,225,0.5), rgba(105,105,125,0.5))",
-        }}
-        onLoad={handleLoad}
-        onError={handleError}
-      />
+      {imageUrl && (
+        <Image
+          src={imageUrl}
+          alt={alt}
+          width={250}
+          height={100}
+          className={`absolute w-24 h-[100px] object-cover top-[4px]`}
+          style={{
+            clipPath: "url(#squircle)",
+            backgroundImage:
+              "linear-gradient(to right, rgba(211,211,225,0.5), rgba(105,105,125,0.5))",
+          }}
+          onError={handleError}
+        />
+      )}
     </div>
   );
 };

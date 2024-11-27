@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { app } from "../../../../config/firebaseConfig";
 import { createUserInDatabase } from "../../../utils/database";
 import "./log-in-styles.css";
+import Image from "next/image";
 
 const LOGIN_LABEL_CLASS = "text-gray-300 text-sm";
 const LOGIN_INPUT_CLASS = "bg-black/50 border border-white/20 rounded-md text-sm p-2 text-white w-full focus:outline-none focus:border-gray-400 transition-colors";
@@ -54,11 +55,16 @@ const LogInForm = () => {
     }
   };
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleSignIn = async () => {
     try {
       const provider = new GoogleAuthProvider();
       provider.addScope('profile');
       provider.addScope('email');
+      
+      // Add these settings to force account selection
+      provider.setCustomParameters({
+        prompt: 'select_account'  // Forces account selection even when one account is available
+      });
       
       const result = await signInWithPopup(auth, provider);
       
@@ -114,10 +120,10 @@ const LogInForm = () => {
       {/* Google SSO Button */}
       <button
         type="button"
-        onClick={handleGoogleLogin}
+        onClick={handleGoogleSignIn}
         className={`${BUTTON_BASE_CLASS} w-full border border-white/20 hover:bg-white/5 text-white flex items-center justify-center space-x-2`}
       >
-        <img src="/google-logo.svg" alt="Google" className="w-5 h-5" />
+        <Image src="/google-logo.svg" alt="Google" className="w-5 h-5" width={20} height={20}/>
         <span>Continue with Google</span>
       </button>
 
@@ -189,7 +195,7 @@ const LogInForm = () => {
       {/* Sign Up Link */}
       <div className="text-center pt-4 border-t border-white/20">
         <p className="text-gray-400 text-sm">
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <button 
             onClick={handleSignupClick}
             className="text-white hover:text-gray-300 transition-colors"

@@ -14,7 +14,7 @@ import { serverTimestamp, collection,addDoc } from "firebase/firestore";
  */
 const PickForm = ({ weekData, setIsOpen, triggerSubmit }) => {
   const [selectedGolfer, setSelectedGolfer] = useState(null);
-  const { auth, idToken } = useAuth();
+  const { auth } = useAuth();
   const user = auth.currentUser;
 
   /**
@@ -27,15 +27,22 @@ const PickForm = ({ weekData, setIsOpen, triggerSubmit }) => {
     if (!user) return;
 
     try {
-      // Submit to Firestore
+      // Submit to Firestore with enhanced data
+
+      //TODO: Fix golfer name to be full name, not currently populated.
       const docRef = await addDoc(collection(firestoreDb, "Picks"), {
         timestamp_utc: serverTimestamp(),
         user_id: user.uid,
+        user_email: user.email,
+        user_display_name: user.displayName || '',
         league_id: leagueId,
         tournament_id: tournamentId,
+        tournament_name: weekData.tournament_name || '',
         golfer_id: golferId,
+        golfer_name: selectedGolfer.name || '',
+        backup: true
       });
-      console.log("Firestore document written with ID:", docRef.id);
+      console.log("Firestore backup written with ID:", docRef.id);
 
       // Submit to legacy database
       const token = await user.getIdToken();
@@ -59,6 +66,7 @@ const PickForm = ({ weekData, setIsOpen, triggerSubmit }) => {
       return data;
     } catch (error) {
       console.error("Failed to submit pick", error);
+      throw error;
     }
   };
 

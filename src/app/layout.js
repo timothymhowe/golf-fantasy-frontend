@@ -1,6 +1,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { ClientProviders } from "./components/client-providers";
+// import { ClientProviders } from "./components/client-providers";
+import { FirebaseProvider } from "./components/firebase-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,9 +14,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ClientProviders>
+        <FirebaseProvider>
           {children}
-        </ClientProviders>
+        </FirebaseProvider>
       </body>
     </html>
   );

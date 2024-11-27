@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Image from "next/image";
 import "./avatar-styles.css";
 
 const Avatar = ({ avatarUrl, displayName }) => {
@@ -12,10 +13,12 @@ const Avatar = ({ avatarUrl, displayName }) => {
   return (
     <div className="flex items-center justify-center mt-8">
       <div className="relative">
-        <img
+        <Image
           src={!imageError ? avatarUrl || defaultAvatar : defaultAvatar}
           alt={displayName || "User Avatar"}
           onError={handleImageError}
+          width={100}
+          height={100}
           className="rounded-full h-20 w-20 border-2 border-white avatar-img object-cover"
         />
        

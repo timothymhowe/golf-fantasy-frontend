@@ -2,24 +2,55 @@ import React, { useState, useEffect } from "react";
 import { Combobox } from "@headlessui/react";
 import { Tooltip } from "react-tooltip";
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
+import Image from "next/image";
 
 /**
  * Gets the golfer's photo URL from Firebase Storage
- * TODO: Performance Optimization Needed
- * - Implement caching for photo URLs
+ * 
+ * TODO: Photo Loading Optimization
+ * Current behavior: Makes Firebase Storage requests for all golfers with DataGolf IDs,
+ * resulting in 404 console errors for valid golfers without stored photos.
+ * 
+ * Potential solutions:
+ * 1. Implement client-side caching to prevent repeated 404s:
+ *    - Use Set/Map to track missing photos during session
+ *    - Consider localStorage for persistent caching
+ * 
+ * 2. Server-side improvements:
+ *    - Maintain a list of golfers with confirmed photos
+ *    - Add API endpoint to check photo existence before requesting
+ *    - Implement bulk photo existence checking
+ * 
+ * 3. Photo management:
+ *    - Create system to track/flag missing photos
+ *    - Implement automated photo collection for new golfers
+ *    - Consider CDN or alternative storage solutions
+ * 
+ * Current implementation uses try-catch to handle missing photos gracefully,
+ * but still generates 404 console errors from Firebase Storage internals.
+ * 
+ * TODO: * - Implement caching for photo URLs
  * - Consider preloading images for top N golfers
  * - Investigate using Firebase Storage CDN configuration
  * - Add loading state/skeleton for images
+ * 
  * @param {string} datagolf_id - The golfer's DataGolf ID
- * @returns {Promise<string>} The photo URL or placeholder
+ * @returns {Promise<string>} URL to the golfer's photo or placeholder
  */
 const getGolferPhotoUrl = async (datagolf_id) => {
+  if (!datagolf_id) {
+    return "/portrait_placeholder_75.png";
+  }
+
   try {
     const storage = getStorage();
     const photoRef = ref(storage, `headshots/thumbnails/${datagolf_id}_headshot_100x100.png`);
-    return await getDownloadURL(photoRef);
+    const url = await getDownloadURL(photoRef);
+    return url;
   } catch (error) {
-    console.error("Error loading golfer photo:", error);
+    if (error.code === 'storage/object-not-found') {
+      console.log(`Valid golfer ID ${datagolf_id} but no photo found in storage`);
+    }
     return "/portrait_placeholder_75.png";
   }
 };
@@ -54,7 +85,9 @@ const DropdownItem = ({ item }) => {
         style={{ gridTemplateColumns: "auto 10fr 1fr 1fr" }}
       >
         <div className="h-[38px] w-[38px]">
-          <img 
+          <Image 
+          width={100}
+          height={100}
             src={photoUrl} 
             className={imageClasses} 
             alt={item.full_name}
@@ -142,7 +175,9 @@ export const SelectedGolfer = ({ golfer, setSelectedGolfer }) => {
         style={{ gridTemplateColumns: "auto 2fr 2fr" }}
       >
         <div className="h-[38px] w-[38px]">
-          <img 
+          <Image 
+          width={100}
+          height={100}
             src={photoUrl} 
             className={imageClasses} 
             alt={golfer.full_name}

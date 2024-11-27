@@ -8,6 +8,7 @@ import Sidebar from "../sidebar";
 import Pick from "../widgets/pick";
 import Leaderboard from "../widgets/leaderboard";
 import Scoresheet from "../widgets/scoresheet";
+import PickHistory from "../widgets/pick-history";
 
 import WidgetContainer from "../widget-container";
 
@@ -45,6 +46,10 @@ const PageLayout = ({ header, footer, children }) => {
 
           <WidgetContainer title="League Leaderboard">
             <Leaderboard />
+          </WidgetContainer>
+
+          <WidgetContainer title="Pick History">
+            {/* <PickHistory /> */}
           </WidgetContainer>
 
           {/* <WidgetContainer title="Scoring Rules">
