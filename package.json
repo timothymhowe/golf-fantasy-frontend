@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.7.18",
+    "chart.js": "^4.4.6",
     "date-fns": "^2.21.1",
     "date-fns-tz": "^2.0.0",
     "debounce": "^2.0.0",
@@ -26,6 +27,7 @@
     "flowbite": "^2.2.1",
     "next": "15",
     "react": "^18",
+    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18",
     "react-spinners": "^0.13.8",
     "react-tooltip": "^5.26.0",
