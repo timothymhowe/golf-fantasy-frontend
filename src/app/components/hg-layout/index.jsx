@@ -48,8 +48,8 @@ const PageLayout = ({ header, footer, children }) => {
             <Leaderboard />
           </WidgetContainer>
 
-          <WidgetContainer title="Pick History">
-            {/* <PickHistory /> */}
+          <WidgetContainer title="Pick Mystery">
+            <PickHistory />
           </WidgetContainer>
 
           {/* <WidgetContainer title="Scoring Rules">

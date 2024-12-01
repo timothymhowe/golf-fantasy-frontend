@@ -115,7 +115,7 @@ const Leaderboard = () => {
       <PickHistoryModal 
         isOpen={!!selectedMember}
         onClose={() => setSelectedMember(null)}
-        memberId={selectedMember?.id}
+        memberId={selectedMember?.leagueMemberId}
         memberName={selectedMember?.name}
       />
     </>
