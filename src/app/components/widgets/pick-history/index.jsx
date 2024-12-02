@@ -77,7 +77,10 @@ const PickHistory = () => {
 
   return (
     <div className="w-full">
-      <PickHistoryTable picks={picks.picks} />
+      <PickHistoryTable 
+        picks={picks.picks} 
+        isLoading={isLoading} 
+      />
 
       <div className="mt-4 text-sm text-gray-600 grid grid-cols-4 gap-2 text-center">
         <div>
@@ -85,12 +88,12 @@ const PickHistory = () => {
           <div>{picks.summary.total_picks}</div>
         </div>
         <div>
-          <div className="text-gray-600">Majors</div>
-          <div>{picks.summary.majors_played}</div>
+          <div className="text-gray-600">Duplicates</div>
+          <div>{picks.summary.duplicate_picks}</div>
         </div>
         <div>
-          <div className="text-gray-600">Missed/Dup</div>
-          <div>{picks.summary.missed_picks}/{picks.summary.duplicate_picks}</div>
+          <div className="text-gray-600">No Picks</div>
+          <div>{picks.summary.missed_picks}</div>
         </div>
         <div>
           <div className="text-gray-600">Total Points</div>

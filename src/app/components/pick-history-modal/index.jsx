@@ -1,7 +1,8 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { useState, useEffect } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 import { useAuth } from '../auth-provider';
 import PickHistoryTable from './pick-history-table';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 
 const PickHistoryModal = ({ isOpen, onClose, memberId, memberName }) => {
   const { user } = useAuth();
@@ -33,39 +34,55 @@ const PickHistoryModal = ({ isOpen, onClose, memberId, memberName }) => {
   }, [memberId, isOpen, user]);
 
   return (
-    <Transition
-      show={isOpen}
-      enter="transition-opacity duration-75"
-      enterFrom="opacity-0"
-      enterTo="opacity-100"
-      leave="transition-opacity duration-150"
-      leaveFrom="opacity-100"
-      leaveTo="opacity-0"
-    >
-      <Dialog 
-        as="div" 
-        className="fixed inset-0 z-50 overflow-y-auto"
-        onClose={onClose}
-      >
+    <Transition show={isOpen} as={Fragment}>
+      <Dialog as="div" className="fixed inset-0 z-50 overflow-y-auto" onClose={onClose}>
         <div className="flex min-h-screen items-center justify-center p-4">
-          <Dialog.Panel className="w-full max-w-2xl transform rounded-xl bg-white shadow-2xl transition-all">
-            <div className="p-6 text-gray-800">
-              {pickHistory && (
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-50" aria-hidden="true" />
+          </Transition.Child>
+
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0 scale-95"
+            enterTo="opacity-100 scale-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100 scale-100"
+            leaveTo="opacity-0 scale-95"
+          >
+            <Dialog.Panel className="w-full max-w-2xl transform rounded-xl bg-white shadow-2xl transition-all relative">
+              <button
+                onClick={onClose}
+                className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-100 transition-colors duration-200"
+                aria-label="Close dialog"
+              >
+                <XMarkIcon className="h-6 w-6 text-gray-500" />
+              </button>
+
+              <div className="p-6 text-gray-800">
                 <div className="mb-4">
                   <h2>Pick History</h2>
-                  <h3 className="text-2xl font-bold">{pickHistory.member.name}</h3>
+                  <h3 className="text-2xl font-bold">
+                    {pickHistory ? pickHistory.member.name : memberName}
+                  </h3>
                 </div>
-              )}
-              
-              {isLoading ? (
-                <div className="flex justify-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
-                </div>
-              ) : pickHistory && (
-                <PickHistoryTable picks={pickHistory.picks} />
-              )}
-            </div>
-          </Dialog.Panel>
+                
+                <PickHistoryTable 
+                  picks={pickHistory?.picks} 
+                  isLoading={isLoading} 
+                  containerHeight="h-[60vh]"
+                />
+              </div>
+            </Dialog.Panel>
+          </Transition.Child>
         </div>
       </Dialog>
     </Transition>

@@ -3,7 +3,7 @@ import "./widget-container-styles.css";
 
 const WidgetContainer = ({ title, maxHeight, children }) => {
   return (
-    <div className={`widget-container px-[10px] py-1 rounded-lg drop-shadow-lg bg-white text-gray-700 mb-2 h-auto`}>
+    <div className={`widget-container px-[10px] py-1 rounded-lg drop-shadow-lg bg-white text-gray-700 mb-2 h-auto max-h-[${maxHeight}]`}>
       <div className="text-lg text-gray-600">
         {title}
       </div>

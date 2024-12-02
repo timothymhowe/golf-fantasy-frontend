@@ -3,6 +3,13 @@ import { useAuth } from "../../auth-provider";
 import PickHistoryModal from '../../pick-history-modal';
 import Image from "next/image";
 
+// TODO: Enhance leaderboard by making the current user's row sticky at the top
+// This would involve:
+// 1. Separating current user's row from other rows
+// 2. Making it sticky below the header
+// 3. Adding appropriate styling to highlight the user's row
+// 4. Ensuring correct position numbers are maintained
+
 const Leaderboard = () => {
   const { user, auth } = useAuth();
   const [leaderboard, setLeaderboard] = useState([]);
