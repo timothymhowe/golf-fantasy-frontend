@@ -1,22 +1,27 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { useState, useEffect } from 'react';
-
-const dialogContainerStyles = "fixed inset-0 z-10 justify-center flex h-full overflow-visible";
-const backdropStyles = "absolute inset-0 bg-black opacity-50 blur-lg h-[120vh]";
-const dialogStyles = "relative my-auto mt-20 mx-5 max-w-lg p-1 bg-white rounded shadow-lg w-full h-auto";
+import { Fragment, useState, useEffect } from 'react';
+import { useAuth } from '../auth-provider';
+import PickHistoryTable from './pick-history-table';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 
 const PickHistoryModal = ({ isOpen, onClose, memberId, memberName }) => {
-  const [picks, setPicks] = useState([]);
+  const { user } = useAuth();
+  const [pickHistory, setPickHistory] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || !memberId) return;
 
     const fetchPickHistory = async () => {
       try {
-        const response = await fetch(`/api/members/${memberId}/picks`);
+        const token = await user.getIdToken();
+        const response = await fetch(`/api/league/member/${memberId}/pick-history`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = await response.json();
-        setPicks(data);
+        setPickHistory(data);
       } catch (error) {
         console.error('Error fetching picks:', error);
       } finally {
@@ -24,64 +29,60 @@ const PickHistoryModal = ({ isOpen, onClose, memberId, memberName }) => {
       }
     };
 
+    setIsLoading(true);
     fetchPickHistory();
-  }, [memberId, isOpen]);
+  }, [memberId, isOpen, user]);
 
   return (
-    <Transition
-      show={isOpen}
-      enter="transition-opacity duration-75"
-      enterFrom="opacity-0"
-      enterTo="opacity-100"
-      leave="transition-opacity duration-150"
-      leaveFrom="opacity-100"
-      leaveTo="opacity-0"
-    >
-      <Dialog as="div" onClose={onClose} className={dialogContainerStyles}>
-        <Dialog.Overlay className={backdropStyles} />
+    <Transition show={isOpen} as={Fragment}>
+      <Dialog as="div" className="fixed inset-0 z-50 overflow-y-auto" onClose={onClose}>
+        <div className="flex min-h-screen items-center justify-center p-4">
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-50" aria-hidden="true" />
+          </Transition.Child>
 
-        <div className={dialogStyles}>
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">{memberName}&apos;s Pick History</h2>
-            
-            {isLoading ? (
-              <div className="flex justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0 scale-95"
+            enterTo="opacity-100 scale-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100 scale-100"
+            leaveTo="opacity-0 scale-95"
+          >
+            <Dialog.Panel className="w-full max-w-2xl transform rounded-xl bg-white shadow-2xl transition-all relative">
+              <button
+                onClick={onClose}
+                className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-100 transition-colors duration-200"
+                aria-label="Close dialog"
+              >
+                <XMarkIcon className="h-6 w-6 text-gray-500" />
+              </button>
+
+              <div className="p-6 text-gray-800">
+                <div className="mb-4">
+                  <h2>Pick History</h2>
+                  <h3 className="text-2xl font-bold">
+                    {pickHistory ? pickHistory.member.name : memberName}
+                  </h3>
+                </div>
+                
+                <PickHistoryTable 
+                  picks={pickHistory?.picks} 
+                  isLoading={isLoading} 
+                  containerHeight="h-[60vh]"
+                />
               </div>
-            ) : (
-              <div className="max-h-[60vh] overflow-y-auto">
-                <table className="w-full">
-                  <thead className="sticky top-0 bg-white">
-                    <tr className="border-b">
-                      <th className="text-left py-2">Tournament</th>
-                      <th className="text-left">Golfer</th>
-                      <th className="text-right">Position</th>
-                      <th className="text-right">Points</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {picks.map((pick, index) => (
-                      <tr 
-                        key={index}
-                        className={`
-                          border-b hover:bg-gray-50
-                          ${pick.status === 'cut' ? 'text-red-500' : ''}
-                          ${pick.status === 'wd' ? 'text-orange-500' : ''}
-                        `}
-                      >
-                        <td className="py-2">{pick.tournamentName}</td>
-                        <td>{pick.golferName}</td>
-                        <td className="text-right">{pick.position}</td>
-                        <td className="text-right font-mono">
-                          {pick.points >= 0 ? '+' : ''}{pick.points}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
+            </Dialog.Panel>
+          </Transition.Child>
         </div>
       </Dialog>
     </Transition>
