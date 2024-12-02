@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../auth-provider';
-import { Tab } from "@headlessui/react";
+// import { Tab } from "@headlessui/react";
 import PickHistoryTable from '../../../components/pick-history-modal/pick-history-table';
 
 const PickHistory = () => {

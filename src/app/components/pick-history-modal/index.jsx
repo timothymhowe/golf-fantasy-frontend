@@ -1,12 +1,7 @@
-import { Dialog, Transition, Tab } from "@headlessui/react";
+import { Dialog, Transition } from "@headlessui/react";
 import { useState, useEffect } from 'react';
 import { useAuth } from '../auth-provider';
-import PickHistoryGraph from './pick-history-graph';
 import PickHistoryTable from './pick-history-table';
-
-const dialogContainerStyles = "fixed inset-0 z-10 overflow-y-auto";
-const backdropStyles = "fixed inset-0 bg-black opacity-50";
-const dialogStyles = "relative mx-auto max-w-xl w-[95%] bg-white rounded shadow-lg";
 
 const PickHistoryModal = ({ isOpen, onClose, memberId, memberName }) => {
   const { user } = useAuth();
@@ -67,69 +62,7 @@ const PickHistoryModal = ({ isOpen, onClose, memberId, memberName }) => {
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
                 </div>
               ) : pickHistory && (
-                <>
-
-                  <Tab.Group>
-                    <Tab.List className="flex space-x-1 rounded-lg bg-blue-900/10 p-0.5  w-48 mx-auto ">
-                      <Tab
-                        className={({ selected }) =>
-                          `w-full rounded-md py-1.5 text-xs font-medium leading-none
-                          ${selected 
-                            ? 'bg-white text-blue-700 shadow-sm'
-                            : 'text-blue-600 hover:bg-white/[0.12] hover:text-blue-600'
-                          }`
-                        }
-                      >
-                        List
-                      </Tab>
-                      <Tab
-                        className={({ selected }) =>
-                          `w-full rounded-md py-1.5 text-xs font-medium leading-none
-                          ${selected 
-                            ? 'bg-white text-blue-700 shadow-sm'
-                            : 'text-blue-600 hover:bg-white/[0.12] hover:text-blue-600'
-                          }`
-                        }
-                      >
-                        Graph
-                      </Tab>
-                    </Tab.List>
-
-                    <Tab.Panels className="overflow-hidden">
-                      <Tab.Panel className="overflow-y-auto">
-                        <PickHistoryTable picks={pickHistory.picks} />
-                      </Tab.Panel>
-
-                      <Tab.Panel>
-                        <div className="h-[50vh]">
-                          <PickHistoryGraph picks={pickHistory.picks} />
-                        </div>
-                      </Tab.Panel>
-                    </Tab.Panels>
-                  </Tab.Group>
-
-                  <div className="border-t items-center">
-                    <div className="grid grid-cols-3 text-xs justify-items-center pt-1">
-                      <div className="text-center">
-                        <div className="text-gray-600">Wins</div>
-                        <div>{pickHistory.summary.wins}</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-gray-600">Missed/Dup</div>
-                        <div>
-                          {pickHistory.summary.missed_picks}/{pickHistory.summary.duplicate_picks}
-                        </div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-gray-600">Total Points</div>
-                        <div className="font-mono">
-                          {pickHistory.summary.total_points > 0 ? '+' : ''}
-                          {pickHistory.summary.total_points}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </>
+                <PickHistoryTable picks={pickHistory.picks} />
               )}
             </div>
           </Dialog.Panel>

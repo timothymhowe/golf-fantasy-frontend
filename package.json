@@ -15,7 +15,7 @@
     "dev:firebase": "npm run build && npm run firebase:emulate"
   },
   "dependencies": {
-    "@headlessui/react": "^1.7.18",
+    "@headlessui/react": "^1.7.19",
     "chart.js": "^4.4.6",
     "date-fns": "^2.21.1",
     "date-fns-tz": "^2.0.0",
