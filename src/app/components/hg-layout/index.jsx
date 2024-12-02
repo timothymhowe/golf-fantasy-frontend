@@ -48,7 +48,7 @@ const PageLayout = ({ header, footer, children }) => {
             <Leaderboard />
           </WidgetContainer>
 
-          <WidgetContainer title="Pick Mystery">
+          <WidgetContainer title="Pick History">
             <PickHistory />
           </WidgetContainer>
 

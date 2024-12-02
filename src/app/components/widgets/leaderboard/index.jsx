@@ -46,61 +46,72 @@ const Leaderboard = () => {
 
   return (
     <>
-      <div className="max-h-[500px] w-[100%] overflow-auto">
-        <table className="w-full table-auto text-sm divide-y divide-gray-300">
-          <thead>
-            <tr>
-              <th className="px-4 py-2 text-left">#</th>
-              <th className="px-4 py-2 text-left">Name</th>
-              <th className="px-4 py-2 text-left">Score</th>
-              <th className="px-4 py-2 text-left">No Pick</th>
-            </tr>
-          </thead>
-          <tbody className="text-gray-700">
-          {isLoaded ? (
-            leaderboard.map((item) => (
-              <tr
-                key={item.rank}
-                className="hover:bg-gray-200 transition-colors duration-200"
-              >
-                <td className="px-4 py-2">{item.rank}</td>
-                <td className="px-4 py-2">
-                  <button 
-                    onClick={() => {
-                      console.log('Clicked member:', item);  // Debug log
-                      setSelectedMember(item);
-                    }}
-                    className="hover:text-blue-600 hover:underline text-left w-full"
-                  >
-                    {item.name}
-                  </button>
-                </td>
-                {/* Display score as float, rather than big ass int. */}
-                <td className="px-4 py-2">{item.score / 100}</td> 
-                <td className="px-4 py-2">{item.missedPicks}</td>
+      <div className="bg-white rounded-lg shadow-sm overflow-hidden pb-2">
+        <div className="max-h-[350px] overflow-auto">
+          <table className="w-full table-fixed text-sm">
+            <thead>
+              <tr className="bg-gray-50 border-b sticky top-0 h-7">
+                <th className="w-10 px-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                <th className="w-[40%] px-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                <th className="w-[20%] px-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Points</th>
+                <th className="w-[15%] px-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Wins</th>
+                <th className="w-[15%] px-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Missed</th>
               </tr>
-            ))
-          ) : (
-            // Skeleton screen
-            [...Array(10)].map((_, index) => (
-              <tr key={index} className="animate-pulse">
-                <td className="px-4 py-2">
-                  <div className="h-5 bg-gray-300 rounded w-1/4"></div>
-                </td>
-                <td className="px-4 py-2">
-                  <div className="h-5 bg-gray-300 rounded w-3/4"></div>
-                </td>
-                <td className="px-4 py-2">
-                  <div className="h-5 bg-gray-300 rounded w-2/4"></div>
-                </td>
-                <td className="px-4 py-2">
-                  <div className="h-5 bg-gray-300 rounded w-1/4"></div>
-                </td>
-              </tr>
-            ))
-          )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+            {isLoaded ? (
+              leaderboard.map((item, index) => (
+                <tr
+                  key={item.rank}
+                  className="hover:bg-gray-50 transition-colors duration-200 h-8"
+                >
+                  <td className="px-3 whitespace-nowrap font-medium text-gray-500">
+                    {index === leaderboard.length - 1 ? '🤡' : item.rank}
+                  </td>
+                  <td className="px-3 whitespace-nowrap">
+                    <button 
+                      onClick={() => setSelectedMember(item)}
+                      className="hover:text-blue-600 font-medium text-left w-full"
+                    >
+                      {item.name}
+                    </button>
+                  </td>
+                  <td className="px-3 whitespace-nowrap text-center font-mono">
+                    {item.score > 0 ? '+' : ''}{(item.score / 100).toFixed(1)}
+                  </td>
+                  <td className="px-3 whitespace-nowrap text-center text-gray-500">
+                    {item.wins || 0}
+                  </td>
+                  <td className="px-3 whitespace-nowrap text-center text-gray-500">
+                    {item.missedPicks}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              // Update skeleton loading to match new column count
+              [...Array(10)].map((_, index) => (
+                <tr key={index} className="animate-pulse h-8">
+                  <td className="px-3">
+                    <div className="h-4 bg-gray-300 rounded w-1/4"></div>
+                  </td>
+                  <td className="px-3">
+                    <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+                  </td>
+                  <td className="px-3">
+                    <div className="h-4 bg-gray-300 rounded w-2/4 mx-auto"></div>
+                  </td>
+                  <td className="px-3">
+                    <div className="h-4 bg-gray-300 rounded w-1/4 mx-auto"></div>
+                  </td>
+                  <td className="px-3">
+                    <div className="h-4 bg-gray-300 rounded w-1/4 mx-auto"></div>
+                  </td>
+                </tr>
+              ))
+            )}
+            </tbody>
+          </table>
+        </div>
       </div>
       <div className="hidden md:block">
         <Image
