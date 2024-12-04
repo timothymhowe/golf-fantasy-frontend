@@ -3,11 +3,8 @@ import Image from 'next/image';
 import { getGolferPhotoUrl } from '../../../../utils/images';
 
 const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', { 
-    month: 'short', 
-    day: 'numeric'
-  });
+  const [year, month, day] = dateString.split('-');
+  return `${month}/${day}/${year.slice(-2)}`;
 };
 
 const PickHistoryRow = ({ pick, weekNumber }) => {
