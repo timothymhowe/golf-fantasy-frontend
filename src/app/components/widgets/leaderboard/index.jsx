@@ -73,7 +73,9 @@ const Leaderboard = () => {
                   className="hover:bg-gray-50 transition-colors duration-200 h-8"
                 >
                   <td className="px-3 whitespace-nowrap font-medium text-gray-500">
-                    {index === leaderboard.length - 1 ? '🤡' : item.rank}
+                    {/* {index === leaderboard.length - 1 ? '🤡' : item.rank}
+                     */}
+                     {item.rank}
                   </td>
                   <td className="px-3 whitespace-nowrap">
                     <button 

@@ -49,7 +49,7 @@ const PageLayout = ({ header, footer, children }) => {
 
           {/* Right Column */}
           <div className="h-full">
-            <WidgetContainer title="My Picks" className="h-full">
+            <WidgetContainer title="League Schedule" className="h-full">
               <PickHistory />
             </WidgetContainer>
           </div>

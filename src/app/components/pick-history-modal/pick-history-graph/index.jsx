@@ -23,7 +23,8 @@ ChartJS.register(
 );
 
 const PickHistoryGraph = ({ picks, containerHeight = "h-[50vh]" }) => {
-  const chronologicalPicks = [...picks].reverse();
+  const pastPicks = picks.filter(pick => !pick.is_future);
+  const chronologicalPicks = [...pastPicks].reverse();
   const cumulativePoints = chronologicalPicks.reduce((acc, pick, index) => {
     const previousTotal = index > 0 ? acc[index - 1] : 0;
     acc.push(previousTotal + pick.points);
@@ -33,14 +34,14 @@ const PickHistoryGraph = ({ picks, containerHeight = "h-[50vh]" }) => {
   const photoCache = useRef(new Map());
 
   useEffect(() => {
-    picks.forEach(pick => {
+    pastPicks.forEach(pick => {
       if (pick.golfer?.datagolf_id && !photoCache.current.has(pick.golfer.datagolf_id)) {
         getGolferPhotoUrl(pick.golfer.datagolf_id).then(url => {
           photoCache.current.set(pick.golfer.datagolf_id, url);
         });
       }
     });
-  }, [picks]);
+  }, [pastPicks]);
 
   const data = {
     labels: ['0', ...chronologicalPicks.map((_, index) => (index + 1).toString())],
@@ -49,15 +50,15 @@ const PickHistoryGraph = ({ picks, containerHeight = "h-[50vh]" }) => {
         label: 'Total Points',
         data: [0, ...cumulativePoints],
         pointBackgroundColor: ['rgb(59, 130, 246)', ...chronologicalPicks.map(pick => {
-          if (pick.result.result === '1') return 'rgb(234, 179, 8)';
+          if (pick.result?.result === '1') return 'rgb(234, 179, 8)';
           if (pick.tournament.is_major) return 'rgb(239, 68, 68)';
           return 'rgb(59, 130, 246)';
         })],
         pointHoverRadius: [0, ...chronologicalPicks.map(pick => 
-          pick.tournament.is_major || pick.result.result === '1' ? 7 : 5
+          pick.tournament.is_major || pick.result?.result === '1' ? 7 : 5
         )],
         pointRadius: [0, ...chronologicalPicks.map(pick => 
-          pick.tournament.is_major || pick.result.result === '1' ? 5 : 3
+          pick.tournament.is_major || pick.result?.result === '1' ? 5 : 3
         )],
         borderColor: 'rgb(59, 130, 246)',
         backgroundColor: 'rgba(59, 130, 246, 0.05)',
@@ -116,7 +117,7 @@ const PickHistoryGraph = ({ picks, containerHeight = "h-[50vh]" }) => {
             const total = cumulativePoints[pointIndex - 1];
             
             return [
-              `${pick.golfer.name}`,
+              `${pick.golfer?.name || 'No Pick'}`,
               `Points: ${points > 0 ? '+' : ''}${points}`,
               `Total: ${total > 0 ? '+' : ''}${total}`
             ];
