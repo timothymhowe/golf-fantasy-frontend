@@ -32,11 +32,6 @@ const Sidebar = ({ isOpen }) => {
           </a>
         </li>
         <li>
-          <a href="/about" className="text-black hover:text-blue-500">
-            About
-          </a>
-        </li>
-        <li>
           <a href="/settings/profile" className="text-black hover:text-blue-500">
             Profile
           </a>
@@ -46,12 +41,15 @@ const Sidebar = ({ isOpen }) => {
             href="https://docs.google.com/forms/d/e/1FAIpQLScqFE9p85yilbw00gtHi2-aKgXakE8GYg-W2borVuPaXvGapQ/viewform"
             className="text-black hover:text-blue-500"
           >
-
-            
             Legacy Google Form
           </a>
         </li>
         <li>
+          <a className="text-black hover:text-blue-500"> Something Cool (coming soon) </a>
+          </li>
+        <li>
+
+        
           <LogoutButton />
         </li>
       </ul>

@@ -2,6 +2,7 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../auth-provider";
+import LoadingScreen from "../loading-screen";
 
 const GuardedPage = ({ children }) => {
   const { user, loading } = useAuth();
@@ -16,9 +17,10 @@ const GuardedPage = ({ children }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse">Loading...</div>
-      </div>
+      <LoadingScreen />
+      // <div className="min-h-screen flex items-center justify-center">
+      //   <div className="animate-pulse">Loading...</div>
+      // </div>
     );
   }
 

@@ -6,7 +6,7 @@ import { FirebaseProvider } from "./components/firebase-provider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "Golf Pick'em 2024",
+  title: "Golf Pick'em (beta)",
   description: "Show me what you got.",
   openGraph: {
     title: 'Fantasy Golf',
