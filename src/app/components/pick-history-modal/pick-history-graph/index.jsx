@@ -22,7 +22,7 @@ ChartJS.register(
   Legend
 );
 
-const PickHistoryGraph = ({ picks }) => {
+const PickHistoryGraph = ({ picks, containerHeight = "h-[50vh]" }) => {
   const chronologicalPicks = [...picks].reverse();
   const cumulativePoints = chronologicalPicks.reduce((acc, pick, index) => {
     const previousTotal = index > 0 ? acc[index - 1] : 0;
@@ -82,14 +82,7 @@ const PickHistoryGraph = ({ picks }) => {
         display: false
       },
       title: {
-        display: true,
-        text: 'Cumulative Points Over Time',
-        font: {
-          family: 'Verdana, sans-serif',
-          size: 14,
-          weight: '400'
-        },
-        padding: 20
+        display: false
       },
       tooltip: {
         backgroundColor: 'white',
@@ -135,73 +128,81 @@ const PickHistoryGraph = ({ picks }) => {
       x: {
         grid: {
           display: true,
-          color: 'rgba(0, 0, 0, 0.1)',
+          color: 'rgba(0, 0, 0, 0.05)',
           drawTicks: true,
         },
         border: {
           display: true,
-          color: 'rgba(0, 0, 0, 0.3)',
+          color: 'rgba(0, 0, 0, 0.1)',
         },
         title: {
           display: true,
           text: 'Week',
           font: {
             family: 'Verdana, sans-serif',
-            size: 12
-          }
+            size: 11
+          },
+          padding: { top: 5 }
         },
         ticks: {
           font: {
             family: 'Verdana, sans-serif',
-            size: 11
+            size: 10
           },
           callback: function(value) {
             return value % 5 === 0 || value === 0 ? value : '';
           },
           maxRotation: 0,
-          padding: 5
+          padding: 3
         }
       },
       y: {
         beginAtZero: true,
         grid: {
-          color: 'rgba(0, 0, 0, 0.1)',
-          lineWidth: 1
+          color: 'rgba(0, 0, 0, 0.05)',
+          lineWidth: 0.5
         },
         border: {
           display: true,
-          color: 'rgba(0, 0, 0, 0.3)',
+          color: 'rgba(0, 0, 0, 0.1)',
+        },
+        title: {
+          display: true,
+          text: 'Points',
+          font: {
+            family: 'Verdana, sans-serif',
+            size: 11
+          }
         },
         ticks: {
           font: {
             family: 'Verdana, sans-serif',
-            size: 11
+            size: 10
           },
-          padding: 5
+          padding: 3,
+          maxTicksLimit: 8
         }
-      }
-    },
-    elements: {
-      line: {
-        borderWidth: 1.5,
       }
     },
     layout: {
       padding: {
-        top: 10,
-        right: 10,
-        bottom: 10,
-        left: 10
+        top: 5,
+        right: 5,
+        bottom: 5,
+        left: 5
       }
     }
   };
 
   return (
-    <div className="h-[50vh] p-4 bg-white">
+    <div className={`${containerHeight} p-2 bg-white transition-all duration-300 ease-in-out`}>
       <Line 
         options={{
           ...options,
           maintainAspectRatio: false,
+          animation: {
+            duration: 300
+          }
         }} 
         data={data} 
       />

@@ -84,8 +84,8 @@ const PickHistory = () => {
 
       <div className="mt-4 text-sm text-gray-600 grid grid-cols-4 gap-2 text-center">
         <div>
-          <div className="text-gray-600">Total Picks</div>
-          <div>{picks.summary.total_picks}</div>
+          <div className="text-gray-600">Wins</div>
+          <div>{picks.summary.wins}</div>
         </div>
         <div>
           <div className="text-gray-600">Duplicates</div>

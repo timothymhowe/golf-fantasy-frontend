@@ -21,7 +21,7 @@ const PickHistoryTable = ({ picks, isLoading, containerHeight = "max-h-[50vh]" }
           <tr className="border-b h-7">
             <th className="text-center py-0 w-8 text-xs"></th>
             <th className="text-left py-0 w-[60%] text-xs">Pick</th>
-            <th className="text-right w-[15%] text-xs">Result</th>
+            <th className="text-right w-[15%] text-xs hidden sm:table-cell">Result</th>
             <th className="text-right w-[20%] text-xs pr-4">Points</th>
           </tr>
         </thead>

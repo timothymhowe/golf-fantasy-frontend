@@ -62,7 +62,7 @@ const Leaderboard = () => {
                 <th className="w-[40%] px-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                 <th className="w-[20%] px-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Points</th>
                 <th className="w-[15%] px-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Wins</th>
-                <th className="w-[15%] px-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Missed</th>
+                <th className="w-[15%] px-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">No Pick</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">

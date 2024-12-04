@@ -37,8 +37,10 @@ const PickHistoryRow = ({ pick, weekNumber }) => {
       </td>
       <td className="py-0">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 relative flex-shrink-0">
-            {!pick.pick_status.is_no_pick && (
+          <div className="w-8 h-8 relative flex-shrink-0 flex items-center justify-center">
+            {pick.pick_status.is_no_pick ? (
+              <span className="text-2xl">🤡</span>
+            ) : (
               <Image 
                 src={photoUrl}
                 alt=""
@@ -49,12 +51,15 @@ const PickHistoryRow = ({ pick, weekNumber }) => {
             )}
           </div>
           <div className="min-w-0 leading-none">
-            <div className="text-[11px] font-bold pb-1 z-2" title={pick.tournament.name}>
-              {tournamentName}{"   "}{pick.tournament.is_major && 
-            <span className="px-1 bg-gray-200 text-gray-700 rounded text-[9px] font-medium">
-              1.25x
-            </span>
-          }
+            <div className="text-[11px] font-bold pb-0.5 flex items-center gap-1 leading-normal">
+              <span className="truncate" title={pick.tournament.name}>
+                {tournamentName}
+              </span>
+              {pick.tournament.is_major && 
+                <span className="flex-shrink-0 px-1 bg-gray-200 text-gray-700 rounded text-[9px] font-medium">
+                  1.25x
+                </span>
+              }
             </div>
             <div className="text-[13px] font-normal truncate py-0.5">
               {pick.pick_status.is_no_pick ? (
@@ -66,7 +71,7 @@ const PickHistoryRow = ({ pick, weekNumber }) => {
           </div>
         </div>
       </td>
-      <td className="text-right py-0 leading-none">
+      <td className="text-right py-0 leading-none hidden sm:table-cell">
         {pick.pick_status.is_no_pick ? (
           '-'
         ) : (
@@ -78,7 +83,6 @@ const PickHistoryRow = ({ pick, weekNumber }) => {
       <td className="text-right font-mono leading-none">
         <div className="flex items-center justify-end gap-1 pr-4">
           <span>{pick.points > 0 ? `+${pick.points}` : pick.points}</span>
-          
         </div>
       </td>
     </tr>
