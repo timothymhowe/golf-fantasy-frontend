@@ -66,7 +66,7 @@ const Header = ({isSidebarOpen, setIsSidebarOpen}) => {
         </button>}
       </div>
       <a href="/dashboard" className="text-2xl font-bold pr-[2em]">
-        Golf 2k24
+        pick.golf (beta)
       </a>
 
       <div className="flex-grow">
