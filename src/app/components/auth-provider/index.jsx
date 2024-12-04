@@ -4,7 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { app } from "../../../config/firebaseConfig";
 import { useFirebase } from "../firebase-provider";
-
+import LoadingScreen from "../loading-screen";
 /**
  * Context for managing authentication state.
  * @typedef {Object} AuthContext
@@ -63,7 +63,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   if (loading) {
-    return <div>Loading...</div>; // Or your loading component
+    return <LoadingScreen />;
   }
 
   return (

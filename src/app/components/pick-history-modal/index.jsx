@@ -1,22 +1,58 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { useState, useEffect } from 'react';
+import { Fragment, useState, useEffect } from 'react';
+import { useAuth } from '../auth-provider';
+import PickHistoryTable from './pick-history-table';
+import PickHistoryGraph from './pick-history-graph';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 
-const dialogContainerStyles = "fixed inset-0 z-10 justify-center flex h-full overflow-visible";
-const backdropStyles = "absolute inset-0 bg-black opacity-50 blur-lg h-[120vh]";
-const dialogStyles = "relative my-auto mt-20 mx-5 max-w-lg p-1 bg-white rounded shadow-lg w-full h-auto";
-
+/**
+ * Modal component that displays a member's pick history
+ * @param {Object} props - Component props
+ * @param {boolean} props.isOpen - Controls visibility of the modal
+ * @param {Function} props.onClose - Callback function to close the modal
+ * @param {string} props.memberId - ID of the league member whose picks are being displayed
+ * @param {string} props.memberName - Name of the league member whose picks are being displayed
+ * @returns {JSX.Element} Pick history modal component
+ */
 const PickHistoryModal = ({ isOpen, onClose, memberId, memberName }) => {
-  const [picks, setPicks] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuth();
+  const [pickHistory, setPickHistory] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showGraph, setShowGraph] = useState(false);
+
+  // Only call onClose, data clearing happens after transition
+  const handleClose = () => {
+    onClose();
+  };
+
+  // Clear data after transition
+  const handleAfterLeave = () => {
+    setPickHistory(null);
+    setShowGraph(false);
+    setIsLoading(false);
+  };
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (isOpen) {
+      setPickHistory(null);
+      setIsLoading(true);
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen || !memberId) return;
 
     const fetchPickHistory = async () => {
+      setIsLoading(true);
       try {
-        const response = await fetch(`/api/members/${memberId}/picks`);
+        const token = await user.getIdToken();
+        const response = await fetch(`/api/league/member/${memberId}/pick-history`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = await response.json();
-        setPicks(data);
+        setPickHistory(data);
       } catch (error) {
         console.error('Error fetching picks:', error);
       } finally {
@@ -25,63 +61,88 @@ const PickHistoryModal = ({ isOpen, onClose, memberId, memberName }) => {
     };
 
     fetchPickHistory();
-  }, [memberId, isOpen]);
+  }, [memberId, isOpen, user]);
 
   return (
-    <Transition
-      show={isOpen}
-      enter="transition-opacity duration-75"
-      enterFrom="opacity-0"
-      enterTo="opacity-100"
-      leave="transition-opacity duration-150"
-      leaveFrom="opacity-100"
-      leaveTo="opacity-0"
-    >
-      <Dialog as="div" onClose={onClose} className={dialogContainerStyles}>
-        <Dialog.Overlay className={backdropStyles} />
+    <Transition show={isOpen} as={Fragment} afterLeave={handleAfterLeave}>
+      <Dialog as="div" className="fixed inset-0 z-50 overflow-y-auto" onClose={handleClose}>
+        <div className="flex min-h-screen items-center justify-center p-4">
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-50" aria-hidden="true" />
+          </Transition.Child>
 
-        <div className={dialogStyles}>
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">{memberName}&apos;s Pick History</h2>
-            
-            {isLoading ? (
-              <div className="flex justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0 scale-95"
+            enterTo="opacity-100 scale-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100 scale-100"
+            leaveTo="opacity-0 scale-95"
+          >
+            <Dialog.Panel className="w-full max-w-2xl transform rounded-xl bg-white shadow-2xl transition-all relative">
+              <button
+                onClick={handleClose}
+                className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-100 transition-colors duration-200"
+                aria-label="Close dialog"
+              >
+                <XMarkIcon className="h-6 w-6 text-gray-500" />
+              </button>
+
+              <div className="p-6 text-gray-800">
+                <div className="mb-4">
+                  <h2>Pick History</h2>
+                  <h3 className="text-2xl font-bold mb-2">{memberName}</h3>
+                  
+                  <div className="flex items-center h-6">
+                    {!isLoading && pickHistory && (
+                      <label className="inline-flex items-center cursor-pointer">
+                        <span className={`mr-2 text-xs ${!showGraph ? 'text-blue-600 font-medium' : 'text-gray-500'}`}>
+                          Table
+                        </span>
+                        <div className="relative">
+                          <input
+                            type="checkbox"
+                            checked={showGraph}
+                            onChange={(e) => setShowGraph(e.target.checked)}
+                            className="sr-only peer"
+                          />
+                          <div className="w-8 h-4 bg-gray-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-300 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-full" />
+                        </div>
+                        <span className={`ml-2 text-xs ${showGraph ? 'text-blue-600 font-medium' : 'text-gray-500'}`}>
+                          Graph
+                        </span>
+                      </label>
+                    )}
+                  </div>
+                </div>
+
+                <div className="h-[50vh]">
+                  {isLoading ? (
+                    <div className="h-full flex justify-center items-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
+                    </div>
+                  ) : pickHistory && (
+                    <>
+                      {!showGraph ? (
+                        <PickHistoryTable picks={pickHistory.picks} />
+                      ) : (
+                        <PickHistoryGraph picks={pickHistory.picks} />
+                      )}
+                    </>
+                  )}
+                </div>
               </div>
-            ) : (
-              <div className="max-h-[60vh] overflow-y-auto">
-                <table className="w-full">
-                  <thead className="sticky top-0 bg-white">
-                    <tr className="border-b">
-                      <th className="text-left py-2">Tournament</th>
-                      <th className="text-left">Golfer</th>
-                      <th className="text-right">Position</th>
-                      <th className="text-right">Points</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {picks.map((pick, index) => (
-                      <tr 
-                        key={index}
-                        className={`
-                          border-b hover:bg-gray-50
-                          ${pick.status === 'cut' ? 'text-red-500' : ''}
-                          ${pick.status === 'wd' ? 'text-orange-500' : ''}
-                        `}
-                      >
-                        <td className="py-2">{pick.tournamentName}</td>
-                        <td>{pick.golferName}</td>
-                        <td className="text-right">{pick.position}</td>
-                        <td className="text-right font-mono">
-                          {pick.points >= 0 ? '+' : ''}{pick.points}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
+            </Dialog.Panel>
+          </Transition.Child>
         </div>
       </Dialog>
     </Transition>

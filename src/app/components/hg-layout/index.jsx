@@ -29,41 +29,43 @@ const PageLayout = ({ header, footer, children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [pickTitle, setPickTitle] = useState(null);
 
-  /**
-   * Renders a placeholder list of widgets that will be rendered, only if no children are passed to the PageLayout component.
-   *
-   * @returns {JSX.Element} The rendered list of widgets.
-   */
+
+  // TODO: Refactor this.  Currently it hardcodes the widgets that are shown. We should make this more dynamic. More React-ful.  Fine for now, but needs work. 
+
   const renderChildren = () => {
     if (React.Children.count(children) === 0) {
       return (
-        <>
-          <WidgetContainer title={pickTitle}>
-            <Pick
-              setTitle={setPickTitle}
-            />
-          </WidgetContainer>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Left Column */}
+          <div className="flex flex-col gap-4">
+            <WidgetContainer title={pickTitle}>
+              <Pick setTitle={setPickTitle} />
+            </WidgetContainer>
 
-          <WidgetContainer title="League Leaderboard">
-            <Leaderboard />
-          </WidgetContainer>
+            <WidgetContainer title="League Leaderboard">
+              <Leaderboard />
+            </WidgetContainer>
+          </div>
 
-          <WidgetContainer title="Pick History">
-            {/* <PickHistory /> */}
-          </WidgetContainer>
-
-          {/* <WidgetContainer title="Scoring Rules">
-            <Scoresheet />
-          </WidgetContainer> */}
-        </>
+          {/* Right Column */}
+          <div className="h-full">
+            <WidgetContainer title="League Schedule" className="h-full">
+              <PickHistory />
+            </WidgetContainer>
+          </div>
+        </div>
       );
     }
 
-    return React.Children.map(children, (child) => (
-      <WidgetContainer title={child.props.title || "Default Title"}>
-        {child}
-      </WidgetContainer>
-    ));
+    return (
+      <div className="grid">
+        {React.Children.map(children, (child) => (
+          <WidgetContainer title={child.props.title || "Default Title"}>
+            {child}
+          </WidgetContainer>
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -77,7 +79,7 @@ const PageLayout = ({ header, footer, children }) => {
       </Header>
       <div className="body-container relative justify-end flex-grow">
         <Sidebar isOpen={isSidebarOpen} />
-        <main className="overflow-auto flex-grow h-auto  p-4 w-full max-w-[600px] max-h-100vh  md:mx-auto">
+        <main className="overflow-auto flex-grow h-auto p-4 w-full max-w-[1200px] max-h-100vh md:mx-auto">
           {renderChildren()}
         </main>
       </div>

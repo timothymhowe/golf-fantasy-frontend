@@ -6,7 +6,7 @@ import LeagueInvitePrompt from '../components/widgets/league-invite';
 import Pick from '../components/widgets/pick';
 import Leaderboard from '../components/widgets/leaderboard';
 import { useAuth } from '../components/auth-provider';
-
+import LoadingScreen from '../components/loading-screen';
 /**
  * Dashboard Home Page
  * Protected route that checks both authentication and league membership
@@ -51,15 +51,16 @@ export default function Home() {
   return (
     <GuardedPage>
       {isLoading ? (
-        <div className="flex justify-center items-center h-full">
-          Loading...
-        </div>
+        <LoadingScreen />
+        // <div className="flex justify-center items-center h-full">
+        //   Loading...
+        // </div>
       ) : (
         <PageLayout>
           {hasLeague ? (
             null  // PageLayout will show default widgets when no children
           ) : (
-            <div className="flex justify-center items-center h-full">
+            <div title={'League Invite'} className="flex justify-center items-center h-full">
               <LeagueInvitePrompt onSuccess={() => setHasLeague(true)} />
             </div>
           )}
