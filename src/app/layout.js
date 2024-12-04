@@ -3,6 +3,7 @@ import "./globals.css";
 // import { ClientProviders } from "./components/client-providers";
 import { FirebaseProvider } from "./components/firebase-provider";
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -45,8 +46,10 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={inter.className}>
         <FirebaseProvider>
-          {children}
+          <SpeedInsights />
           <Analytics />
+
+          {children}
         </FirebaseProvider>
       </body>
     </html>
