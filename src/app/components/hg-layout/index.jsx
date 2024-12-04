@@ -29,6 +29,9 @@ const PageLayout = ({ header, footer, children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [pickTitle, setPickTitle] = useState(null);
 
+
+  // TODO: Refactor this.  Currently it hardcodes the widgets that are shown. We should make this more dynamic. More React-ful.  Fine for now, but needs work. 
+
   const renderChildren = () => {
     if (React.Children.count(children) === 0) {
       return (
@@ -55,7 +58,7 @@ const PageLayout = ({ header, footer, children }) => {
     }
 
     return (
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid">
         {React.Children.map(children, (child) => (
           <WidgetContainer title={child.props.title || "Default Title"}>
             {child}

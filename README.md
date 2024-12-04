@@ -25,6 +25,8 @@ The Golf Fantasy website utilizes a MySQL database for storing and managing data
 
 
 
+
+
 ## More Info
 
 For more information on Next.js, Flask, Firebase Authentication, and Firebase Storage, refer to the following resources:
@@ -192,3 +194,9 @@ Current rules allow public read access to all profile images. Need to implement 
   - [ ] Add proper TypeScript types
   - [ ] Set up monitoring and logging
 
+### Newsletter
+
+- [ ] Implement a rich text viewer for the league commissioner to post newsletters
+  - Use a markdown renderer for rendering
+  - Create an editor for the commissioner
+  - Integrate with backend for storage
