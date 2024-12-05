@@ -13,6 +13,8 @@ const PickHistoryRow = ({ pick, weekNumber }) => {
   const [photoUrl, setPhotoUrl] = useState("/portrait_placeholder_75.png");
 
   useEffect(() => {
+    setPhotoUrl("/portrait_placeholder_75.png");
+    
     if (pick.golfer?.datagolf_id) {
       getGolferPhotoUrl(pick.golfer.datagolf_id).then(setPhotoUrl);
     }

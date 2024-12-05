@@ -4,6 +4,7 @@ import { Combobox, Transition } from "@headlessui/react";
 import GolferComboboxInput from "./input";
 
 import { useAuth } from "../../auth-provider";
+import { useLeague } from "../../league-context";
 import unidecode from "unidecode";
 
 /**
@@ -19,6 +20,7 @@ function AutocompleteGolfer({
   selectedTournament,
   user,
 }) {
+  const {selectedLeagueMemberId} = useLeague();
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [inputValue, setInputValue] = useState("");
@@ -34,7 +36,7 @@ function AutocompleteGolfer({
     
     if (user && selectedTournament?.id) {
       user.getIdToken().then(token => {
-        const url = `/api/tournament/dd?tournament_id=${selectedTournament.id}`;
+        const url = `/api/tournament/dd/${selectedLeagueMemberId}?tournament_id=${selectedTournament.id}`;
         console.log("Fetching from:", url);
         
         fetch(url, {

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import AutocompleteGolfer from "../../drop-down/golfer";
 import { useAuth } from "../../auth-provider";
+import { useLeague } from "../../league-context";
 import { set } from "date-fns";
 
 import { firestoreDb } from "../../../../config/firebaseConfig";
@@ -15,6 +16,7 @@ import { serverTimestamp, collection,addDoc } from "firebase/firestore";
 const PickForm = ({ weekData, setIsOpen, triggerSubmit }) => {
   const [selectedGolfer, setSelectedGolfer] = useState(null);
   const { auth } = useAuth();
+  const {selectedLeagueMemberId,selectedLeagueId} = useLeague();
   const user = auth.currentUser;
 
   /**
@@ -23,8 +25,8 @@ const PickForm = ({ weekData, setIsOpen, triggerSubmit }) => {
    * @param {number} golferId - Selected golfer's ID
    * @param {string} leagueId - League identifier (optional)
    */
-  const submitPick = async (tournamentId, golferId, leagueId = "19") => {
-    if (!user) return;
+  const submitPick = async (tournamentId, golferId) => {
+    if (!user || !selectedLeagueId) return;
 
     try {
       // Submit to Firestore with enhanced data
@@ -35,7 +37,8 @@ const PickForm = ({ weekData, setIsOpen, triggerSubmit }) => {
         user_id: user.uid,
         user_email: user.email,
         user_display_name: user.displayName || '',
-        league_id: leagueId,
+        league_id: selectedLeagueId,
+        league_member_id: selectedLeagueMemberId,
         tournament_id: tournamentId,
         tournament_name: weekData.tournament_name || '',
         golfer_id: golferId,
@@ -46,7 +49,7 @@ const PickForm = ({ weekData, setIsOpen, triggerSubmit }) => {
 
       // Submit to legacy database
       const token = await user.getIdToken();
-      const response = await fetch("/api/pick/submit", {
+      const response = await fetch(`/api/pick/submit`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -55,6 +58,7 @@ const PickForm = ({ weekData, setIsOpen, triggerSubmit }) => {
         body: JSON.stringify({
           tournament_id: tournamentId,
           golfer_id: golferId,
+          league_member_id: selectedLeagueMemberId,
         }),
       });
 

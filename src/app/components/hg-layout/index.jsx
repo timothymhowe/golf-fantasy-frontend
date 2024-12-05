@@ -12,6 +12,8 @@ import PickHistory from "../widgets/pick-history";
 
 import WidgetContainer from "../widget-container";
 
+import { LeagueProvider } from "../league-context";
+
 import "./layout-styles.css";
 import { set } from "date-fns";
 
@@ -35,6 +37,7 @@ const PageLayout = ({ header, footer, children }) => {
   const renderChildren = () => {
     if (React.Children.count(children) === 0) {
       return (
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Left Column */}
           <div className="flex flex-col gap-4">
@@ -69,6 +72,7 @@ const PageLayout = ({ header, footer, children }) => {
   };
 
   return (
+    <LeagueProvider>
     <div className="flex flex-col h-screen">
       <Header
         className="bg-gray-200 p-4 top-0 w-full z-10"
@@ -86,7 +90,8 @@ const PageLayout = ({ header, footer, children }) => {
       <Footer className="bg-gray-200 p-4 fixed bottom-0 w-full z-10">
         {footer}
       </Footer>
-    </div>
+      </div>
+    </LeagueProvider>
   );
 };
 

@@ -4,6 +4,7 @@ import FormModal from "../../form-modal";
 import SquircleImage from "../../avatar/squircle-image";
 
 import { useAuth } from "../../auth-provider";
+import { useLeague } from "../../league-context";
 
 import { zonedTimeToUtc, utcToZonedTime, format } from "date-fns-tz";
 import { set } from "date-fns";
@@ -14,16 +15,21 @@ import { formatTournamentName } from "../../../utils/formatTournamentName";
 
 const Pick = ({ setTitle, onChangePick }) => {
   const { user } = useAuth();
+  const { selectedLeagueId, selectedLeagueMemberId } = useLeague();
+
   const [weekData, setWeekData] = useState(null);
   const [pick, setPick] = useState(null);
   const [photoUrl, setPhotoUrl] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const [hasMadePick, setHasMadePick] = useState(false);
+  const [hasUpcomingTournament, setHasUpcomingTournament] = useState(true);
 
   const [submitTrigger, setSubmitTrigger] = useState(false);
 
   const placeholderImage = "/portrait_placeholder_75.png";
+
+  const [isRecentTournament, setIsRecentTournament] = useState(false);
 
   /**
    * Gets the golfer's photo URL from Firebase Storage
@@ -63,11 +69,11 @@ const Pick = ({ setTitle, onChangePick }) => {
   useEffect(() => {
     const controller = new AbortController();
 
-    if (user) {
+    if (user && selectedLeagueId) {
       console.log("Fetching tournament data...");
       user.getIdToken().then(token => {
         console.log("Got token, making API call...");
-        fetch("/api/tournament/upcoming", {
+        fetch(`/api/tournament/upcoming/${selectedLeagueId}`, {
           signal: controller.signal,
           headers: {
             Authorization: `Bearer ${token}`,
@@ -79,22 +85,33 @@ const Pick = ({ setTitle, onChangePick }) => {
           })
           .then((data) => {
             console.log("Tournament data received:", data);
-            setWeekData(data);
+            if (data.has_tournament === false) {
+              setHasUpcomingTournament(false);
+              if (data.most_recent) {
+                setIsRecentTournament(true);
+                setWeekData(data.most_recent);
+              } else {
+                setWeekData(null);
+              }
+            } else {
+              setHasUpcomingTournament(true);
+              setIsRecentTournament(false);
+              setWeekData(data);
+            }
             setIsLoading(false);
           })
           .catch((error) => {
             if (!controller.signal.aborted) {
               console.error("Error fetching tournament data:", error);
               setIsLoading(false);
+              setHasUpcomingTournament(false);
             }
           });
       });
-    } else {
-      console.log("No user available for API call");
     }
 
     return () => controller.abort();
-  }, [user]);
+  }, [user, selectedLeagueId]);
 
   useEffect(() => {
     updateTitle();
@@ -132,48 +149,82 @@ const Pick = ({ setTitle, onChangePick }) => {
   };
 
   useEffect(() => {
-    if (weekData) {
-      user.getIdToken().then(token => {
-        fetch(`/api/pick/current?tournament_id=${weekData.id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-          .then((response) => response.json())
-          .then(async (data) => {
-            console.log("Raw pick data:", data);  // See full pick data
-            console.log("DataGolf ID:", data?.datagolf_id);  // Check if datagolf_id exists
-            setPick(data);
-            
-            if (data && data.datagolf_id) {
-              try {
-                const url = await getGolferPhotoUrl(data.datagolf_id);
-                console.log("Firebase URL:", url);  // See what URL we get
-                setPhotoUrl(url);
-              } catch (error) {
-                console.error("Error getting photo URL:", error);
-                setPhotoUrl("/portrait_placeholder_75.png");
-              }
-            } else {
-              console.log("No datagolf_id found in pick data");  // Debug why we're using placeholder
+    if (!weekData || !selectedLeagueMemberId) {
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+    user.getIdToken().then(token => {
+      fetch(`/api/pick/current/${selectedLeagueMemberId}?tournament_id=${weekData.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => response.json())
+      .then(async (data) => {
+        console.log("Raw pick data:", data);
+
+        if (data.status === 'success' && data.has_pick) {
+          setPick(data);  // Set the entire data object as the pick
+          
+          if (data.datagolf_id) {
+            try {
+              const url = await getGolferPhotoUrl(data.datagolf_id);
+              setPhotoUrl(url);
+            } catch (error) {
+              console.error("Error getting photo URL:", error);
               setPhotoUrl("/portrait_placeholder_75.png");
             }
-            
-            setIsLoading(false);
-            if (!data?.error) {
-              setHasMadePick(true);
-            }
-          })
-          .catch((error) => {
-            console.error("Error fetching pick:", error);
+          } else {
             setPhotoUrl("/portrait_placeholder_75.png");
-            setIsLoading(false);
-          });
+          }
+          
+          setHasMadePick(true);
+        } else {
+          setPick(null);
+          setPhotoUrl("/portrait_placeholder_75.png");
+          setHasMadePick(false);
+        }
+        
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching pick:", error);
+        setPhotoUrl("/portrait_placeholder_75.png");
+        setIsLoading(false);
       });
-    }
-  }, [weekData, submitTrigger]);
+    });
+  }, [weekData, submitTrigger, selectedLeagueMemberId]);
 
-  if (!isLoading && pick && weekData) {
+  if (!isLoading && !hasUpcomingTournament && !weekData) {
+    return (
+      <div className="flex flex-col items-center justify-center p-6 text-center">
+        <div className="text-gray-600 text-lg mb-2">
+          No upcoming tournaments scheduled
+        </div>
+        <div className="text-gray-400 text-sm">
+          Check back later for the next tournament
+        </div>
+      </div>
+    );
+  }
+
+  const PickButton = () => (
+    <button
+      className={`${
+        isRecentTournament 
+          ? "bg-gray-400 cursor-not-allowed"
+          : "bg-green-500 hover:bg-green-700"
+      } text-white font-semibold py-2 px-4 border border-green-700 rounded shadow m-2 h-auto transition duration-500 ease-in-out`}
+      onClick={() => !isRecentTournament && setIsOpen(true)}
+      disabled={isRecentTournament}
+    >
+      {isRecentTournament ? "Tournament Complete" : "Change Pick"}
+    </button>
+  );
+
+  if (!isLoading && weekData) {
     const dateTimeString = `${weekData.start_date}T${weekData.start_time}`; // Combine date and time into a single string
     const dateTimeUtc = zonedTimeToUtc(dateTimeString, weekData.time_zone); // Convert to UTC
     const dateTime = utcToZonedTime(dateTimeUtc, "America/New_York"); // Convert to Eastern Time
@@ -196,12 +247,7 @@ const Pick = ({ setTitle, onChangePick }) => {
               </a>
             </div>
             <div className="flex items-end">
-              <button
-                className=" bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-2 h-auto%]"
-                onClick={() => setIsOpen(true)}
-              >
-                Make Pick
-              </button>
+              <PickButton />
               <FormModal
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}
@@ -242,12 +288,7 @@ const Pick = ({ setTitle, onChangePick }) => {
             </a>
           </div>
           <div className="flex items-end">
-            <button
-              className="bg-green-500 hover:bg-green-700 text-white font-semibold py-2 px-4 border border-green-700 rounded shadow m-2 h-auto transition duration-500 ease-in-out"
-              onClick={() => setIsOpen(true)}
-            >
-              Change Pick
-            </button>
+            <PickButton />
             <FormModal
               isOpen={isOpen}
               setIsOpen={setIsOpen}

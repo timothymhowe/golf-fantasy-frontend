@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../auth-provider';
+import { useLeague } from '../../league-context';
 // import { Tab } from "@headlessui/react";
 import PickHistoryTable from '../../../components/pick-history-modal/pick-history-table';
 
@@ -8,6 +9,7 @@ const PickHistory = () => {
   const [picks, setPicks] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const {selectedLeagueId} = useLeague();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -15,7 +17,8 @@ const PickHistory = () => {
     const fetchPicks = async () => {
       try {
         const token = await user.getIdToken();
-        const response = await fetch("/api/user/history", {
+        if (token && selectedLeagueId) {
+        const response = await fetch(`/api/user/history/${selectedLeagueId}`, {
           signal: controller.signal,
           headers: {
             Authorization: `Bearer ${token}`,
@@ -29,6 +32,7 @@ const PickHistory = () => {
         const data = await response.json();
         setPicks(data);
         setError(null);
+      }
       } catch (error) {
         if (!controller.signal.aborted) {
           console.error("Error fetching pick history:", error);
@@ -44,7 +48,7 @@ const PickHistory = () => {
     }
 
     return () => controller.abort();
-  }, [user]);
+  }, [user, selectedLeagueId]);
 
   if (isLoading) {
     return (
