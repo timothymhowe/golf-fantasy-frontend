@@ -10,6 +10,8 @@ import { set } from "date-fns";
 
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
 
+import { formatTournamentName } from "../../../utils/formatTournamentName";
+
 const Pick = ({ setTitle, onChangePick }) => {
   const { user } = useAuth();
   const [weekData, setWeekData] = useState(null);
@@ -109,7 +111,7 @@ const Pick = ({ setTitle, onChangePick }) => {
       setTitle(
         <div className="flex flex-col w-fit">
           <div className="text-green-700 font-bold whitespace-nowrap pr-4 text-xl mb-[-2px]">
-            {weekData.tournament_name}
+            {formatTournamentName(weekData.tournament_name)}
           </div>
           <div
             className="text-gray-600 italic text-sm mb-[-2px] text-left

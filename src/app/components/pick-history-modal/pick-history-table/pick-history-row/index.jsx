@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { getGolferPhotoUrl } from '../../../../utils/images';
+import { formatTournamentName } from '../../../../utils/formatTournamentName';
+
 
 const formatDate = (dateString) => {
   const [year, month, day] = dateString.split('-');
@@ -45,7 +47,7 @@ const PickHistoryRow = ({ pick, weekNumber }) => {
           <div className="min-w-0 leading-none">
             <div className="text-[11px] font-bold pb-0.5 flex items-center gap-1 leading-normal">
               <span className="truncate" title={pick.tournament.name}>
-                {pick.tournament.name}
+                {formatTournamentName(pick.tournament.name)}
               </span>
               {pick.tournament.is_major && 
                 <span className="flex-shrink-0 px-1 bg-gray-200 text-gray-700 rounded text-[9px] font-medium">
