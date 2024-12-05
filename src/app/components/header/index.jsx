@@ -45,7 +45,7 @@ const Header = ({isSidebarOpen, setIsSidebarOpen}) => {
       </div>
       
       <div className="flex items-center gap-4">
-        <a href="/dashboard" className="text-2xl font-bold">
+        <a href="/dashboard" className="text-2xl font-bold pl-4 leading-none text-nowrap">
           pick.golf <span className="text-sm opacity-75">(beta)</span>
         </a>
         {user && <LeagueSelector />}

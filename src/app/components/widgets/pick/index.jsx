@@ -216,11 +216,11 @@ const Pick = ({ setTitle, onChangePick }) => {
         isRecentTournament 
           ? "bg-gray-400 cursor-not-allowed"
           : "bg-green-500 hover:bg-green-700"
-      } text-white font-semibold py-2 px-4 border border-green-700 rounded shadow m-2 h-auto transition duration-500 ease-in-out`}
+      } text-white font-semibold py-2 px-2 border border-green-700 rounded shadow m-2 h-auto transition duration-500 ease-in-out`}
       onClick={() => !isRecentTournament && setIsOpen(true)}
       disabled={isRecentTournament}
     >
-      {isRecentTournament ? "Tournament Complete" : "Change Pick"}
+      {isRecentTournament ? "Locked" : "Change Pick"}
     </button>
   );
 
