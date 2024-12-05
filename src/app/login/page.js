@@ -23,8 +23,8 @@ const LoginPage = () => {
   return (
     <div className="min-h-screen bg-black flex flex-col items-center justify-center px-6">
       <div className="w-full max-w-[1000px] flex flex-col mb-4">
-        <h1 className="text-white text-6xl font-bold leading-[0.9]">
-          Golf Pick&apos;em (beta)
+      <h1 className="text-white text-6xl font-bold leading-[0.9]">
+          Golf Pick&apos;em<span className="text-lg text-gray-500">(beta)</span>
         </h1>
       </div>
       
@@ -42,7 +42,7 @@ const LoginPage = () => {
         </div>
       </HeroContainer>
 
-      <p className="text-gray-500 mt-8 text-sm">
+      <p className="text-gray-300 mt-8 text-sm italic">
         Need help? Email jmonahan@pgatour.com
       </p>
     </div>

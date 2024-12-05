@@ -7,7 +7,7 @@ const SignUpPage = () => {
     <div className="min-h-screen bg-black flex flex-col items-center justify-center px-6">
       <div className="w-full max-w-[1000px] flex flex-col mb-4">
         <h1 className="text-white text-6xl font-bold leading-[0.9]">
-          Golf Pick&apos;em (beta)
+          Golf Pick&apos;em<span className="text-lg text-gray-500">(beta)</span>
         </h1>
       </div>
 
