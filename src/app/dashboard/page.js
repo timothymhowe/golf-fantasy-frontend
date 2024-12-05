@@ -64,6 +64,7 @@ export default function Home() {
               <LeagueInvitePrompt onSuccess={() => setHasLeague(true)} />
             </div>
           )}
+          
         </PageLayout>
       )}
     </GuardedPage>

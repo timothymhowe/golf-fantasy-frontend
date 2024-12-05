@@ -21,17 +21,38 @@ export const useAuth = () => {
   const { auth } = useFirebase();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [leagues, setLeagues] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const token = await user.getIdToken();
+          const response = await fetch('/api/user/leagues', {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+          const data = await response.json();
+          if (data.success) {
+            setLeagues(data.data);
+          }
+        } catch (error) {
+          console.error('Error fetching user leagues:', error);
+          setLeagues([]);
+        }
+        setUser(user);
+      } else {
+        setUser(null);
+        setLeagues(null);
+      }
       setLoading(false);
     });
 
     return () => unsubscribe();
   }, [auth]);
 
-  return { user, loading, auth };
+  return { user, loading, auth, leagues };
 };
 
 /**
@@ -43,31 +64,14 @@ export const useAuth = () => {
  * @returns {JSX.Element} The authentication provider component.
  */
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const auth = getAuth(app);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, [auth]);
-
-  const value = {
-    user,
-    auth,
-    loading
-  };
+  const { user, loading, leagues } = useAuth();
 
   if (loading) {
     return <LoadingScreen />;
   }
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{ user, loading, leagues }}>
       {children}
     </AuthContext.Provider>
   );

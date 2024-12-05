@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../auth-provider";
+import { useLeague } from "../../league-context";
+
 import PickHistoryModal from '../../pick-history-modal';
 import Image from "next/image";
 
@@ -12,19 +14,24 @@ import Image from "next/image";
 
 const Leaderboard = () => {
   const { user, auth } = useAuth();
+  const {selectedLeagueId} = useLeague();
+
   const [leaderboard, setLeaderboard] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [selectedMember, setSelectedMember] = useState(null);
 
   useEffect(() => {
+
+
+
     const controller = new AbortController();
     
     // Only proceed if user is fully initialized
-    if (user?.getIdToken) {  // Check if user has required methods
+    if (user?.getIdToken && selectedLeagueId) {  // Check if user has required methods
       user.getIdToken().then(token => {
-        // Only make the fetch if we haven't been aborted
         if (!controller.signal.aborted) {
-          fetch("/api/league/scoreboard", {
+          // Update fetch URL to include selectedLeagueId
+          fetch(`/api/league/scoreboard/${selectedLeagueId}`, {
             signal: controller.signal,
             headers: {
               Authorization: `Bearer ${token}`,
@@ -32,7 +39,7 @@ const Leaderboard = () => {
           })
             .then((response) => response.json())
             .then((data) => {
-              if (!controller.signal.aborted) {  // Check again before setting state
+              if (!controller.signal.aborted && data.status === "success") {  // Add status check
                 setLeaderboard(data.data.leaderboard);
                 setIsLoaded(true);
               }
@@ -49,7 +56,7 @@ const Leaderboard = () => {
     return () => {
       controller.abort();
     };
-  }, [user?.uid]); // Only depend on user.uid instead of entire user object
+  }, [user?.uid, selectedLeagueId]); // Only depend on user.uid instead of entire user object
 
   return (
     <>
