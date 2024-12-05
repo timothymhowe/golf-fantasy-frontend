@@ -24,7 +24,7 @@ ChartJS.register(
 
 const PickHistoryGraph = ({ picks, containerHeight = "h-[50vh]" }) => {
   const pastPicks = picks.filter(pick => !pick.is_future);
-  const chronologicalPicks = [...pastPicks].reverse();
+  const chronologicalPicks = [...pastPicks];
   const cumulativePoints = chronologicalPicks.reduce((acc, pick, index) => {
     const previousTotal = index > 0 ? acc[index - 1] : 0;
     acc.push(previousTotal + pick.points);

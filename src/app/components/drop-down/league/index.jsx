@@ -32,7 +32,7 @@ const LeagueSelector = () => {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-3 py-1.5 text-white hover:bg-green-700/50 rounded-lg transition-colors"
       >
-        <span className="font-medium">
+        <span className="font-semibold text-sm">
           {selectedLeague?.league_name || 'Select League'}
         </span>
         <svg
