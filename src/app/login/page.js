@@ -42,7 +42,7 @@ const LoginPage = () => {
         </div>
       </HeroContainer>
 
-      <p className="text-gray-500 mt-8 text-sm">
+      <p className="text-gray-300 mt-8 text-sm italic">
         Need help? Email jmonahan@pgatour.com
       </p>
     </div>

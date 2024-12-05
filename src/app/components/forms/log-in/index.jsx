@@ -194,11 +194,11 @@ const LogInForm = () => {
 
       {/* Sign Up Link */}
       <div className="text-center pt-4 border-t border-white/20">
-        <p className="text-gray-400 text-sm">
+        <p className="text-gray-300 text-sm">
           Don&apos;t have an account?{' '}
           <button 
             onClick={handleSignupClick}
-            className="text-white hover:text-gray-300 transition-colors"
+            className="text-white hover:text-gray-300 transition-colors underline"
           >
             Sign up
           </button>

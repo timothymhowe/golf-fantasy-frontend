@@ -112,7 +112,7 @@ const Pick = ({ setTitle, onChangePick }) => {
             {weekData.tournament_name}
           </div>
           <div
-            className="text-gray-400 italic text-sm mb-[-2px] text-left
+            className="text-gray-600 italic text-sm mb-[-2px] text-left
           "
           >
             {weekData.course_name}
@@ -214,7 +214,7 @@ const Pick = ({ setTitle, onChangePick }) => {
           </div>
           <hr />
           <div className="flex flex-col justify-center items-center">
-            <div className="mt-2 text-xs italic text-gray-600 text-center">
+            <div className="mt-2 text-xs italic text-gray-500 text-center">
               Picks lock on {format(dateTime, "EEEEEEE, MM/dd/yyyy")} at{" "}
               {format(dateTime, "hh:mm a zzz")}
             </div>
@@ -235,7 +235,7 @@ const Pick = ({ setTitle, onChangePick }) => {
                 style={{ fontFamily: "Verdana, sans-serif" }}
               >
                 <div className="text-xl">{pick.last_name.toUpperCase()},</div>
-                <div className="text-gray-400 italic">{pick.first_name}</div>
+                <div className="text-gray-500 italic">{pick.first_name}</div>
               </div>
             </a>
           </div>
