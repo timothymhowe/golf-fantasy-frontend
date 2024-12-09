@@ -31,6 +31,9 @@ const Pick = ({ setTitle, onChangePick }) => {
 
   const [isRecentTournament, setIsRecentTournament] = useState(false);
 
+  // Add a new state to track if tournament data is fully loaded
+  const [isTournamentDataLoaded, setIsTournamentDataLoaded] = useState(false);
+
   /**
    * Gets the golfer's photo URL from Firebase Storage
    * Uses higher resolution 200x200 images for the pick display
@@ -68,9 +71,16 @@ const Pick = ({ setTitle, onChangePick }) => {
 
   useEffect(() => {
     const controller = new AbortController();
-
+    
+    // Clear all relevant state when league changes
+    setIsTournamentDataLoaded(false);
+    setWeekData(null);
+    setPick(null);
+    setPhotoUrl(placeholderImage);
+    setHasMadePick(false);
+    
     if (user && selectedLeagueId) {
-      console.log("Fetching tournament data...");
+      console.log("🏌️ Tournament fetch triggered by leagueId:", selectedLeagueId);
       user.getIdToken().then(token => {
         console.log("Got token, making API call...");
         fetch(`/api/tournament/upcoming/${selectedLeagueId}`, {
@@ -79,19 +89,16 @@ const Pick = ({ setTitle, onChangePick }) => {
             Authorization: `Bearer ${token}`,
           },
         })
-          .then((response) => {
-            console.log("API Response:", response.status);
-            return response.json();
-          })
+          .then((response) => response.json())
           .then((data) => {
-            console.log("Tournament data received:", data);
+            console.log("📅 Setting weekData:", data);
             if (data.has_tournament === false) {
               setHasUpcomingTournament(false);
               if (data.most_recent) {
                 setIsRecentTournament(true);
-                setWeekData(data.most_recent);
-              } else {
-                setWeekData(null);
+                if (data.most_recent.id) {
+                  setWeekData(data.most_recent);
+                }
               }
             } else {
               setHasUpcomingTournament(true);
@@ -99,18 +106,20 @@ const Pick = ({ setTitle, onChangePick }) => {
               setWeekData(data);
             }
             setIsLoading(false);
-          })
-          .catch((error) => {
-            if (!controller.signal.aborted) {
-              console.error("Error fetching tournament data:", error);
-              setIsLoading(false);
-              setHasUpcomingTournament(false);
-            }
+            setIsTournamentDataLoaded(true);
           });
       });
     }
 
-    return () => controller.abort();
+    return () => {
+      controller.abort();
+      // Clear state in cleanup
+      setIsTournamentDataLoaded(false);
+      setWeekData(null);
+      setPick(null);
+      setPhotoUrl(placeholderImage);
+      setHasMadePick(false);
+    };
   }, [user, selectedLeagueId]);
 
   useEffect(() => {
@@ -149,24 +158,40 @@ const Pick = ({ setTitle, onChangePick }) => {
   };
 
   useEffect(() => {
-    if (!weekData || !selectedLeagueMemberId) {
+    const controller = new AbortController();
+
+    if (!weekData || !selectedLeagueMemberId || !isTournamentDataLoaded) {
+      console.log("⛳ Pick fetch skipped - waiting for data:", { 
+        weekData: !!weekData, 
+        selectedLeagueMemberId,
+        isTournamentDataLoaded 
+      });
       setIsLoading(false);
       return;
     }
 
+    console.log("🎯 Pick fetch triggered:", {
+      weekDataId: weekData?.id,
+      leagueMemberId: selectedLeagueMemberId,
+      submitTrigger
+    });
+    
     setIsLoading(true);
-    user.getIdToken().then(token => {
-      fetch(`/api/pick/current/${selectedLeagueMemberId}?tournament_id=${weekData.id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => response.json())
-      .then(async (data) => {
+    
+    const fetchPick = async () => {
+      try {
+        const token = await user.getIdToken();
+        const response = await fetch(`/api/pick/current/${selectedLeagueMemberId}?tournament_id=${weekData.id}`, {
+          signal: controller.signal,  // Add abort signal to fetch
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await response.json();
         console.log("Raw pick data:", data);
 
         if (data.status === 'success' && data.has_pick) {
-          setPick(data);  // Set the entire data object as the pick
+          setPick(data);
           
           if (data.datagolf_id) {
             try {
@@ -174,28 +199,38 @@ const Pick = ({ setTitle, onChangePick }) => {
               setPhotoUrl(url);
             } catch (error) {
               console.error("Error getting photo URL:", error);
-              setPhotoUrl("/portrait_placeholder_75.png");
+              setPhotoUrl(placeholderImage);
             }
           } else {
-            setPhotoUrl("/portrait_placeholder_75.png");
+            setPhotoUrl(placeholderImage);
           }
           
           setHasMadePick(true);
         } else {
           setPick(null);
-          setPhotoUrl("/portrait_placeholder_75.png");
+          setPhotoUrl(placeholderImage);
           setHasMadePick(false);
         }
         
         setIsLoading(false);
-      })
-      .catch((error) => {
+      } catch (error) {
+        if (error.name === 'AbortError') {
+          console.log('Pick fetch aborted');
+          return;
+        }
         console.error("Error fetching pick:", error);
-        setPhotoUrl("/portrait_placeholder_75.png");
+        setPhotoUrl(placeholderImage);
         setIsLoading(false);
-      });
-    });
-  }, [weekData, submitTrigger, selectedLeagueMemberId]);
+      }
+    };
+
+    fetchPick();
+
+    return () => {
+      console.log('🚫 Aborting pick fetch');
+      controller.abort(); // Abort any in-flight requests when dependencies change
+    };
+  }, [weekData, submitTrigger, selectedLeagueMemberId, isTournamentDataLoaded]);
 
   if (!isLoading && !hasUpcomingTournament && !weekData) {
     return (
