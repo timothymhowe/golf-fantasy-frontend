@@ -119,7 +119,7 @@ const LeaguePicks = ({setTitle}) => {
               <th className="px-2 py-1 text-left w-[45%] sm:w-[35%]"></th>
               <th className="px-2 py-1 text-left w-[35%] sm:w-[25%]">Pick</th>
               <th className="hidden sm:table-cell px-2 py-1 text-center w-[15%]">Pos</th>
-              <th className="hidden sm:table-cell px-2 py-1 text-right w-[15%]">Score</th>
+              <th className="hidden sm:table-cell px-2 py-1 text-right w-[15%]">To Par</th>
               <th className="px-2 py-1 text-right w-[20%] sm:w-[10%]">Points</th>
             </tr>
           </thead>
