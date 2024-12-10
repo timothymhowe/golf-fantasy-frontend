@@ -112,63 +112,61 @@ const LeaguePicks = ({setTitle}) => {
 
   return (
     <div className="league-picks">
-      <div className="overflow-x-auto -mx-1">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead>
-            <tr className="text-xs text-gray-500 uppercase tracking-wider h-7">
-              <th className="px-2 py-1 text-left w-[45%] sm:w-[35%]"></th>
-              <th className="px-2 py-1 text-left w-[35%] sm:w-[25%]">Pick</th>
-              <th className="hidden sm:table-cell px-2 py-1 text-center w-[15%]">Pos</th>
-              <th className="hidden sm:table-cell px-2 py-1 text-right w-[15%]">To Par</th>
-              <th className="px-2 py-1 text-right w-[20%] sm:w-[10%]">Points</th>
+      <table className="w-full divide-y divide-gray-200">
+        <thead>
+          <tr className="text-xs text-gray-500 uppercase tracking-wider h-7">
+            <th className="px-2 py-1 text-left w-[35%]">Player</th>
+            <th className="px-2 py-1 text-left w-[35%]">Pick</th>
+            <th className="hidden sm:table-cell px-2 py-1 text-center w-[10%]">Pos</th>
+            <th className="hidden sm:table-cell px-2 py-1 text-right w-[10%]">Score</th>
+            <th className="px-2 py-1 text-right w-[10%]">Pts</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-100">
+          {picksData.picks.map((pick) => (
+            <tr key={pick.member.id} className="hover:bg-gray-50 h-8">
+              <td className="px-2 py-1 whitespace-nowrap">
+                <div className="flex items-center gap-1">
+                  <Image
+                    src={pick.member.avatar_url || "/portrait_placeholder_75.png"}
+                    alt=""
+                    width={16}
+                    height={16}
+                    className="rounded-full"
+                  />
+                  <span className="text-sm font-medium truncate">{pick.member.name}</span>
+                </div>
+              </td>
+              <td className="px-2 py-1 whitespace-nowrap">
+                {pick.pick ? (
+                  <span className="text-sm truncate">
+                    {pick.pick.golfer_first_name} {pick.pick.golfer_last_name}
+                  </span>
+                ) : (
+                  <span className="text-sm text-red-500 italic">No Pick</span>
+                )}
+              </td>
+              <td className="hidden sm:table-cell px-2 py-1 text-center whitespace-nowrap">
+                <span className="text-sm">
+                  {pick.pick?.position || '-'}
+                </span>
+              </td>
+              <td className="hidden sm:table-cell px-2 py-1 text-right whitespace-nowrap">
+                <span className="text-sm">
+                  {pick.pick?.score_to_par != null 
+                    ? (pick.pick.score_to_par > 0 ? '+' : '') + pick.pick.score_to_par
+                    : '-'}
+                </span>
+              </td>
+              <td className="px-2 py-1 text-right whitespace-nowrap">
+                <span className="text-sm font-medium">
+                  {pick.pick?.points != null ? pick.pick.points : '-'}
+                </span>
+              </td>
             </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {picksData.picks.map((pick) => (
-              <tr key={pick.member.id} className="hover:bg-gray-50 h-8">
-                <td className="px-2 py-1 whitespace-nowrap">
-                  <div className="flex items-center space-x-2">
-                    <Image
-                      src={pick.member.avatar_url || "/portrait_placeholder_75.png"}
-                      alt=""
-                      width={20}
-                      height={20}
-                      className="rounded-full"
-                    />
-                    <span className="text-sm font-medium truncate">{pick.member.name}</span>
-                  </div>
-                </td>
-                <td className="px-2 py-1 whitespace-nowrap">
-                  {pick.pick ? (
-                    <span className="text-sm truncate">
-                      {pick.pick.golfer_first_name} {pick.pick.golfer_last_name}
-                    </span>
-                  ) : (
-                    <span className="text-sm text-red-500 italic">No Pick</span>
-                  )}
-                </td>
-                <td className="hidden sm:table-cell px-2 py-1 text-center whitespace-nowrap">
-                  <span className="text-sm">
-                    {pick.pick?.position || '-'}
-                  </span>
-                </td>
-                <td className="hidden sm:table-cell px-2 py-1 text-right whitespace-nowrap">
-                  <span className="text-sm">
-                    {pick.pick?.score_to_par != null 
-                      ? (pick.pick.score_to_par > 0 ? '+' : '') + pick.pick.score_to_par
-                      : '-'}
-                  </span>
-                </td>
-                <td className="px-2 py-1 text-right whitespace-nowrap">
-                  <span className="text-sm font-medium">
-                    {pick.pick?.points != null ? pick.pick.points : '-'}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
