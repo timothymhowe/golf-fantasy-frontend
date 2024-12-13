@@ -9,6 +9,7 @@ import Pick from "../widgets/pick";
 import Leaderboard from "../widgets/leaderboard";
 import Scoresheet from "../widgets/scoresheet";
 import PickHistory from "../widgets/pick-history";
+import LeaguePicks from "../widgets/league-picks";
 
 import WidgetContainer from "../widget-container";
 
@@ -30,6 +31,7 @@ import { set } from "date-fns";
 const PageLayout = ({ header, footer, children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [pickTitle, setPickTitle] = useState(null);
+  const [leaguePicksTitle, setLeaguePicksTitle] = useState(null);
 
 
   // TODO: Refactor this.  Currently it hardcodes the widgets that are shown. We should make this more dynamic. More React-ful.  Fine for now, but needs work. 
@@ -45,15 +47,19 @@ const PageLayout = ({ header, footer, children }) => {
               <Pick setTitle={setPickTitle} />
             </WidgetContainer>
 
-            <WidgetContainer title="League Leaderboard">
+            <WidgetContainer title="League Leaderboard" defaultCollapsed={true}>
               <Leaderboard />
             </WidgetContainer>
           </div>
 
           {/* Right Column */}
-          <div className="h-full">
-            <WidgetContainer title="League Schedule" className="h-full">
+          <div className="flex flex-col gap-4">
+            <WidgetContainer title="League Schedule" defaultCollapsed={true}>
               <PickHistory />
+            </WidgetContainer>
+
+            <WidgetContainer title={leaguePicksTitle} defaultCollapsed={true}>
+              <LeaguePicks setTitle={setLeaguePicksTitle} />
             </WidgetContainer>
           </div>
         </div>

@@ -1,5 +1,7 @@
-
-.widget-container:hover{
+.widget-container {
     box-shadow: 1px 1px 1px 0px rgba(0,0,0,0.2);
+}
 
+.widget-body {
+    transition: max-height 0.3s ease-in-out, opacity 0.2s ease-in-out;
 }

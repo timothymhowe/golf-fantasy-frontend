@@ -26,13 +26,14 @@ const PickForm = ({ weekData, setIsOpen, triggerSubmit }) => {
    * @param {string} leagueId - League identifier (optional)
    */
   const submitPick = async (tournamentId, golferId) => {
-    if (!user || !selectedLeagueId) return;
+    if (!user || !selectedLeagueId) {
+      console.error('Missing required data:', { user, selectedLeagueId });
+      return;
+    }
 
     try {
-      // Submit to Firestore with enhanced data
-
-      //TODO: Fix golfer name to be full name, not currently populated.
-      const docRef = await addDoc(collection(firestoreDb, "Picks"), {
+      // Log the data being sent to Firestore
+      const pickData = {
         timestamp_utc: serverTimestamp(),
         user_id: user.uid,
         user_email: user.email,
@@ -44,7 +45,10 @@ const PickForm = ({ weekData, setIsOpen, triggerSubmit }) => {
         golfer_id: golferId,
         golfer_name: selectedGolfer.name || '',
         backup: true
-      });
+      };
+      console.log('Attempting to write to Firestore:', pickData);
+
+      const docRef = await addDoc(collection(firestoreDb, "Picks"), pickData);
       console.log("Firestore backup written with ID:", docRef.id);
 
       // Submit to legacy database

@@ -60,16 +60,16 @@ const Leaderboard = () => {
 
   return (
     <>
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden pb-2">
+      <div className="bg-white overflow-hidden">
         <div className="max-h-[350px] overflow-auto">
           <table className="w-full table-fixed text-sm">
-            <thead>
-              <tr className="bg-gray-50 border-b sticky top-0 h-7">
-                <th className="w-10 px-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                <th className="w-[40%] px-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                <th className="w-[20%] px-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Points</th>
-                <th className="w-[15%] px-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Wins</th>
-                <th className="w-[15%] px-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">No Pick</th>
+            <thead className="bg-gray-50">
+              <tr className="sticky top-0 h-7">
+                <th className="w-10 px-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">#</th>
+                <th className="w-[40%] px-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Name</th>
+                <th className="w-[20%] px-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Points</th>
+                <th className="w-[15%] px-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Wins</th>
+                <th className="w-[15%] px-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">No Pick</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
