@@ -65,15 +65,12 @@ const getGolferPhotoUrl = async (datagolf_id) => {
  * @returns {JSX.Element} The rendered DropdownItem component.
  */
 const DropdownItem = ({ item }) => {
-  console.log("DropdownItem received:", item);  // Debug log
-  
   const [photoUrl, setPhotoUrl] = useState("/portrait_placeholder_75.png");
-  const isPlayingInTournament = item?.is_playing_in_tournament ?? false;  // Add null check
-  const hasBeenPicked = item?.has_been_picked ?? false;  // Add null check
+  const isPlayingInTournament = item?.is_playing_in_tournament ?? false;
+  const hasBeenPicked = item?.has_been_picked ?? false;
   
   useEffect(() => {
-    console.log("DataGolf ID:", item?.datagolf_id);  // Debug log
-    if (item?.datagolf_id) {  // Add null check
+    if (item?.datagolf_id) {
       getGolferPhotoUrl(item.datagolf_id).then(setPhotoUrl);
     }
   }, [item?.datagolf_id]);
@@ -82,62 +79,36 @@ const DropdownItem = ({ item }) => {
     <Combobox.Option key={item.id} value={item} className={optionClasses}>
       <div
         className={contentClasses}
-        style={{ gridTemplateColumns: "auto 10fr 1fr 1fr" }}
+        style={{ 
+          gridTemplateColumns: "38px 1fr"
+        }}
       >
         <div className="h-[38px] w-[38px]">
           <Image 
-          width={100}
-          height={100}
+            width={100}
+            height={100}
             src={photoUrl} 
-            className={imageClasses} 
+            className={`${imageClasses} ${!isPlayingInTournament ? 'opacity-50 grayscale' : ''}`}
             alt={item.full_name}
-            loading="lazy"  // Add lazy loading for performance
+            loading="lazy"
           />
         </div>
-        <div
-          className={nameContainerClasses}
-          style={{ fontFamily: "Verdana, sans-serif" }}
-        >
-          <span
-            className={generateTextClasses(
-              lastNameClasses,
-              isPlayingInTournament,
-              hasBeenPicked
-            )}
-          >
+        <div className={nameContainerClasses}>
+          <span className={`
+            ${!isPlayingInTournament ? 'text-gray-400' : ''}
+            ${hasBeenPicked ? 'text-red-500' : ''}
+            ${lastNameClasses}
+          `}>
             {item.last_name.toUpperCase()},
           </span>
-          <span
-            className={generateTextClasses(
-              firstNameClasses,
-              isPlayingInTournament,
-              hasBeenPicked
-            )}
-          >
+          <span className={`
+            ${!isPlayingInTournament ? 'text-gray-400' : ''}
+            ${hasBeenPicked ? 'text-red-500' : ''}
+            ${firstNameClasses}
+          `}>
             {item.first_name}
           </span>
         </div>
-        {!isPlayingInTournament ? (
-            <a
-              data-tooltip-id="not-playing-tip"
-              data-tooltip-content="This golfer is not in the tournament field."
-              className="cursor-pointer mx-1 font-md"
-            >
-              ⚠️
-              <Tooltip id="not-playing-tip" />
-            </a>
-          ): (
-            <span className="mx-1">&nbsp;</span> 
-          )}
-        <a
-          data-tooltip-id="has-been-picked-tip"
-          data-tooltip-content="You've already picked this golfer before."
-          className="cursor-pointer  mx-1 font-md"
-        >
-          {/* TODO: Switch this back to being the correct boolean, from !isPlayingInTournament to hasBeenPicked  */}
-          {hasBeenPicked ? "🚫" : ""}
-          <Tooltip id="has-been-picked-tip" />
-        </a>
       </div>
     </Combobox.Option>
   );

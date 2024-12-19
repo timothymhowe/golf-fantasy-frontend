@@ -101,6 +101,21 @@ const PickForm = ({ weekData, setIsOpen, triggerSubmit }) => {
         user={user}
       />
 
+      {selectedGolfer && (
+        <div className="mt-4">
+          {!selectedGolfer.is_playing_in_tournament && (
+            <div className="text-amber-600 bg-amber-50 p-3 rounded-md mb-4">
+              ⚠️ Warning: {selectedGolfer.first_name} {selectedGolfer.last_name} is not currently in the tournament field
+            </div>
+          )}
+          {selectedGolfer.has_been_picked && (
+            <div className="text-red-600 bg-red-50 p-3 rounded-md mb-4">
+              ⚠️ Note: You have already picked this golfer in a previous tournament
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="flex justify-end">
         <button className={cancelClasses} type="button" onClick={handleCancel}>
           Cancel
@@ -110,7 +125,9 @@ const PickForm = ({ weekData, setIsOpen, triggerSubmit }) => {
           type="submit"
           onClick={handleSubmit}
         >
-          Submit
+          {selectedGolfer && (selectedGolfer.has_been_picked || !selectedGolfer.is_playing_in_tournament) 
+            ? "Submit Anyway" 
+            : "Submit"}
         </button>
       </div>
     </form>
@@ -120,15 +137,17 @@ const PickForm = ({ weekData, setIsOpen, triggerSubmit }) => {
 export default PickForm;
 const formClasses = "bg-white rounded px-8 pt-6 pb-8 mb-4";
 
-const cancelClasses =
-  "bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 mr-1 rounded focus:outline-none focus:shadow-outline mt-3";
-const submitClasses = (selectedGolfer) => {
-  const baseClasses =
-    " font-bold py-2 px-4 ml-1 rounded focus:outline-none focus:shadow-outline mt-3";
+const cancelClasses = 
+  "bg-white border border-red-400 text-red-500 hover:bg-red-50 font-bold py-2 px-4 mr-1 rounded focus:outline-none focus:shadow-outline mt-3";
 
-  if (selectedGolfer) {
-    return "bg-blue-500 hover:bg-blue-700 text-white" + baseClasses;
-  } else {
-    return "bg-gray-400 disabled text-gray-200" + baseClasses;
+const submitClasses = (selectedGolfer) => {
+  if (!selectedGolfer) {
+    return "bg-gray-400 text-gray-200 font-bold py-2 px-4 ml-1 rounded focus:outline-none focus:shadow-outline mt-3";
   }
+  
+  const hasWarning = selectedGolfer.has_been_picked || !selectedGolfer.is_playing_in_tournament;
+  
+  return hasWarning
+    ? "bg-red-500 hover:bg-red-600 text-white shadow-md hover:shadow-red-300/50 transition-all font-bold py-2 px-4 ml-1 rounded focus:outline-none focus:shadow-outline mt-3"
+    : "bg-blue-500 hover:bg-blue-600 text-white shadow-sm hover:shadow-blue-300/50 transition-all font-bold py-2 px-4 ml-1 rounded focus:outline-none focus:shadow-outline mt-3";
 };

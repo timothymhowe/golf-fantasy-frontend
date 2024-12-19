@@ -7,6 +7,7 @@ import PageLayout from '../../components/hg-layout';
 import GuardedPage from '../../components/guarded-page';
 import Image from 'next/image';
 import Avatar from '../../components/avatar';
+import WidgetContainer from '../../components/widget-container';
 
 /**
  * ProfileSettings Component
@@ -132,9 +133,9 @@ export default function ProfileSettings() {
   return (
     <GuardedPage>
       <PageLayout>
-        <div className="p-4">
+        <WidgetContainer title='Profile Settings' canCollapse={false} noMaxHeight={true}>
+        
           <div className="mx-auto max-w-2xl">
-            <h2 className="text-2xl font-bold mb-6">Profile Settings</h2>
             
             <div className="bg-white shadow rounded-lg p-6">
               <form className="space-y-6" onSubmit={handleSubmit}>
@@ -239,7 +240,7 @@ export default function ProfileSettings() {
               </form>
             </div>
           </div>
-        </div>
+        </WidgetContainer>
       </PageLayout>
     </GuardedPage>
   );

@@ -23,26 +23,26 @@ const LoginPage = () => {
   return (
     <div className="min-h-screen bg-black flex flex-col items-center justify-center px-6">
       <div className="w-full max-w-[1000px] flex flex-col mb-4">
-      <h1 className="text-white text-6xl font-bold leading-[0.9]">
-          Golf Pick&apos;em<span className="text-lg text-gray-500">(beta)</span>
+      <h1 className="text-white text-6xl font-bold leading-[0.9] mt-6 tracking-tighter">
+          pick.golf<span className="text-lg text-gray-500 tracking-tight">(beta)</span>
         </h1>
       </div>
       
       <HeroContainer>
         <div className="flex flex-col items-center w-full">
           <FloatingText>
-            <p className="text-gray-800 text-xl mb-10 italic font-medium text-center max-w-md">
+            <p className="text-gray-800 text-xl mb-4 italic font-medium text-center max-w-md tracking-tight">
               {subtitle}
             </p>
           </FloatingText>
 
-          <div className="w-full max-w-xs backdrop-blur-md bg-black/30 p-8 rounded-2xl shadow-2xl border border-white/20">
+          <div className="w-full max-w-xs backdrop-blur-md bg-black/30 p-6 rounded-2xl shadow-2xl border border-white/20">
             <LogInForm />
           </div>
         </div>
       </HeroContainer>
 
-      <p className="text-gray-300 mt-8 text-sm italic">
+      <p className="text-gray-300 mt-8 mb-8 text-sm italic">
         Need help? Email jmonahan@pgatour.com
       </p>
     </div>

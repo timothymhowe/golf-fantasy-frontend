@@ -8,7 +8,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "Golf Pick'em (beta)",
+  title: "pick.golf(beta)",
   description: "Show me what you got.",
   openGraph: {
     title: 'Fantasy Golf',

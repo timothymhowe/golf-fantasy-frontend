@@ -33,13 +33,11 @@ const PageLayout = ({ header, footer, children }) => {
   const [pickTitle, setPickTitle] = useState(null);
   const [leaguePicksTitle, setLeaguePicksTitle] = useState(null);
 
-
-  // TODO: Refactor this.  Currently it hardcodes the widgets that are shown. We should make this more dynamic. More React-ful.  Fine for now, but needs work. 
+  // TODO: Refactor this.  Currently it hardcodes the widgets that are shown. We should make this more dynamic. More React-ful.  Fine for now, but needs work.
 
   const renderChildren = () => {
     if (React.Children.count(children) === 0) {
       return (
-
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Left Column */}
           <div className="flex flex-col gap-4">
@@ -69,9 +67,9 @@ const PageLayout = ({ header, footer, children }) => {
     return (
       <div className="grid">
         {React.Children.map(children, (child) => (
-          <WidgetContainer title={child.props.title || "Default Title"}>
-            {child}
-          </WidgetContainer>
+          <div>
+          {child}
+          </div>
         ))}
       </div>
     );
@@ -79,23 +77,23 @@ const PageLayout = ({ header, footer, children }) => {
 
   return (
     <LeagueProvider>
-    <div className="flex flex-col h-screen">
-      <Header
-        className="bg-gray-200 p-4 top-0 w-full z-10"
-        isSidebarOpen={isSidebarOpen}
-        setIsSidebarOpen={setIsSidebarOpen}
-      >
-        {header}
-      </Header>
-      <div className="body-container relative justify-end flex-grow">
-        <Sidebar isOpen={isSidebarOpen} />
-        <main className="overflow-auto flex-grow h-auto p-4 w-full max-w-[1200px] max-h-100vh md:mx-auto">
-          {renderChildren()}
-        </main>
-      </div>
-      <Footer className="bg-gray-200 p-4 fixed bottom-0 w-full z-10">
-        {footer}
-      </Footer>
+      <div className="flex flex-col h-screen">
+        <Header
+          className="bg-gray-200 p-4 top-0 w-full z-10"
+          isSidebarOpen={isSidebarOpen}
+          setIsSidebarOpen={setIsSidebarOpen}
+        >
+          {header}
+        </Header>
+        <div className="body-container relative justify-end flex-grow">
+          <Sidebar isOpen={isSidebarOpen} />
+          <main className="overflow-auto flex-grow h-auto p-4 w-full max-w-[1200px] max-h-100vh md:mx-auto">
+            {renderChildren()}
+          </main>
+        </div>
+        <Footer className="bg-gray-200 p-4 fixed bottom-0 w-full z-10">
+          {footer}
+        </Footer>
       </div>
     </LeagueProvider>
   );
