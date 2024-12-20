@@ -8,7 +8,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "Golf Pick'em (beta)",
+  title: "pick.golf(beta)",
   description: "Show me what you got.",
   openGraph: {
     title: 'Fantasy Golf',
@@ -38,8 +38,8 @@ export const metadata = {
       { rel: 'icon', url: '/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
       { rel: 'icon', url: '/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' },
     ]
-  }
-}
+  },
+};
 
 export default function RootLayout({ children }) {
   return (

@@ -60,12 +60,12 @@ const Leaderboard = () => {
 
   return (
     <>
-      <div className="bg-white overflow-hidden">
+      <div className="overflow-hidden">
         <div className="max-h-[350px] overflow-auto">
           <table className="w-full table-fixed text-sm">
             <thead className="bg-gray-50">
               <tr className="sticky top-0 h-7">
-                <th className="w-10 px-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">#</th>
+                <th className="w-10 px-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Rk.</th>
                 <th className="w-[40%] px-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Name</th>
                 <th className="w-[20%] px-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Points</th>
                 <th className="w-[15%] px-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Wins</th>
@@ -129,15 +129,7 @@ const Leaderboard = () => {
           </table>
         </div>
       </div>
-      <div className="hidden md:block">
-        <Image
-          width={100}
-          height={100}
-          src="/scoring.png"
-          alt="Scoring"
-          className="object-contain w-full h-full"
-        />
-      </div>
+      
       
       <PickHistoryModal 
         isOpen={!!selectedMember}

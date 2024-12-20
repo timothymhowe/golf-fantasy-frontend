@@ -116,7 +116,7 @@ const LogInForm = () => {
   };
 
   return (
-    <div className="flex flex-col space-y-6 w-full">
+    <div className="flex flex-col space-y-1 w-full">
       {/* Google SSO Button */}
       <button
         type="button"
@@ -135,7 +135,7 @@ const LogInForm = () => {
       </div>
 
       {/* Email/Password Form */}
-      <form onSubmit={handleLogin} className="flex flex-col space-y-4">
+      <form onSubmit={handleLogin} className="flex flex-col space-y-4 py-1">
         <div className={FIELD_CONTAINER_CLASS}>
           <label htmlFor="email" className={LOGIN_LABEL_CLASS}>
             Email
