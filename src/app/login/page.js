@@ -10,7 +10,7 @@ const SUBTITLES = [
   "If its not Poa Annua, I won't play on it.",
   "The Cognizant Classic in the Palm Beaches isn't going to watch itself.",
   "You definitely could have gone pro.",
-  "Zach Johnson was a great Ryder Cup captain, actually.",
+  "Zach Johnson was a great captain, actually.",
   "Sponsored by P.F. Chang's."
 ];
 
@@ -21,17 +21,17 @@ const LoginPage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center px-6">
+    <div className="min-h-screen bg-black flex flex-col items-center justify-center px-6 pb-[env(safe-area-inset-bottom,24px)]">
       <div className="w-full max-w-[1000px] flex flex-col mb-4">
-      <h1 className="text-white text-6xl font-bold leading-[0.9] mt-6 tracking-tighter">
+        <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold leading-[0.9] mt-6 tracking-tighter bg-gradient-to-t from-gray-400 to-white bg-clip-text text-transparent pb-2 md:pb-3 lg:pb-4">
           pick.golf<span className="text-lg text-gray-500 tracking-tight">(beta)</span>
         </h1>
       </div>
       
       <HeroContainer>
-        <div className="flex flex-col items-center w-full">
+        <div className="flex flex-col items-center w-full gap-4">
           <FloatingText>
-            <p className="text-gray-800 text-xl mb-4 italic font-medium text-center max-w-md tracking-tight">
+            <p className="text-gray-800 text-lg md:text-xl italic font-medium text-center max-w-[280px] md:max-w-md tracking-tight">
               {subtitle}
             </p>
           </FloatingText>
