@@ -38,8 +38,8 @@ export const metadata = {
       { rel: 'icon', url: '/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
       { rel: 'icon', url: '/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' },
     ]
-  }
-}
+  },
+};
 
 export default function RootLayout({ children }) {
   return (
