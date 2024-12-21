@@ -132,17 +132,13 @@ const Pick = ({ setTitle, onChangePick }) => {
    * TODO: THIS IS AWFUL PROBABLY?  LIKE A STATE WIDGET GARBO?  F THAT
    */
   const updateTitle = () => {
-    // TODO: Fix this awful trash you garbage human
     if (weekData) {
       setTitle(
         <div className="flex flex-col w-fit">
-          <div className="text-green-700 font-bold whitespace-nowrap pr-4 text-xl mb-[-2px]">
+          <div className="text-white/90 font-bold whitespace-nowrap pr-4 text-xl mb-[-2px]">
             {formatTournamentName(weekData.tournament_name)}
           </div>
-          <div
-            className="text-gray-600 italic text-sm mb-[-2px] text-left
-          "
-          >
+          <div className="text-white/60 italic text-sm mb-[-2px] text-left">
             {weekData.course_name}
           </div>
         </div>
@@ -150,8 +146,8 @@ const Pick = ({ setTitle, onChangePick }) => {
     } else {
       setTitle(
         <div className="flex flex-col justify-left animate-pulse">
-          <div className="h-6 bg-gray-300 rounded w-3/4 mb-2"></div>
-          <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+          <div className="h-6 bg-white/10 rounded w-3/4 mb-2"></div>
+          <div className="h-4 bg-white/10 rounded w-1/2"></div>
         </div>
       );
     }
@@ -235,10 +231,10 @@ const Pick = ({ setTitle, onChangePick }) => {
   if (!isLoading && !hasUpcomingTournament && !weekData) {
     return (
       <div className="flex flex-col items-center justify-center p-6 text-center">
-        <div className="text-gray-600 text-lg mb-2">
+        <div className="text-white/70 text-lg mb-2">
           No upcoming tournaments scheduled
         </div>
-        <div className="text-gray-400 text-sm">
+        <div className="text-white/50 text-sm">
           Check back later for the next tournament
         </div>
       </div>
@@ -249,9 +245,9 @@ const Pick = ({ setTitle, onChangePick }) => {
     <button
       className={`${
         isRecentTournament 
-          ? "bg-gray-400 cursor-not-allowed"
-          : "bg-green-500 hover:bg-green-700"
-      } text-white font-semibold py-2 px-2 border border-green-700 rounded shadow m-2 h-auto transition duration-500 ease-in-out`}
+          ? "bg-white/10 cursor-not-allowed"
+          : "bg-[#BFFF00] hover:bg-[#9FDF00] text-black"
+      } font-semibold py-2 px-2 rounded shadow m-2 h-auto transition duration-500 ease-in-out`}
       onClick={() => !isRecentTournament && setIsOpen(true)}
       disabled={isRecentTournament}
     >
@@ -260,44 +256,32 @@ const Pick = ({ setTitle, onChangePick }) => {
   );
 
   if (!isLoading && weekData) {
-    const dateTimeString = `${weekData.start_date}T${weekData.start_time}`; // Combine date and time into a single string
-    const dateTimeUtc = zonedTimeToUtc(dateTimeString, weekData.time_zone); // Convert to UTC
-    const dateTime = utcToZonedTime(dateTimeUtc, "America/New_York"); // Convert to Eastern Time
+    const dateTimeString = `${weekData.start_date}T${weekData.start_time}`;
+    const dateTimeUtc = zonedTimeToUtc(dateTimeString, weekData.time_zone);
+    const dateTime = utcToZonedTime(dateTimeUtc, "America/New_York");
 
     if (!hasMadePick) {
       return (
-        <div className="flex flex-col w-[100%] ">
+        <div className="flex flex-col w-[100%]">
           <div className="w-[100%] relative h-fill flex flex-row justify-between">
             <div className="mb-2">
               <a className="flex flex-row pl-2 items-top">
                 <SquircleImage photoUrl={photoUrl} />
-
-                <div
-                  className="w-auto h-fill text-left ml-2 flex flex-col align-bottom mt-1"
-                  style={{ fontFamily: "Verdana, sans-serif" }}
-                >
-                  {/* <div className="text-xl">{pick.last_name.toUpperCase()},</div>
-                    <div className="text-gray-400 italic">{pick.first_name}</div> */}
+                <div className="w-auto h-fill text-left ml-2 flex flex-col align-bottom mt-1 text-white/90">
+                  {/* Empty state - no pick made yet */}
                 </div>
               </a>
             </div>
             <div className="flex items-end">
               <PickButton />
-              <FormModal
-                isOpen={isOpen}
-                setIsOpen={setIsOpen}
-                onClose={() => setIsOpen(false)}
-                
-              >  <PickForm
-              weekData={weekData}
-              setIsOpen={setIsOpen}
-              triggerSubmit={() => setSubmitTrigger(!submitTrigger)}
-            ></PickForm></FormModal>
+              <FormModal isOpen={isOpen} setIsOpen={setIsOpen} onClose={() => setIsOpen(false)}>
+                <PickForm weekData={weekData} setIsOpen={setIsOpen} triggerSubmit={() => setSubmitTrigger(!submitTrigger)} />
+              </FormModal>
             </div>
           </div>
-          <hr />
+          <hr className="border-white/10" />
           <div className="flex flex-col justify-center items-center">
-            <div className="mt-2 text-xs italic text-gray-500 text-center">
+            <div className="mt-2 text-xs italic text-white/50 text-center">
               Picks lock on {format(dateTime, "EEEEEEE, MM/dd/yyyy")} at{" "}
               {format(dateTime, "hh:mm a zzz")}
             </div>
@@ -307,38 +291,27 @@ const Pick = ({ setTitle, onChangePick }) => {
     }
 
     return (
-      <div className="flex flex-col w-[100%] ">
+      <div className="flex flex-col w-[100%]">
         <div className="w-[100%] relative h-fill flex flex-row justify-between">
           <div className="mb-2">
             <a className="flex flex-row pl-2 items-top">
               <SquircleImage photoUrl={photoUrl} />
-
-              <div
-                className="w-auto h-fill text-left ml-2 flex flex-col align-bottom mt-1"
-                style={{ fontFamily: "Verdana, sans-serif" }}
-              >
-                <div className="text-xl">{pick.last_name.toUpperCase()},</div>
-                <div className="text-gray-500 italic">{pick.first_name}</div>
+              <div className="w-auto h-fill text-left ml-2 flex flex-col align-bottom mt-1">
+                <div className="text-xl text-white/90">{pick.last_name.toUpperCase()},</div>
+                <div className="text-white/60 italic">{pick.first_name}</div>
               </div>
             </a>
           </div>
           <div className="flex items-end">
             <PickButton />
-            <FormModal
-              isOpen={isOpen}
-              setIsOpen={setIsOpen}
-              onClose={() => setIsOpen(false)}
-            > 
-            <PickForm
-            weekData={weekData}
-            setIsOpen={setIsOpen}
-            triggerSubmit={() => setSubmitTrigger(!submitTrigger)}
-          ></PickForm></FormModal>
+            <FormModal isOpen={isOpen} setIsOpen={setIsOpen} onClose={() => setIsOpen(false)}>
+              <PickForm weekData={weekData} setIsOpen={setIsOpen} triggerSubmit={() => setSubmitTrigger(!submitTrigger)} />
+            </FormModal>
           </div>
         </div>
-        <hr />
+        <hr className="border-white/10" />
         <div className="flex flex-col justify-center items-center">
-          <div className="mt-2 text-xs italic text-gray-600 text-center">
+          <div className="mt-2 text-xs italic text-white/50 text-center">
             Picks lock on {format(dateTime, "EEEEEEE, MM/dd/yyyy")} at{" "}
             {format(dateTime, "hh:mm a zzz")}
           </div>
@@ -351,10 +324,10 @@ const Pick = ({ setTitle, onChangePick }) => {
         <div className="w-[100%] relative h-fill flex flex-row justify-between">
           <div className="mb-2">
             <a className="flex flex-row pl-2 items-top">
-              <div className="h-24 w-24 bg-gray-300 rounded-[31px] mr-2"></div>
+              <div className="h-24 w-24 bg-white/10 rounded-[31px] mr-2"></div>
               <div className="w-auto h-fill text-left ml-2 flex flex-col align-bottom mt-1">
-                <div className="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
-                <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+                <div className="h-4 bg-white/10 rounded w-3/4 mb-2"></div>
+                <div className="h-4 bg-white/10 rounded w-1/2"></div>
               </div>
             </a>
           </div>

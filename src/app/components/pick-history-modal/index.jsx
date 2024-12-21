@@ -76,7 +76,7 @@ const PickHistoryModal = ({ isOpen, onClose, memberId, memberName }) => {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-black bg-opacity-50" aria-hidden="true" />
+            <div className="fixed inset-0 bg-black bg-opacity-75" aria-hidden="true" />
           </Transition.Child>
 
           <Transition.Child
@@ -88,24 +88,24 @@ const PickHistoryModal = ({ isOpen, onClose, memberId, memberName }) => {
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <Dialog.Panel className="w-full max-w-2xl transform rounded-xl bg-white shadow-2xl transition-all relative">
+            <Dialog.Panel className="w-full max-w-2xl transform rounded-xl bg-[#1a1a1a] shadow-2xl transition-all relative">
               <button
                 onClick={handleClose}
-                className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-100 transition-colors duration-200"
+                className="absolute top-4 right-4 p-1 rounded-full hover:bg-white/5 transition-colors duration-200"
                 aria-label="Close dialog"
               >
-                <XMarkIcon className="h-6 w-6 text-gray-500" />
+                <XMarkIcon className="h-6 w-6 text-gray-400" />
               </button>
 
-              <div className="p-6 text-gray-800">
+              <div className="p-6">
                 <div className="mb-4">
-                  <h2>Pick History</h2>
-                  <h3 className="text-2xl font-bold mb-2">{memberName}</h3>
+                  <h2 className="text-gray-400 text-sm">Pick History</h2>
+                  <h3 className="text-gray-200 text-2xl font-bold mb-2">{memberName}</h3>
                   
                   <div className="flex items-center h-6">
                     {!isLoading && pickHistory && (
                       <label className="inline-flex items-center cursor-pointer">
-                        <span className={`mr-2 text-xs ${!showGraph ? 'text-blue-600 font-medium' : 'text-gray-500'}`}>
+                        <span className={`mr-2 text-xs ${!showGraph ? 'text-[#BFFF00] font-medium' : 'text-gray-400'}`}>
                           Table
                         </span>
                         <div className="relative">
@@ -115,9 +115,17 @@ const PickHistoryModal = ({ isOpen, onClose, memberId, memberName }) => {
                             onChange={(e) => setShowGraph(e.target.checked)}
                             className="sr-only peer"
                           />
-                          <div className="w-8 h-4 bg-gray-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-300 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-full" />
+                          <div className="w-8 h-4 bg-white/10 rounded-full peer 
+                            peer-focus:ring-2 peer-focus:ring-[#BFFF00]/25 
+                            peer-checked:bg-[#BFFF00]/25 
+                            after:content-[''] after:absolute after:top-[2px] 
+                            after:left-[2px] after:bg-gray-200 after:rounded-full 
+                            after:h-3 after:w-3 after:transition-all 
+                            peer-checked:after:translate-x-full 
+                            peer-checked:after:bg-[#BFFF00]" 
+                          />
                         </div>
-                        <span className={`ml-2 text-xs ${showGraph ? 'text-blue-600 font-medium' : 'text-gray-500'}`}>
+                        <span className={`ml-2 text-xs ${showGraph ? 'text-[#BFFF00] font-medium' : 'text-gray-400'}`}>
                           Graph
                         </span>
                       </label>
@@ -128,7 +136,7 @@ const PickHistoryModal = ({ isOpen, onClose, memberId, memberName }) => {
                 <div className="h-[50vh]">
                   {isLoading ? (
                     <div className="h-full flex justify-center items-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#BFFF00]" />
                     </div>
                   ) : pickHistory && (
                     <>

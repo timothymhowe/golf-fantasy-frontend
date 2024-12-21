@@ -8,17 +8,19 @@ const WidgetContainer = ({ title, children, defaultExpanded = true }) => {
 
   return (
     <div className="
-      rounded-sm bg-white
-      border border-gray-200
-      hover:shadow-lg
+      rounded-sm bg-[#1a1a1a]
+      border border-white/10
+      backdrop-blur-sm
+      hover:border-white/20
       transition-all duration-200
+      mx-1
     ">
-      <div className={`bg-gray-100
-        ${showBorder ? 'border-b border-gray-200' : ''} 
+      <div className={`bg-black/20
+        ${showBorder ? 'border-b border-white/10' : ''} 
         rounded-t-sm px-2 py-1
         flex items-center justify-between
       `}>
-        <h2 className="text-gray-600 font-semibold text-lg">
+        <h2 className="text-white/90 font-medium text-base">
           {title}
         </h2>
         <motion.button
@@ -30,14 +32,14 @@ const WidgetContainer = ({ title, children, defaultExpanded = true }) => {
             damping: 30
           }}
           className={`
-            p-1 m-1 border rounded-full
-            hover:bg-gray-200
-            hover:border-gray-300
-            text-gray-600
+            p-1 m-1 border border-white/10 rounded-full
+            hover:bg-white/5
+            hover:border-white/20
+            text-white/70
           `}
           aria-label="Toggle widget"
         >
-          <ChevronDownIcon className="h-5 w-5" />
+          <ChevronDownIcon className="h-4 w-4" />
         </motion.button>
       </div>
       
@@ -65,7 +67,7 @@ const WidgetContainer = ({ title, children, defaultExpanded = true }) => {
             delay: isExpanded ? 0.1 : 0 
           }
         }}
-        className="bg-white rounded-b-sm px-[0.1em]"
+        className="px-[0.1em] rounded-b-sm"
         style={{ overflow: 'hidden' }}
       >
         {children}
