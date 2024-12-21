@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useLeague } from '../../league-context';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const LeagueSelector = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,7 +11,6 @@ const LeagueSelector = () => {
 
   const selectedLeague = leagues?.find(league => league.league_id === selectedLeagueId);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -22,61 +22,71 @@ const LeagueSelector = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  if (!leagues || leagues.length === 0) {
-    return null;
-  }
+  if (!leagues || leagues.length === 0) return null;
 
   return (
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-1.5 text-white hover:bg-green-700/50 rounded-lg transition-colors"
+        className="flex items-center gap-2 px-4 py-1.5 text-gray-300 hover:text-white transition-colors"
       >
-        <span className="font-semibold text-sm">
+        <span className="text-sm">
           {selectedLeague?.league_name || 'Select League'}
         </span>
-        <svg
+        <motion.svg
           xmlns="http://www.w3.org/2000/svg"
-          className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className="h-4 w-4"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.15 }}
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </motion.svg>
       </button>
 
-      {isOpen && (
-        <div className="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
-          <div className="py-1" role="menu" aria-orientation="vertical">
-            {leagues.map((league) => (
-              <button
-                key={league.league_id}
-                onClick={() => {
-                  setSelectedLeagueId(league.league_id);
-                  setIsOpen(false);
-                }}
-                className={`w-full text-left px-4 py-2 text-sm ${
-                  selectedLeagueId === league.league_id
-                    ? 'bg-green-50 text-green-900'
-                    : 'text-gray-700 hover:bg-gray-100'
-                }`}
-                role="menuitem"
-              >
-                <span className="block truncate">{league.league_name}</span>
-                {league.is_active && (
-                  <span className="text-xs text-green-600 ml-2">Active</span>
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -5 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -5 }}
+            transition={{ duration: 0.1 }}
+            className="absolute right-0 mt-1 w-48 rounded-lg bg-black/90 backdrop-blur-sm shadow-lg ring-1 ring-white/10"
+          >
+            <div className="py-1" role="menu">
+              {leagues.map((league, index) => (
+                <motion.button
+                  key={league.league_id}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: index * 0.03 }}
+                  onClick={() => {
+                    setSelectedLeagueId(league.league_id);
+                    setIsOpen(false);
+                  }}
+                  className={`w-full text-left px-4 py-2 text-sm transition-colors
+                    ${selectedLeagueId === league.league_id
+                      ? 'text-[#BFFF00] bg-white/5'
+                      : 'text-gray-300 hover:text-white hover:bg-white/5'
+                    }`}
+                  role="menuitem"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="truncate">{league.league_name}</span>
+                    {league.is_active && (
+                      <span className="text-xs text-grey-500 italic">
+                        Active
+                      </span>
+                    )}
+                  </div>
+                </motion.button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
