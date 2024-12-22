@@ -64,3 +64,35 @@ const Header = ({ isSidebarOpen, setIsSidebarOpen }) => {
 };
 
 export default Header;
+
+
+export const SkeletonHeader = () => {
+  return (
+    <div className="h-18 px-2 pb-2 pt-3 bg-[#2d2d2d] relative">
+      <header 
+        className="h-14 rounded-md relative mx-auto shadow-md"
+        style={{
+          background: 'linear-gradient(to bottom, #1a1a1a 0%, black 100%)'
+        }}
+      >
+        {/* Header content */}
+        <div className="relative flex items-center h-full px-4 z-[100]">
+          {/* Left: Disabled Menu Button */}
+          <div className="p-2 rounded-lg opacity-50">
+            <Bars3Icon className="h-5 w-5 text-gray-400" />
+          </div>
+
+          {/* Center: League Selector Placeholder */}
+          <div className="flex-grow flex justify-center relative">
+            <div className="h-8 w-48 rounded-lg bg-white/5" />
+          </div>
+
+          {/* Right: Logo */}
+          <div className="flex items-center">
+            <Logo logoSize={40} />
+          </div>
+        </div>
+      </header>
+    </div>
+  );
+};

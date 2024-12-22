@@ -1,8 +1,9 @@
 "use client";
 import React from "react";
 import { useState } from "react";
-import Header from "../header";
+import Header, { SkeletonHeader } from "../header";
 import Footer from "../footer";
+import {Logo} from "../logo";
 
 import Sidebar from "../sidebar";
 import Pick from "../widgets/pick";
@@ -102,5 +103,26 @@ const PageLayout = ({ header, footer, children }) => {
     </LeagueProvider>
   );
 };
+
+export function SkeletonLayout({ children }) {
+  return (
+    <div className="min-h-screen flex flex-col">
+      {/* Header */}
+      <SkeletonHeader />
+      
+      <div className="flex-grow flex relative body-container">
+        {/* Main content */}
+        <div className="flex-grow overflow-x-hidden">
+          <main className="pt-1 px-2 pb-4 w-full max-w-[1200px] mx-auto relative z-10">
+            {children}
+          </main>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <Footer />
+    </div>
+  );
+}
 
 export default PageLayout;

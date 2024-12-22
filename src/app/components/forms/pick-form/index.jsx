@@ -93,10 +93,10 @@ const PickForm = ({ weekData, setIsOpen, triggerSubmit }) => {
   };
 
   return (
-    <form className="w-full max-w-md mx-auto px-2 py-6" onSubmit={handleSubmit}>
+    <form className="w-full max-w-md mx-auto px-2 py-2" onSubmit={handleSubmit}>
       <div className="mb-6">
-        <h2 className="text-gray-400 text-sm">Make Pick</h2>
-        <h3 className="text-gray-200 text-xl font-bold mb-4 truncate">{weekData.tournament_name}</h3>
+        <h3 className="text-gray-200 text-xl font-bold truncate typography-tight">{weekData.tournament_name}</h3>
+        <h4 className="text-gray-300 text-md italic font-bold mb-4 mt-[-0.5vh] truncate">{weekData.course_name}</h4>
         
         <AutocompleteGolfer
           selectedGolfer={selectedGolfer}
@@ -106,22 +106,25 @@ const PickForm = ({ weekData, setIsOpen, triggerSubmit }) => {
         />
       </div>
 
-      {selectedGolfer && (
-        <div className="mb-6">
-          {!selectedGolfer.is_playing_in_tournament && (
-            <div className="text-orange-400 bg-orange-400/10 border border-orange-400/20 
-                          px-3 py-2 rounded-lg mb-3 text-sm">
-              ⚠️ {selectedGolfer.first_name} {selectedGolfer.last_name} is not in the field
-            </div>
-          )}
-          {selectedGolfer.has_been_picked && (
-            <div className="text-red-400 bg-red-400/10 border border-red-400/20 
-                          px-3 py-2 rounded-lg mb-3 text-sm">
-              ⚠️ You have already picked this golfer
-            </div>
-          )}
-        </div>
-      )}
+      {/* Spacer for warning messages */}
+      <div className="mb-6" style={{ minHeight: '3rem' }}>
+        {selectedGolfer && (
+          <>
+            {!selectedGolfer.is_playing_in_tournament && (
+              <div className="text-orange-400 bg-orange-400/10 border border-orange-400/20 
+                            px-3 py-2 rounded-lg mb-3 text-sm">
+                ⚠️ {selectedGolfer.first_name} {selectedGolfer.last_name} is not in the field
+              </div>
+            )}
+            {selectedGolfer.has_been_picked && (
+              <div className="text-red-400 bg-red-400/10 border border-red-400/20 
+                            px-3 py-2 rounded-lg mb-3 text-sm">
+                ⚠️ You have already picked this golfer
+              </div>
+            )}
+          </>
+        )}
+      </div>
 
       <div className="flex justify-end gap-2">
         <button 

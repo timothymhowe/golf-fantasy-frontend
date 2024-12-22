@@ -52,9 +52,7 @@ export default function Home() {
     <GuardedPage>
       {isLoading ? (
         <LoadingScreen />
-        // <div className="flex justify-center items-center h-full">
-        //   Loading...
-        // </div>
+   
       ) : (
         <PageLayout>
           {hasLeague ? (
