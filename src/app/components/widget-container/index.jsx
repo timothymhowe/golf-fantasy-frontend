@@ -8,12 +8,11 @@ const WidgetContainer = ({ title, children, defaultExpanded = true }) => {
 
   return (
     <div className="
-      rounded-sm bg-[#1a1a1a]
+      rounded-md bg-[#1a1a1a]
       border border-white/10
       backdrop-blur-sm
-      hover:border-white/20
+      hover:border-[#BFFF00]/50
       transition-all duration-200
-      mx-1
     ">
       <div className={`bg-black/20
         ${showBorder ? 'border-b border-white/10' : ''} 

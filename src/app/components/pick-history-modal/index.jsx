@@ -66,7 +66,7 @@ const PickHistoryModal = ({ isOpen, onClose, memberId, memberName }) => {
   return (
     <Transition show={isOpen} as={Fragment} afterLeave={handleAfterLeave}>
       <Dialog as="div" className="fixed inset-0 z-50 overflow-y-auto" onClose={handleClose}>
-        <div className="flex min-h-screen items-center justify-center p-4">
+        <div className="flex min-h-screen items-center justify-center p-2">
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -97,8 +97,8 @@ const PickHistoryModal = ({ isOpen, onClose, memberId, memberName }) => {
                 <XMarkIcon className="h-6 w-6 text-gray-400" />
               </button>
 
-              <div className="p-6">
-                <div className="mb-4">
+              <div className="p-2">
+                <div className="mb-4 px-2">
                   <h2 className="text-gray-400 text-sm">Pick History</h2>
                   <h3 className="text-gray-200 text-2xl font-bold mb-2">{memberName}</h3>
                   
@@ -141,7 +141,10 @@ const PickHistoryModal = ({ isOpen, onClose, memberId, memberName }) => {
                   ) : pickHistory && (
                     <>
                       {!showGraph ? (
-                        <PickHistoryTable picks={pickHistory.picks} />
+                        <PickHistoryTable 
+                          picks={pickHistory.picks} 
+                          maxHeight="calc(50vh - 16px)"  // subtract some padding to prevent overflow
+                        />
                       ) : (
                         <PickHistoryGraph picks={pickHistory.picks} />
                       )}

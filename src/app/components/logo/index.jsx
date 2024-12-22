@@ -11,6 +11,7 @@ export function Logo({ className = '', logoSize = 120 }) {
         height: logoSize,
         aspectRatio: '1/1',
       }}
+      onContextMenu={(e) => e.preventDefault()}
     >
       <div className="relative w-full h-full">
         <Image
@@ -20,6 +21,7 @@ export function Logo({ className = '', logoSize = 120 }) {
           width={logoSize}
           height={logoSize}
           priority
+          draggable="false"
         />
         <div 
           className="absolute inset-0 w-full h-full"
@@ -48,6 +50,7 @@ export function Logo({ className = '', logoSize = 120 }) {
         width={logoSize}
         height={logoSize}
         priority
+        draggable="false"
       />
       <div 
         className="absolute inset-0 w-full h-full"
@@ -59,6 +62,7 @@ export function Logo({ className = '', logoSize = 120 }) {
           width={logoSize}
           height={logoSize}
           priority
+          draggable="false"
         />
         <div 
           className="peer absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-1/3 h-1/3 hover:cursor-pointer"

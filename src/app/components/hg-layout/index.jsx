@@ -77,7 +77,7 @@ const PageLayout = ({ header, footer, children }) => {
     <LeagueProvider>
       <div className="min-h-screen flex flex-col">
         <Header
-          className="bg-gray-200 px-4 w-full z-10"
+          className="bg-gray-200 px-2 w-full z-10"
           isSidebarOpen={isSidebarOpen}
           setIsSidebarOpen={setIsSidebarOpen}
         >
@@ -89,7 +89,7 @@ const PageLayout = ({ header, footer, children }) => {
           
           {/* Main content */}
           <div className="flex-grow overflow-x-hidden">
-            <main className="pt-1 px-4 pb-4 w-full max-w-[1200px] mx-auto relative z-10">
+            <main className="pt-1 px-2 pb-4 w-full max-w-[1200px] mx-auto relative z-10">
               {renderChildren()}
             </main>
           </div>

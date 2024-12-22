@@ -24,10 +24,10 @@ const PickHistoryRow = ({ pick, weekNumber }) => {
     <tr className={`
       border-b border-white/10 h-8 transition-colors text-gray-400
       ${pick.is_future ? 'text-gray-500 italic' : ''}
-      ${pick.pick_status?.is_no_pick ? 'text-red-400' : ''}
+      ${pick.pick_status?.is_no_pick ? 'text-red-400 ' : ''}
       ${pick.pick_status?.is_duplicate_pick ? 'text-orange-400' : ''}
       ${!pick.is_future && pick.result?.result === '1' 
-        ? 'bg-[#BFFF00]/5 hover:bg-[#BFFF00]/10' 
+        ? 'text-[#FFD700] bg-[#FFD700]/25 hover:bg-[#FFD700]/30' 
         : 'hover:bg-white/5'
       }
     `}>

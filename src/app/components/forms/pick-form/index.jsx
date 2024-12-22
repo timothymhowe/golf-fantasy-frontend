@@ -93,37 +93,60 @@ const PickForm = ({ weekData, setIsOpen, triggerSubmit }) => {
   };
 
   return (
-    <form className={formClasses} onSubmit={handleSubmit}>
-      <AutocompleteGolfer
-        selectedGolfer={selectedGolfer}
-        setSelectedGolfer={setSelectedGolfer}
-        selectedTournament={weekData}
-        user={user}
-      />
+    <form className="w-full max-w-md mx-auto px-2 py-6" onSubmit={handleSubmit}>
+      <div className="mb-6">
+        <h2 className="text-gray-400 text-sm">Make Pick</h2>
+        <h3 className="text-gray-200 text-xl font-bold mb-4 truncate">{weekData.tournament_name}</h3>
+        
+        <AutocompleteGolfer
+          selectedGolfer={selectedGolfer}
+          setSelectedGolfer={setSelectedGolfer}
+          selectedTournament={weekData}
+          user={user}
+        />
+      </div>
 
       {selectedGolfer && (
-        <div className="mt-4">
+        <div className="mb-6">
           {!selectedGolfer.is_playing_in_tournament && (
-            <div className="text-amber-600 bg-amber-50 p-3 rounded-md mb-4">
-              ⚠️ Warning: {selectedGolfer.first_name} {selectedGolfer.last_name} is not currently in the tournament field
+            <div className="text-orange-400 bg-orange-400/10 border border-orange-400/20 
+                          px-3 py-2 rounded-lg mb-3 text-sm">
+              ⚠️ {selectedGolfer.first_name} {selectedGolfer.last_name} is not in the field
             </div>
           )}
           {selectedGolfer.has_been_picked && (
-            <div className="text-red-600 bg-red-50 p-3 rounded-md mb-4">
-              ⚠️ Note: You have already picked this golfer in a previous tournament
+            <div className="text-red-400 bg-red-400/10 border border-red-400/20 
+                          px-3 py-2 rounded-lg mb-3 text-sm">
+              ⚠️ You've already picked this golfer
             </div>
           )}
         </div>
       )}
 
-      <div className="flex justify-end">
-        <button className={cancelClasses} type="button" onClick={handleCancel}>
+      <div className="flex justify-end gap-2">
+        <button 
+          type="button" 
+          onClick={handleCancel}
+          className="px-4 py-2 rounded-lg text-sm font-medium
+                     text-white/70 hover:text-white/90
+                     border border-white/10 hover:border-white/20
+                     transition-colors duration-200"
+        >
           Cancel
         </button>
         <button
-          className={submitClasses(selectedGolfer)}
           type="submit"
-          onClick={handleSubmit}
+          disabled={!selectedGolfer}
+          className={`
+            px-4 py-2 rounded-lg text-sm font-medium
+            transition-all duration-200
+            ${!selectedGolfer 
+              ? 'bg-white/5 text-white/30 cursor-not-allowed' 
+              : selectedGolfer.has_been_picked || !selectedGolfer.is_playing_in_tournament
+                ? 'bg-red-500/80 hover:bg-red-500 text-white'
+                : 'bg-[#BFFF00]/80 hover:bg-[#BFFF00] text-black'
+            }
+          `}
         >
           {selectedGolfer && (selectedGolfer.has_been_picked || !selectedGolfer.is_playing_in_tournament) 
             ? "Submit Anyway" 
@@ -135,19 +158,3 @@ const PickForm = ({ weekData, setIsOpen, triggerSubmit }) => {
 };
 
 export default PickForm;
-const formClasses = "bg-white rounded px-8 pt-6 pb-8 mb-4";
-
-const cancelClasses = 
-  "bg-white border border-red-400 text-red-500 hover:bg-red-50 font-bold py-2 px-4 mr-1 rounded focus:outline-none focus:shadow-outline mt-3";
-
-const submitClasses = (selectedGolfer) => {
-  if (!selectedGolfer) {
-    return "bg-gray-400 text-gray-200 font-bold py-2 px-4 ml-1 rounded focus:outline-none focus:shadow-outline mt-3";
-  }
-  
-  const hasWarning = selectedGolfer.has_been_picked || !selectedGolfer.is_playing_in_tournament;
-  
-  return hasWarning
-    ? "bg-red-500 hover:bg-red-600 text-white shadow-md hover:shadow-red-300/50 transition-all font-bold py-2 px-4 ml-1 rounded focus:outline-none focus:shadow-outline mt-3"
-    : "bg-blue-500 hover:bg-blue-600 text-white shadow-sm hover:shadow-blue-300/50 transition-all font-bold py-2 px-4 ml-1 rounded focus:outline-none focus:shadow-outline mt-3";
-};

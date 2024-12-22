@@ -22,9 +22,9 @@ const Header = ({ isSidebarOpen, setIsSidebarOpen }) => {
   return (
     <>
       {/* Spacer div with margin for the floating header */}
-      <div className="h-20 px-4 pt-3 bg-[#2d2d2d] relative">
+      <div className="h-18 px-2 pb-2 pt-3 bg-[#2d2d2d] relative">
         <header 
-          className="h-14 rounded-xl relative mx-auto shadow-md"
+          className="h-14 rounded-md relative mx-auto shadow-md"
           style={{
             background: 'linear-gradient(to bottom, #1a1a1a 0%, black 100%)'
           }}

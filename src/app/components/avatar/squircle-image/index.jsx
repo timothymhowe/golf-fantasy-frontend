@@ -88,7 +88,6 @@ const SquircleImage = ({
             clipPath: "url(#squircle)",
             backgroundImage:
               "linear-gradient(to right, rgba(70,70,70,0.8), rgba(30,30,30,0.8))",
-            filter: "drop-shadow(0 0 2px rgba(255,255,255,0.15))",
           }}
           onError={handleError}
         />

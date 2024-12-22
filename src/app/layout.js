@@ -9,11 +9,6 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata = {
   title: "pick.golf",
   description: "Show me what you got.",
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    viewportFit: 'cover',
-  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',

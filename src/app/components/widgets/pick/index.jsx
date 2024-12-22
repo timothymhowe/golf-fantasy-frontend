@@ -310,8 +310,8 @@ const Pick = ({ setTitle, onChangePick }) => {
           </div>
         </div>
         <hr className="border-white/10" />
-        <div className="flex flex-col justify-center items-center">
-          <div className="mt-2 text-xs italic text-white/50 text-center">
+        <div className="flex flex-col justify-center items-center py-1">
+          <div className="text-xs italic text-white/50 text-center">
             Picks lock on {format(dateTime, "EEEEEEE, MM/dd/yyyy")} at{" "}
             {format(dateTime, "hh:mm a zzz")}
           </div>
