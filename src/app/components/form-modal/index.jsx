@@ -4,8 +4,8 @@ import { Fragment } from 'react';
 const FormModal = ({ isOpen, setIsOpen, children, onClose }) => {
   return (
     <Transition show={isOpen} as={Fragment}>
-      <Dialog as="div" className="fixed inset-0 z-50 overflow-y-auto" onClose={onClose}>
-        <div className="flex min-h-screen items-center justify-center p-4">
+      <Dialog as="div" className="fixed inset-0 z-[150] overflow-y-auto" onClose={onClose}>
+        <div className="flex min-h-screen items-start justify-center px-2" style={{ marginTop: '2vh' }}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -15,7 +15,7 @@ const FormModal = ({ isOpen, setIsOpen, children, onClose }) => {
             leaveFrom="opacity-50"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-black bg-opacity-75" aria-hidden="true" />
+            <div className="fixed inset-0 bg-black bg-opacity-75 z-[140]" aria-hidden="true" />
           </Transition.Child>
 
           <Transition.Child
@@ -27,7 +27,7 @@ const FormModal = ({ isOpen, setIsOpen, children, onClose }) => {
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <Dialog.Panel className="inline-block w-full max-w-xl transform rounded-xl bg-[#1a1a1a] shadow-2xl transition-all">
+            <Dialog.Panel className="inline-block w-full max-w-xl transform rounded-xl bg-[#1a1a1a] shadow-2xl transition-all z-[150]">
               {children}
             </Dialog.Panel>
           </Transition.Child>
