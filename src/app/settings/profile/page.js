@@ -8,6 +8,8 @@ import GuardedPage from '../../components/guarded-page';
 import Image from 'next/image';
 import Avatar from '../../components/avatar';
 import WidgetContainer from '../../components/widget-container';
+import { PencilIcon } from '@heroicons/react/24/solid';
+
 
 /**
  * ProfileSettings Component
@@ -134,112 +136,166 @@ export default function ProfileSettings() {
     <GuardedPage>
       <PageLayout>
         <WidgetContainer title='Profile Settings' canCollapse={false} noMaxHeight={true}>
-        
-          <div className="mx-auto max-w-2xl">
-            
-            <div className="bg-white shadow rounded-lg p-6">
-              <form className="space-y-6" onSubmit={handleSubmit}>
-
-
-                {/* Profile Image Section */}
-                <div className="flex flex-col items-center space-y-4">
-                  <div 
-                    onClick={handleImageClick}
-                    className="relative w-32 h-32 rounded-full overflow-hidden cursor-pointer group ring-2 ring-white shadow-2xl"
-                  >
-                    {imagePreview ? (
-                      <div className="relative w-32 h-32 rounded-full overflow-hidden">
-                        <Image
-                          src={imagePreview}
-                          alt="Profile"
-                          fill
-                          className="object-cover rounded-full"
-                          sizes="(max-width: 128px) 100vw, 128px"
-                        />
-                      </div>
-                    ) : (
-                      <div className="w-full h-full bg-gray-200 flex items-center justify-center rounded-full">
-                        <span className="text-gray-400">No Image</span>
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
-                      <span className="text-white text-sm">Change Photo</span>
+          <form className="w-full max-w-md mx-auto px-2 py-6" onSubmit={handleSubmit}>
+            {/* Profile Image */}
+            <div className="flex flex-col items-center mb-8">
+              <div className="relative">
+                <div 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-32 h-32 rounded-full overflow-hidden cursor-pointer 
+                            group border border-white/10 hover:border-white/20 transition-colors"
+                >
+                  {imagePreview ? (
+                    <Image
+                      src={imagePreview}
+                      alt="Profile"
+                      fill
+                      className="object-cover rounded-full border-2 border-white/10 hover"
+                      sizes="128px"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-black/40 flex items-center justify-center">
+                      <span className="text-white/30">No Image</span>
                     </div>
+                  )}
+                  {/* Hover Overlay */}
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center rounded-full
+                                opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-white/90 text-sm">Change Photo</span>
                   </div>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="hidden"
-                  />
                 </div>
-
-                {/* Form Fields */}
-                <div>
-                  <label htmlFor="displayName" className="block text-sm font-medium text-gray-700">
-                    Display Name
-                  </label>
-                  <input
-                    id="displayName"
-                    name="displayName"
-                    type="text"
-                    value={formData.displayName}
-                    onChange={(e) => setFormData(prev => ({ ...prev, displayName: e.target.value }))}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                  />
+                {/* Edit Badge */}
+                <div className="absolute -top-[-5px] -right-[-5px] bg-black/75 rounded-full p-1.5
+                              border border-white/10 group-hover:border-[#BFFF00]/50
+                              transition-colors duration-200 z-10 cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+                  <PencilIcon className="h-3.5 w-3.5 text-white/70 group-hover:text-[#BFFF00]" />
                 </div>
-
-                <div>
-                  <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
-                    First Name
-                  </label>
-                  <input
-                    id="firstName"
-                    name="firstName"
-                    type="text"
-                    value={formData.firstName}
-                    onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
-                    Last Name
-                  </label>
-                  <input
-                    id="lastName"
-                    name="lastName"
-                    type="text"
-                    value={formData.lastName}
-                    onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                  />
-                </div>
-
-                {/* Status Message */}
-                {message.text && (
-                  <div className={`rounded-md p-4 ${
-                    message.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
-                  }`}>
-                    {message.text}
-                  </div>
-                )}
-
-                {/* Submit Button */}
-                <div className="flex justify-end">
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isLoading ? 'Updating...' : 'Update Profile'}
-                  </button>
-                </div>
-              </form>
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="hidden"
+              />
             </div>
-          </div>
+
+            {/* Form Fields */}
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="displayName" className="block text-sm text-white/70 mb-1">
+                  Display Name
+                </label>
+                <input
+                  id="displayName"
+                  name="displayName"
+                  type="text"
+                  value={formData.displayName}
+                  onChange={(e) => setFormData(prev => ({ ...prev, displayName: e.target.value }))}
+                  className="w-full py-3 px-4 
+                            bg-black/40 
+                            text-white/90 
+                            placeholder:text-white/30
+                            border border-white/10
+                            hover:border-white/20
+                            focus:border-[#BFFF00]/50
+                            focus:ring-1 
+                            focus:ring-[#BFFF00]/20
+                            rounded-lg
+                            transition-colors
+                            duration-200
+                            font-[Verdana]
+                            text-lg
+                            outline-none"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="firstName" className="block text-sm text-white/70 mb-1">
+                  First Name
+                </label>
+                <input
+                  id="firstName"
+                  name="firstName"
+                  type="text"
+                  value={formData.firstName}
+                  onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
+                  className="w-full py-3 px-4 
+                            bg-black/40 
+                            text-white/90 
+                            placeholder:text-white/30
+                            border border-white/10
+                            hover:border-white/20
+                            focus:border-[#BFFF00]/50
+                            focus:ring-1 
+                            focus:ring-[#BFFF00]/20
+                            rounded-lg
+                            transition-colors
+                            duration-200
+                            font-[Verdana]
+                            text-lg
+                            outline-none"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="lastName" className="block text-sm text-white/70 mb-1">
+                  Last Name
+                </label>
+                <input
+                  id="lastName"
+                  name="lastName"
+                  type="text"
+                  value={formData.lastName}
+                  onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
+                  className="w-full py-3 px-4 
+                            bg-black/40 
+                            text-white/90 
+                            placeholder:text-white/30
+                            border border-white/10
+                            hover:border-white/20
+                            focus:border-[#BFFF00]/50
+                            focus:ring-1 
+                            focus:ring-[#BFFF00]/20
+                            rounded-lg
+                            transition-colors
+                            duration-200
+                            font-[Verdana]
+                            text-lg
+                            outline-none"
+                />
+              </div>
+            </div>
+
+            {/* Status Message */}
+            {message.text && (
+              <div className={`mt-6 px-3 py-2 rounded-lg text-sm ${
+                message.type === 'success' 
+                  ? 'text-[#BFFF00] bg-[#BFFF00]/10 border border-[#BFFF00]/20'
+                  : 'text-red-500 bg-red-500/10 border border-red-500/20'
+              }`}>
+                {message.text}
+              </div>
+            )}
+
+            {/* Submit Button */}
+            <div className="flex justify-end mt-6">
+              <button
+                type="submit"
+                disabled={isLoading}
+                className={`
+                  px-4 py-2 rounded-lg text-sm font-medium
+                  transition-all duration-200
+                  ${isLoading 
+                    ? 'bg-white/5 text-white/30 cursor-not-allowed border border-white/10' 
+                    : 'bg-black/40 text-gray-200 border border-[#BFFF00]/50 hover:border-[#BFFF00] hover:bg-[#BFFF00]/10'
+                  }
+                `}
+              >
+                {isLoading ? 'Updating...' : 'Update Profile'}
+              </button>
+            </div>
+          </form>
         </WidgetContainer>
       </PageLayout>
     </GuardedPage>
