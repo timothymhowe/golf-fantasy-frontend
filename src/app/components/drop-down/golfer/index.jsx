@@ -24,6 +24,7 @@ function AutocompleteGolfer({
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [inputValue, setInputValue] = useState("");
+  const [displayOptions, setDisplayOptions] = useState(false);
 
   /**
    * Fetches golfer data when tournament and user are available
@@ -89,33 +90,23 @@ function AutocompleteGolfer({
             setInputValue={setInputValue}
             selectedGolfer={selectedGolfer}
             setSelectedGolfer={setSelectedGolfer}
+            setDisplayOptions={setDisplayOptions}
           />
-          {/* Only show options when data is loaded and available */}
-          {!isLoading && filteredGolfers.length > 0 && (
-            <Transition
-              enter="transition duration-100 ease-out"
-              enterFrom="transform scale-95 opacity-0"
-              enterTo="transform scale-100 opacity-100"
-              leave="transition duration-75 ease-out"
-              leaveFrom="transform scale-100 opacity-100"
-              leaveTo="transform scale-95 opacity-0"
-            >
-              <Combobox.Options className={optionsContainerClassName}>
-                {console.log("Rendering options with:", filteredGolfers)}
-                <div className={headerClasses}>
-                  <span title="">Name</span>
-                  <span title="Is this golfer registered to play this week?">
-                    Entered?
-                  </span>
-                  <span title="Have you picked this golfer previously?">
-                    Picked?
-                  </span>
-                </div>
-                {filteredGolfers.map((item) => (
-                  <DropdownItem key={item.id} item={item} />
-                ))}
-              </Combobox.Options>
-            </Transition>
+          {!isLoading && filteredGolfers.length > 0 && displayOptions && (
+            <Combobox.Options static className={optionsContainerClassName}>
+              <div className={headerClasses}>
+                <span title="">Name</span>
+                <span title="Is this golfer registered to play this week?">
+                  Entered?
+                </span>
+                <span title="Have you picked this golfer previously?">
+                  Picked?
+                </span>
+              </div>
+              {filteredGolfers.map((item) => (
+                <DropdownItem key={item.id} item={item} />
+              ))}
+            </Combobox.Options>
           )}
         </div>
       </Combobox>

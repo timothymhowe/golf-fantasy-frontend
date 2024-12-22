@@ -40,15 +40,17 @@ const Sidebar = ({ isOpen }) => {
 
   return (
     <nav
-      className={`px-4 left-0 z-50 bg-gradient-to-b from-white to-gray-50/95
+      className={`px-4 left-0 z-50 
+                  bg-[#1a1a1a]/95 backdrop-blur-sm
                   transform transition-transform duration-200 ease-in-out 
-                  ${isOpen ? "translate-x-0 open" : "-translate-x-full"} 
-                  sidebar absolute inset-x-s0 top-0 flex flex-col
-                  backdrop-blur-sm border-r border-gray-200/50 w-[240px]
-                  rounded-br-lg shadow-lg`}
+                  ${isOpen ? "translate-x-0" : "-translate-x-full"} 
+                  absolute inset-x-s0 top-0 flex flex-col
+                  border-r border-white/10 w-[240px]
+                  rounded-tr-lg rounded-br-lg 
+                  shadow-[0_2px_4px_rgba(0,0,0,0.4)]`}
     >
       <motion.div 
-        className="flex flex-col items-center py-2 border-b border-gray-200/50"
+        className="flex flex-col items-center py-2 border-b border-white/10"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
@@ -58,7 +60,7 @@ const Sidebar = ({ isOpen }) => {
           displayName={user?.displayName}
           className="w-10 h-10 mb-1"
         />
-        <span className="text-sm font-medium text-gray-600 tracking-tight">
+        <span className="text-sm font-medium text-white/70 tracking-tight">
           {user?.displayName || user?.email || 'Loading...'}
         </span>
       </motion.div>
@@ -78,8 +80,8 @@ const Sidebar = ({ isOpen }) => {
           >
             <motion.a
               href={item.href}
-              className="flex items-center space-x-3 px-3 py-1.5 text-sm text-gray-600 
-                       hover:text-green-600 hover:bg-green-50/50 rounded 
+              className="flex items-center space-x-3 px-3 py-1.5 text-sm text-white/70
+                       hover:text-[#BFFF00] hover:bg-white/5 rounded 
                        transition-all duration-200"
               whileHover={{ x: 4 }}
               whileTap={{ scale: 0.98 }}
@@ -98,7 +100,7 @@ const Sidebar = ({ isOpen }) => {
           transition={{ delay: menuItems.length * 0.1 + 0.2 }}
         >
           <motion.a 
-            className="flex items-center space-x-3 px-3 py-1.5 text-sm text-gray-400 cursor-not-allowed"
+            className="flex items-center space-x-3 px-3 py-1.5 text-sm text-white/40 cursor-not-allowed"
             whileHover={{ x: 4 }}
             whileTap={{ scale: 0.98 }}
           >
@@ -113,13 +115,13 @@ const Sidebar = ({ isOpen }) => {
       </motion.ul>
 
       <motion.div 
-        className="py-2 border-t border-gray-200/50"
+        className="py-2 border-t border-white/10"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4 }}
       >
         <LogoutButton className="w-full flex items-center justify-center space-x-2 px-3 py-1.5 
-                                text-sm bg-red-50/50 text-red-600 hover:bg-red-100/50 
+                                text-sm bg-red-900/20 text-red-400 hover:bg-red-800/20 
                                 rounded transition-colors duration-200 tracking-tight" />
       </motion.div>
     </nav>

@@ -3,6 +3,7 @@ import React from "react";
 import LogInForm from "../components/forms/log-in";
 import HeroContainer from '../components/hero-container';
 import FloatingText from "../components/floating-text";
+import {Logo} from "../components/logo";
 
 const SUBTITLES = [
   "If you're reading this, you have strong opinions on the LIV/PGA merger.",
@@ -21,11 +22,16 @@ const LoginPage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center px-6 pb-[env(safe-area-inset-bottom,24px)]">
-      <div className="w-full max-w-[1000px] flex flex-col mb-4">
-        <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold leading-[0.9] mt-6 tracking-tighter bg-gradient-to-t from-gray-400 to-white bg-clip-text text-transparent pb-2 md:pb-3 lg:pb-4">
-          pick.golf<span className="text-lg text-gray-500 tracking-tight">(beta)</span>
-        </h1>
+    <div className="min-h-screen bg-black flex flex-col items-center justify-top px-6 pb-[env(safe-area-inset-bottom,24px)]">
+      <div className="w-full max-w-[1000px]">
+        <div className="flex flex-row items-center mt-10">
+          <Logo className="mb-4 z-10" logoSize={100} />
+          <div className="flex flex-col mb-4">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-[0.9] tracking-tighter bg-gradient-to-t from-gray-400 to-white bg-clip-text text-transparent pb-2 md:pb-3 lg:pb-4">
+              pick.golf<span className="text-sm text-gray-500 tracking-tight">(beta)</span>
+            </h1>
+          </div>
+        </div>
       </div>
       
       <HeroContainer>

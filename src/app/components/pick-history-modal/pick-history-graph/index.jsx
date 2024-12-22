@@ -49,25 +49,53 @@ const PickHistoryGraph = ({ picks, containerHeight = "h-[50vh]" }) => {
       {
         label: 'Total Points',
         data: [0, ...cumulativePoints],
-        pointBackgroundColor: ['rgb(59, 130, 246)', ...chronologicalPicks.map(pick => {
-          if (pick.result?.result === '1') return 'rgb(234, 179, 8)';
-          if (pick.tournament.is_major) return 'rgb(239, 68, 68)';
-          return 'rgb(59, 130, 246)';
+        pointBackgroundColor: ['#9ca3af', ...chronologicalPicks.map(pick => {
+          if (pick.pick_status?.is_no_pick) return '#FF4444';
+          if (pick.result?.result === '1') return '#BFFF00';
+          return '#9ca3af';
         })],
         pointHoverRadius: [0, ...chronologicalPicks.map(pick => 
-          pick.tournament.is_major || pick.result?.result === '1' ? 7 : 5
+          pick.tournament.is_major ? 8 : 5
         )],
         pointRadius: [0, ...chronologicalPicks.map(pick => 
-          pick.tournament.is_major || pick.result?.result === '1' ? 5 : 3
+          pick.tournament.is_major ? 6 : 3
         )],
-        borderColor: 'rgb(59, 130, 246)',
-        backgroundColor: 'rgba(59, 130, 246, 0.05)',
+        pointStyle: [0, ...chronologicalPicks.map(pick => {
+          if (pick.tournament.is_major) {
+            return function(ctx) {
+              const point = ctx.element;
+              const { x, y } = point.tooltipPosition();
+              const radius = point.options.radius;
+              
+              ctx.save();
+              ctx.beginPath();
+              ctx.arc(x, y, radius, 0, Math.PI * 2);
+              ctx.fillStyle = pick.result?.result === '1' 
+                ? '#BFFF00'
+                : '#9ca3af';
+              ctx.fill();
+              
+              ctx.beginPath();
+              ctx.arc(x, y, radius * 0.6, 0, Math.PI * 2);
+              if (pick.pick_status?.is_no_pick) {
+                ctx.fillStyle = '#FF4444';
+              } else {
+                ctx.fillStyle = '#1a1a1a';
+              }
+              ctx.fill();
+              ctx.restore();
+              return true;
+            };
+          }
+          return 'circle';
+        })],
+        borderColor: '#9ca3af',
+        backgroundColor: 'rgba(156, 163, 175, 0.05)',
         tension: 0.1,
         fill: true,
         borderWidth: 1.5,
-        pointBorderColor: 'white',
+        pointBorderColor: '#1a1a1a',
         pointBorderWidth: 1,
-        pointStyle: 'circle',
       }
     ]
   };
@@ -86,9 +114,9 @@ const PickHistoryGraph = ({ picks, containerHeight = "h-[50vh]" }) => {
         display: false
       },
       tooltip: {
-        backgroundColor: 'white',
-        titleColor: 'black',
-        bodyColor: 'black',
+        backgroundColor: '#1a1a1a',
+        titleColor: '#d1d5db',
+        bodyColor: '#d1d5db',
         titleFont: {
           family: 'Verdana, sans-serif',
           size: 12,
@@ -100,7 +128,7 @@ const PickHistoryGraph = ({ picks, containerHeight = "h-[50vh]" }) => {
         },
         padding: 8,
         boxPadding: 4,
-        borderColor: '#ddd',
+        borderColor: '#374151',
         borderWidth: 1,
         displayColors: false,
         callbacks: {
@@ -129,16 +157,17 @@ const PickHistoryGraph = ({ picks, containerHeight = "h-[50vh]" }) => {
       x: {
         grid: {
           display: true,
-          color: 'rgba(0, 0, 0, 0.05)',
+          color: 'rgba(255, 255, 255, 0.05)',
           drawTicks: true,
         },
         border: {
           display: true,
-          color: 'rgba(0, 0, 0, 0.1)',
+          color: 'rgba(255, 255, 255, 0.1)',
         },
         title: {
           display: true,
           text: 'Week',
+          color: '#9ca3af',
           font: {
             family: 'Verdana, sans-serif',
             size: 11
@@ -146,6 +175,7 @@ const PickHistoryGraph = ({ picks, containerHeight = "h-[50vh]" }) => {
           padding: { top: 5 }
         },
         ticks: {
+          color: '#9ca3af',
           font: {
             family: 'Verdana, sans-serif',
             size: 10
@@ -160,22 +190,24 @@ const PickHistoryGraph = ({ picks, containerHeight = "h-[50vh]" }) => {
       y: {
         beginAtZero: true,
         grid: {
-          color: 'rgba(0, 0, 0, 0.05)',
+          color: 'rgba(255, 255, 255, 0.05)',
           lineWidth: 0.5
         },
         border: {
           display: true,
-          color: 'rgba(0, 0, 0, 0.1)',
+          color: 'rgba(255, 255, 255, 0.1)',
         },
         title: {
           display: true,
           text: 'Points',
+          color: '#9ca3af',
           font: {
             family: 'Verdana, sans-serif',
             size: 11
           }
         },
         ticks: {
+          color: '#9ca3af',
           font: {
             family: 'Verdana, sans-serif',
             size: 10
@@ -196,7 +228,7 @@ const PickHistoryGraph = ({ picks, containerHeight = "h-[50vh]" }) => {
   };
 
   return (
-    <div className={`${containerHeight} p-2 bg-white transition-all duration-300 ease-in-out`}>
+    <div className={`${containerHeight} p-2 bg-black/40 transition-all duration-300 ease-in-out rounded`}>
       <Line 
         options={{
           ...options,

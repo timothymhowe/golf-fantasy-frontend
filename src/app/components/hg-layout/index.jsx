@@ -67,9 +67,7 @@ const PageLayout = ({ header, footer, children }) => {
     return (
       <div className="grid">
         {React.Children.map(children, (child) => (
-          <div>
-          {child}
-          </div>
+          <div>{child}</div>
         ))}
       </div>
     );
@@ -77,30 +75,27 @@ const PageLayout = ({ header, footer, children }) => {
 
   return (
     <LeagueProvider>
-      <div className="flex flex-col h-screen">
+      <div className="min-h-screen flex flex-col">
         <Header
-          className="bg-gray-200 p-4 top-0 w-full z-10"
+          className="bg-gray-200 px-2 w-full z-10"
           isSidebarOpen={isSidebarOpen}
           setIsSidebarOpen={setIsSidebarOpen}
         >
           {header}
         </Header>
-        <div className="body-container relative justify-end flex-grow">
-          <div 
-            className="absolute inset-0 pointer-events-none z-0"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='8' numOctaves='6' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='3' intercept='-1'/%3E%3CfeFuncG type='linear' slope='3' intercept='-1'/%3E%3CfeFuncB type='linear' slope='3' intercept='-1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noiseFilter)' fill='white'/%3E%3C/svg%3E")`,
-              backgroundRepeat: 'repeat',
-              opacity: '.23',
-              mixBlendMode: 'darken'
-            }}
-          />
+        
+        <div className="flex-grow flex relative body-container">
           <Sidebar isOpen={isSidebarOpen} />
-          <main className="overflow-auto flex-grow h-auto p-4 w-full max-w-[1200px] max-h-100vh md:mx-auto relative z-10">
-            {renderChildren()}
-          </main>
+          
+          {/* Main content */}
+          <div className="flex-grow overflow-x-hidden">
+            <main className="pt-1 px-2 pb-4 w-full max-w-[1200px] mx-auto relative z-10">
+              {renderChildren()}
+            </main>
+          </div>
         </div>
-        <Footer className="bg-gray-200 p-4 fixed bottom-0 w-full z-10">
+
+        <Footer className="bg-gray-200 p-4 w-full z-10">
           {footer}
         </Footer>
       </div>
