@@ -45,18 +45,18 @@ const PageLayout = ({ header, footer, children }) => {
               <Pick setTitle={setPickTitle} />
             </WidgetContainer>
 
-            <WidgetContainer title="Leaderboard" defaultCollapsed={true}>
+            <WidgetContainer title="Leaderboard" defaultExpanded={false}>
               <Leaderboard />
             </WidgetContainer>
           </div>
 
           {/* Right Column */}
           <div className="flex flex-col gap-2">
-            <WidgetContainer title="Schedule" defaultCollapsed={true}>
+            <WidgetContainer title="Schedule" defaultExpanded={false}>
               <PickHistory />
             </WidgetContainer>
 
-            <WidgetContainer title={leaguePicksTitle} defaultCollapsed={true}>
+            <WidgetContainer title={leaguePicksTitle} defaultExpanded={false}>
               <LeaguePicks setTitle={setLeaguePicksTitle} />
             </WidgetContainer>
           </div>
