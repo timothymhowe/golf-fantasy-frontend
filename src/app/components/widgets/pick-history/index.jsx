@@ -55,8 +55,8 @@ const PickHistory = () => {
       <div className="space-y-4">
         {[...Array(5)].map((_, index) => (
           <div key={index} className="animate-pulse">
-            <div className="h-6 bg-gray-300 rounded w-full mb-2"></div>
-            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+            <div className="h-6 bg-white/10 rounded w-full mb-2"></div>
+            <div className="h-4 bg-white/10 rounded w-3/4"></div>
           </div>
         ))}
       </div>
@@ -65,7 +65,7 @@ const PickHistory = () => {
 
   if (error) {
     return (
-      <div className="text-red-500 p-4 text-center">
+      <div className="text-red-400 p-4 text-center">
         {error}
       </div>
     );
@@ -73,42 +73,48 @@ const PickHistory = () => {
 
   if (!picks || !picks.picks.length) {
     return (
-      <div className="text-gray-500 p-4 text-center">
+      <div className="text-gray-400 p-4 text-center">
         No pick history available
       </div>
     );
   }
 
-  return (
-    <div className="w-full">
-      <PickHistoryTable 
-        picks={picks.picks} 
-        isLoading={isLoading} 
-      />
+  // ... imports and other code remain the same ...
 
-      <div className="mt-4 text-sm text-gray-600 grid grid-cols-4 gap-2 text-center">
-        <div>
-          <div className="text-gray-600">Wins</div>
-          <div>{picks.summary.wins}</div>
-        </div>
-        <div>
-          <div className="text-gray-600">Duplicates</div>
-          <div>{picks.summary.duplicate_picks}</div>
-        </div>
-        <div>
-          <div className="text-gray-600">No Picks</div>
-          <div>{picks.summary.missed_picks}</div>
-        </div>
-        <div>
-          <div className="text-gray-600">Total Points</div>
-          <div className="font-mono">
-            {picks.summary.total_points >= 0 ? '+' : ''}
-            {picks.summary.total_points}
-          </div>
+return (
+  <div className="w-full">
+    <PickHistoryTable 
+      picks={picks.picks} 
+      isLoading={isLoading} 
+    />
+
+    {/* Separator line */}
+    <div className="w-full h-px bg-white/10 mb-2" />
+
+    {/* Stats footer with improved centering */}
+    <div className="text-sm flex flex-row gap-6 text-center pb-2 px-2 items-center justify-center">
+      <div className="flex flex-col items-center">
+        <div className="text-gray-400">Wins</div>
+        <div className="text-gray-200">{picks.summary.wins}</div>
+      </div>
+      <div className="flex flex-col items-center">
+        <div className="text-gray-400">Duplicates</div>
+        <div className="text-gray-200">{picks.summary.duplicate_picks}</div>
+      </div>
+      <div className="flex flex-col items-center">
+        <div className="text-gray-400">No Picks</div>
+        <div className="text-gray-200">{picks.summary.missed_picks}</div>
+      </div>
+      <div className="flex flex-col items-center">
+        <div className="text-gray-400">Total Points</div>
+        <div className="font-mono text-gray-200">
+          {picks.summary.total_points >= 0 ? '+' : ''}
+          {picks.summary.total_points}
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default PickHistory;

@@ -22,13 +22,16 @@ const PickHistoryRow = ({ pick, weekNumber }) => {
 
   return (
     <tr className={`
-      border-b hover:bg-gray-50 h-8
+      border-b border-white/10 h-8 transition-colors text-gray-400
       ${pick.is_future ? 'text-gray-500 italic' : ''}
-      ${pick.pick_status?.is_no_pick ? 'text-red-500' : ''}
-      ${pick.pick_status?.is_duplicate_pick ? 'text-orange-500' : ''}
-      ${!pick.is_future && pick.result?.result === '1' ? 'bg-yellow-50 hover:bg-yellow-100' : ''}
+      ${pick.pick_status?.is_no_pick ? 'text-red-400 ' : ''}
+      ${pick.pick_status?.is_duplicate_pick ? 'text-orange-400' : ''}
+      ${!pick.is_future && pick.result?.result === '1' 
+        ? 'text-[#FFD700] bg-[#FFD700]/25 hover:bg-[#FFD700]/30' 
+        : 'hover:bg-white/5'
+      }
     `}>
-      <td className="text-center py-0 text-xs text-gray-500">
+      <td className="text-center py-0 text-xs text-gray-400">
         {weekNumber}
       </td>
       <td className="py-0">
@@ -42,7 +45,7 @@ const PickHistoryRow = ({ pick, weekNumber }) => {
                 alt=""
                 width={32}
                 height={32}
-                className="rounded object-cover bg-gray-100"
+                className="rounded object-cover bg-black/20"
               />
             )}
           </div>
@@ -52,7 +55,7 @@ const PickHistoryRow = ({ pick, weekNumber }) => {
                 {formatTournamentName(pick.tournament.name)}
               </span>
               {pick.tournament.is_major && 
-                <span className="flex-shrink-0 px-1 bg-gray-200 text-gray-700 rounded text-[9px] font-medium">
+                <span className="flex-shrink-0 px-1 bg-white/10 text-gray-300 rounded text-[9px] font-medium">
                   1.25x
                 </span>
               }

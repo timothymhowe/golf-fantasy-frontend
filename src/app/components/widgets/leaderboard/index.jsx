@@ -60,67 +60,74 @@ const Leaderboard = () => {
 
   return (
     <>
-      <div className="overflow-hidden">
+      <div className="overflow-hidden ">
         <div className="max-h-[350px] overflow-auto">
-          <table className="w-full table-fixed text-sm">
-            <thead className="bg-gray-50">
-              <tr className="sticky top-0 h-7">
-                <th className="w-10 px-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Rk.</th>
-                <th className="w-[40%] px-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Name</th>
-                <th className="w-[20%] px-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Points</th>
-                <th className="w-[15%] px-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Wins</th>
-                <th className="w-[15%] px-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">No Pick</th>
+          <table className="w-full table-fixed text-sm text-gray-500 font-medium text-left text-xs tracking-wide uppercase">
+            <thead>
+              <tr className="sticky top-0 h-7 bg-black/40 backdrop-blur-sm border-b border-white/20">
+                <th className="w-10 px-3">
+                  Rk.
+                </th>
+                <th className="w-[40%] px-3">
+                  Name
+                </th>
+                <th className="w-[20%] px-3 ">
+                  Points
+                </th>
+                <th className="w-[15%] px-3 ">
+                  Wins
+                </th>
+                <th className="w-[15%] px-3 ">
+                  No Pick
+                </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-white/10">
             {isLoaded ? (
               leaderboard.map((item, index) => (
                 <tr
                   key={item.rank}
-                  className="hover:bg-gray-50 transition-colors duration-200 h-8"
+                  className="hover:bg-white/5 transition-colors duration-200 h-8"
                 >
-                  <td className="px-3 whitespace-nowrap font-medium text-gray-500">
-                    {/* {index === leaderboard.length - 1 ? '🤡' : item.rank}
-                     */}
-                     {item.rank}
+                  <td className="px-3 whitespace-nowrap font-medium ">
+                    {item.rank}
                   </td>
                   <td className="px-3 whitespace-nowrap">
                     <button 
                       onClick={() => setSelectedMember(item)}
-                      className="hover:text-blue-600 font-medium text-left w-full"
+                      className="hover:text-[#BFFF00] font-medium text-left w-full transition-colors"
                     >
                       {item.name}
                     </button>
                   </td>
-                  <td className="px-3 whitespace-nowrap text-center font-mono">
+                  <td className="px-3 whitespace-nowrap text-center font-mono text-white/90">
                     {item.score > 0 ? '+' : ''}{(item.score / 100).toFixed(1)}
                   </td>
-                  <td className="px-3 whitespace-nowrap text-center text-gray-500">
+                  <td className="px-3 whitespace-nowrap text-center text-white/60">
                     {item.wins || 0}
                   </td>
-                  <td className="px-3 whitespace-nowrap text-center text-gray-500">
+                  <td className="px-3 whitespace-nowrap text-center text-white/60">
                     {item.missedPicks}
                   </td>
                 </tr>
               ))
             ) : (
-              // Update skeleton loading to match new column count
               [...Array(10)].map((_, index) => (
                 <tr key={index} className="animate-pulse h-8">
                   <td className="px-3">
-                    <div className="h-4 bg-gray-300 rounded w-1/4"></div>
+                    <div className="h-4 bg-white/10 rounded w-1/4"></div>
                   </td>
                   <td className="px-3">
-                    <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+                    <div className="h-4 bg-white/10 rounded w-3/4"></div>
                   </td>
                   <td className="px-3">
-                    <div className="h-4 bg-gray-300 rounded w-2/4 mx-auto"></div>
+                    <div className="h-4 bg-white/10 rounded w-2/4 mx-auto"></div>
                   </td>
                   <td className="px-3">
-                    <div className="h-4 bg-gray-300 rounded w-1/4 mx-auto"></div>
+                    <div className="h-4 bg-white/10 rounded w-1/4 mx-auto"></div>
                   </td>
                   <td className="px-3">
-                    <div className="h-4 bg-gray-300 rounded w-1/4 mx-auto"></div>
+                    <div className="h-4 bg-white/10 rounded w-1/4 mx-auto"></div>
                   </td>
                 </tr>
               ))
