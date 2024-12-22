@@ -201,17 +201,17 @@ export const SelectedGolfer = ({ golfer, setSelectedGolfer }) => {
 
 
 const optionClasses =
-  " grid grid-cols-3 border-b border-l border-r border-black hover:bg-gray-200 h-[40px] bg-[#f8f8f8] cursor-pointer";
-const contentClasses = "grid text-black grid-cols-4 w-max";
+  "grid grid-cols-3 border-b border-l border-r border-white/10 hover:bg-[#2a2a2a] h-[40px] bg-[#1a1a1a] cursor-pointer";
+const contentClasses = "grid text-gray-200 grid-cols-4 w-max";
 const nameContainerClasses =
   "whitespace-nowrap flex flex-col h-auto space-y-[-4px] ml-1";
 const lastNameClasses = "whitespace-nowrap flex flex-col";
-const firstNameClasses = "whitespace-nowrap italic text-grey-800 text-xs";
+const firstNameClasses = "whitespace-nowrap italic text-gray-400 text-xs";
 
 const imageClasses = "h-[38px] relative object-cover";
 
-const notPlayingClasses = " text-gray-500";
-const alreadyPickedClasses = "text-red-500 line-through";
+const notPlayingClasses = "text-gray-500";
+const alreadyPickedClasses = "text-red-400 line-through";
 
 function generateTextClasses(
   baseClasses,
