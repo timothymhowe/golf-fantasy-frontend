@@ -12,30 +12,11 @@ const LeaguePicks = ({setTitle}) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Set initial title with skeleton loader
-    setTitle(
-      <div className="flex flex-col w-fit">
-        <div className="flex items-center">
-          <span className="text-white/60 mr-2">Picks:</span>
-          <div className="h-6 bg-white/10 rounded w-32 animate-pulse"></div>
-        </div>
-      </div>
-    );
-
-    // Update title when data loads
-    if (picksData?.tournament) {
-      setTitle(
-        <div className="flex flex-col w-fit">
-          <div className="flex items-center">
-            <span className="text-white/60 mr-2">Picks:</span>
-            <span className="text-gray-200 font-bold">
-              {formatTournamentName(picksData.tournament.name)}
-            </span>
-          </div>
-        </div>
-      );
-    }
-  }, [picksData, setTitle]);
+    setTitle("Picks");
+    setPicksData(null);
+    setIsLoading(true);
+    setError(null);
+  }, [selectedLeagueId, setTitle]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -81,6 +62,21 @@ const LeaguePicks = ({setTitle}) => {
     return () => controller.abort();
   }, [user, selectedLeagueId]);
 
+  useEffect(() => {
+    if (picksData?.tournament) {
+      setTitle(
+        <div className="flex flex-col w-fit">
+          <div className="flex items-center">
+            <span className="text-white/60 mr-2">Picks:</span>
+            <span className="text-gray-200 font-bold">
+              {formatTournamentName(picksData.tournament.name)}
+            </span>
+          </div>
+        </div>
+      );
+    }
+  }, [picksData, setTitle]);
+
   if (isLoading) {
     return (
       <div className="p-4 animate-pulse">
@@ -94,18 +90,10 @@ const LeaguePicks = ({setTitle}) => {
     );
   }
 
-  if (error) {
-    return (
-      <div className="p-4 text-center text-red-400">
-        <p>{error}</p>
-      </div>
-    );
-  }
-
-  if (!picksData || !picksData.picks?.length) {
+  if (error || !picksData || !picksData.picks?.length) {
     return (
       <div className="p-4 text-center text-white/50">
-        <p>No picks available for the current tournament.</p>
+        <p>Check back after picks lock for the week!</p>
       </div>
     );
   }
@@ -115,7 +103,7 @@ const LeaguePicks = ({setTitle}) => {
       <div className="max-h-[300px] overflow-y-auto">
         <table className="w-full divide-y divide-white/10">
           <thead>
-            <tr className="sticky top-0 h-7 bg-black/40 backdrop-blur-sm border-b border-white/20 text-xs text-white/50 uppercase tracking-wider">
+            <tr className="sticky top-0 h-7 bg-black/40 backdrop-blur-sm  text-xs text-white/50 uppercase tracking-wider">
               <th className="px-2 py-1 text-left w-[35%]">Player</th>
               <th className="px-2 py-1 text-left w-[35%]">Pick</th>
               <th className="hidden sm:table-cell px-2 py-1 text-center w-[10%]">Pos</th>

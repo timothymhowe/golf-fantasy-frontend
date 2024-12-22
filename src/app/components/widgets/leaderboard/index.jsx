@@ -64,7 +64,7 @@ const Leaderboard = () => {
         <div className="max-h-[350px] overflow-auto">
           <table className="w-full table-fixed text-sm text-gray-500 font-medium text-left text-xs tracking-wide uppercase">
             <thead>
-              <tr className="sticky top-0 h-7 bg-black/40 backdrop-blur-sm border-b border-white/20">
+              <tr className="sticky top-0 h-7 bg-black/40 backdrop-blur-sm text-white/50 uppercase">
                 <th className="w-10 px-3">
                   Rk.
                 </th>

@@ -15,11 +15,14 @@ const WidgetContainer = ({ title, children, defaultExpanded = true }) => {
       transition-all duration-200
     ">
       <div className={`bg-black/20
+
+      // TODO: 53px is hardcoded to match the height of the pick widget, should make this dynamic in the future, yeah?
+      
         ${showBorder ? 'border-b border-white/10' : ''} 
         rounded-t-sm px-2 py-1
-        flex items-center justify-between
+        flex items-center justify-between h-[53px] 
       `}>
-        <h2 className="text-white/90 font-medium text-base">
+        <h2 className="text-white/90 font-medium text-xl">
           {title}
         </h2>
         <motion.button
@@ -43,7 +46,7 @@ const WidgetContainer = ({ title, children, defaultExpanded = true }) => {
       </div>
       
       <motion.div
-        initial={false}
+        initial={{ height: defaultExpanded ? "auto" : 0, opacity: defaultExpanded ? 1 : 0 }}
         animate={{ 
           height: isExpanded ? "auto" : 0,
           opacity: isExpanded ? 1 : 0,
