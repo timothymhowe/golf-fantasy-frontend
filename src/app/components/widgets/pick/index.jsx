@@ -7,7 +7,6 @@ import { useAuth } from "../../auth-provider";
 import { useLeague } from "../../league-context";
 
 import { zonedTimeToUtc, utcToZonedTime, format } from "date-fns-tz";
-import { set } from "date-fns";
 
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
 
@@ -37,14 +36,14 @@ const Pick = ({ setTitle, onChangePick }) => {
   /**
    * Gets the golfer's photo URL from Firebase Storage
    * Uses higher resolution 200x200 images for the pick display
-   * 
+   *
    * TODO: Performance Optimization Needed
    * - Implement caching for frequently viewed picks
    * - Add loading state transitions for image loads
    * - Consider preloading images for likely picks
    * - Add error boundary for failed image loads
    * - Investigate CDN configuration for faster loading
-   * 
+   *
    * @param {string} datagolf_id - The golfer's DataGolf ID
    * @returns {Promise<string>} URL to the golfer's photo or placeholder
    */
@@ -53,7 +52,7 @@ const Pick = ({ setTitle, onChangePick }) => {
       console.log("No datagolf_id provided for pick photo");
       return "/portrait_placeholder_75.png";
     }
-  
+
     try {
       const storage = getStorage();
       const photoRef = ref(storage, `headshots/thumbnails/${datagolf_id}_headshot_200x200.png`);
@@ -71,17 +70,20 @@ const Pick = ({ setTitle, onChangePick }) => {
 
   useEffect(() => {
     const controller = new AbortController();
-    
+
     // Clear all relevant state when league changes
     setIsTournamentDataLoaded(false);
     setWeekData(null);
     setPick(null);
     setPhotoUrl(placeholderImage);
     setHasMadePick(false);
-    
+
     if (user && selectedLeagueId) {
-      console.log("🏌️ Tournament fetch triggered by leagueId:", selectedLeagueId);
-      user.getIdToken().then(token => {
+      console.log(
+        "🏌️ Tournament fetch triggered by leagueId:",
+        selectedLeagueId
+      );
+      user.getIdToken().then((token) => {
         console.log("Got token, making API call...");
         fetch(`/api/tournament/upcoming/${selectedLeagueId}`, {
           signal: controller.signal,
@@ -157,10 +159,10 @@ const Pick = ({ setTitle, onChangePick }) => {
     const controller = new AbortController();
 
     if (!weekData || !selectedLeagueMemberId || !isTournamentDataLoaded) {
-      console.log("⛳ Pick fetch skipped - waiting for data:", { 
-        weekData: !!weekData, 
+      console.log("⛳ Pick fetch skipped - waiting for data:", {
+        weekData: !!weekData,
         selectedLeagueMemberId,
-        isTournamentDataLoaded 
+        isTournamentDataLoaded,
       });
       setIsLoading(false);
       return;
@@ -169,26 +171,29 @@ const Pick = ({ setTitle, onChangePick }) => {
     console.log("🎯 Pick fetch triggered:", {
       weekDataId: weekData?.id,
       leagueMemberId: selectedLeagueMemberId,
-      submitTrigger
+      submitTrigger,
     });
-    
+
     setIsLoading(true);
-    
+
     const fetchPick = async () => {
       try {
         const token = await user.getIdToken();
-        const response = await fetch(`/api/pick/current/${selectedLeagueMemberId}?tournament_id=${weekData.id}`, {
-          signal: controller.signal,  // Add abort signal to fetch
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await fetch(
+          `/api/pick/current/${selectedLeagueMemberId}?tournament_id=${weekData.id}`,
+          {
+            signal: controller.signal, // Add abort signal to fetch
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         const data = await response.json();
         console.log("Raw pick data:", data);
 
-        if (data.status === 'success' && data.has_pick) {
+        if (data.status === "success" && data.has_pick) {
           setPick(data);
-          
+
           if (data.datagolf_id) {
             try {
               const url = await getGolferPhotoUrl(data.datagolf_id);
@@ -200,18 +205,18 @@ const Pick = ({ setTitle, onChangePick }) => {
           } else {
             setPhotoUrl(placeholderImage);
           }
-          
+
           setHasMadePick(true);
         } else {
           setPick(null);
           setPhotoUrl(placeholderImage);
           setHasMadePick(false);
         }
-        
+
         setIsLoading(false);
       } catch (error) {
-        if (error.name === 'AbortError') {
-          console.log('Pick fetch aborted');
+        if (error.name === "AbortError") {
+          console.log("Pick fetch aborted");
           return;
         }
         console.error("Error fetching pick:", error);
@@ -223,7 +228,7 @@ const Pick = ({ setTitle, onChangePick }) => {
     fetchPick();
 
     return () => {
-      console.log('🚫 Aborting pick fetch');
+      console.log("🚫 Aborting pick fetch");
       controller.abort(); // Abort any in-flight requests when dependencies change
     };
   }, [weekData, submitTrigger, selectedLeagueMemberId, isTournamentDataLoaded]);
@@ -244,7 +249,7 @@ const Pick = ({ setTitle, onChangePick }) => {
   const PickButton = () => (
     <button
       className={`${
-        isRecentTournament 
+        isRecentTournament
           ? "bg-white/10 cursor-not-allowed"
           : "bg-[#BFFF00] hover:bg-[#9FDF00] text-black"
       } font-semibold py-2 px-2 rounded shadow m-2 h-auto transition duration-500 ease-in-out`}
@@ -255,10 +260,20 @@ const Pick = ({ setTitle, onChangePick }) => {
     </button>
   );
 
+  const DateTimeObject = ({ dateTime }) => (
+    <div className="flex flex-col justify-center items-center">
+      <div className="m-1 text-xs italic text-white/50 text-center">
+        Picks lock on {format(dateTime, "EEEEEEE, MM/dd/yyyy")} at{" "}
+        {format(dateTime, "hh:mm a zzz")}
+      </div>
+    </div>
+  );
+
   if (!isLoading && weekData) {
     const dateTimeString = `${weekData.start_date}T${weekData.start_time}`;
     const dateTimeUtc = zonedTimeToUtc(dateTimeString, weekData.time_zone);
-    const dateTime = utcToZonedTime(dateTimeUtc, "America/New_York");
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const dateTime = utcToZonedTime(dateTimeUtc, userTimeZone);
 
     if (!hasMadePick) {
       return (
@@ -274,18 +289,21 @@ const Pick = ({ setTitle, onChangePick }) => {
             </div>
             <div className="flex items-end">
               <PickButton />
-              <FormModal isOpen={isOpen} setIsOpen={setIsOpen} onClose={() => setIsOpen(false)}>
-                <PickForm weekData={weekData} setIsOpen={setIsOpen} triggerSubmit={() => setSubmitTrigger(!submitTrigger)} />
+              <FormModal
+                isOpen={isOpen}
+                setIsOpen={setIsOpen}
+                onClose={() => setIsOpen(false)}
+              >
+                <PickForm
+                  weekData={weekData}
+                  setIsOpen={setIsOpen}
+                  triggerSubmit={() => setSubmitTrigger(!submitTrigger)}
+                />
               </FormModal>
             </div>
           </div>
           <hr className="border-white/10" />
-          <div className="flex flex-col justify-center items-center">
-            <div className="mt-2 text-xs italic text-white/50 text-center">
-              Picks lock on {format(dateTime, "EEEEEEE, MM/dd/yyyy")} at{" "}
-              {format(dateTime, "hh:mm a zzz")}
-            </div>
-          </div>
+          <DateTimeObject dateTime={dateTime} />
         </div>
       );
     }
@@ -297,25 +315,30 @@ const Pick = ({ setTitle, onChangePick }) => {
             <a className="flex flex-row pl-2 items-top">
               <SquircleImage photoUrl={photoUrl} />
               <div className="w-auto h-fill text-left ml-2 flex flex-col align-bottom mt-1">
-                <div className="text-xl text-white/90">{pick.last_name.toUpperCase()},</div>
+                <div className="text-xl text-white/90">
+                  {pick.last_name.toUpperCase()},
+                </div>
                 <div className="text-white/60 italic">{pick.first_name}</div>
               </div>
             </a>
           </div>
           <div className="flex items-end">
             <PickButton />
-            <FormModal isOpen={isOpen} setIsOpen={setIsOpen} onClose={() => setIsOpen(false)}>
-              <PickForm weekData={weekData} setIsOpen={setIsOpen} triggerSubmit={() => setSubmitTrigger(!submitTrigger)} />
+            <FormModal
+              isOpen={isOpen}
+              setIsOpen={setIsOpen}
+              onClose={() => setIsOpen(false)}
+            >
+              <PickForm
+                weekData={weekData}
+                setIsOpen={setIsOpen}
+                triggerSubmit={() => setSubmitTrigger(!submitTrigger)}
+              />
             </FormModal>
           </div>
         </div>
         <hr className="border-white/10" />
-        <div className="flex flex-col justify-center items-center py-1">
-          <div className="text-xs italic text-white/50 text-center">
-            Picks lock on {format(dateTime, "EEEEEEE, MM/dd/yyyy")} at{" "}
-            {format(dateTime, "hh:mm a zzz")}
-          </div>
-        </div>
+        <DateTimeObject dateTime={dateTime} />
       </div>
     );
   } else {
