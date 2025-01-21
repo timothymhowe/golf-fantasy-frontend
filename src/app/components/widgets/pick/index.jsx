@@ -7,7 +7,6 @@ import { useAuth } from "../../auth-provider";
 import { useLeague } from "../../league-context";
 
 import { zonedTimeToUtc, utcToZonedTime, format } from "date-fns-tz";
-import { set } from "date-fns";
 
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
 
@@ -273,7 +272,8 @@ const Pick = ({ setTitle, onChangePick }) => {
   if (!isLoading && weekData) {
     const dateTimeString = `${weekData.start_date}T${weekData.start_time}`;
     const dateTimeUtc = zonedTimeToUtc(dateTimeString, weekData.time_zone);
-    const dateTime = utcToZonedTime(dateTimeUtc, "America/New_York");
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const dateTime = utcToZonedTime(dateTimeUtc, userTimeZone);
 
     if (!hasMadePick) {
       return (
