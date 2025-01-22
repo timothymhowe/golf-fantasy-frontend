@@ -13,14 +13,15 @@ const WidgetContainer = ({ title, children, defaultExpanded = true }) => {
       backdrop-blur-sm
       hover:border-[#BFFF00]/50
       transition-all duration-200
+      overflow-hidden
     ">
       <div className={`bg-black/20
 
       // TODO: 53px is hardcoded to match the height of the pick widget, should make this dynamic in the future, yeah?
       
         ${showBorder ? 'border-b border-white/10' : ''} 
-        rounded-t-sm px-2 py-1
-        flex items-center justify-between h-[53px] 
+        rounded-t-md px-2 py-1
+        flex items-center justify-between h-[53px]  'h-[53px]'} 
       `}>
         <h2 className="text-white/90 font-medium text-xl">
           {title}
@@ -69,7 +70,7 @@ const WidgetContainer = ({ title, children, defaultExpanded = true }) => {
             delay: isExpanded ? 0.1 : 0 
           }
         }}
-        className="px-[0.1em] rounded-b-sm"
+        className="px-[0.1em] rounded-b-md"
         style={{ overflow: 'hidden' }}
       >
         {children}
