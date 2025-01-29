@@ -29,6 +29,7 @@
     "firebaseui": "^6.1.0",
     "flowbite": "^2.2.1",
     "framer-motion": "^11.14.4",
+    "i18n-iso-countries": "^7.13.0",
     "next": "15",
     "react": "^18",
     "react-chartjs-2": "^5.2.0",
