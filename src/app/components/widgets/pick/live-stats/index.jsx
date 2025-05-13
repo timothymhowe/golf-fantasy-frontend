@@ -1,124 +1,108 @@
-import React, { useEffect, useState } from "react";
-import { useAuth } from "../../../auth-provider";
-import { format, parseISO } from "date-fns";
-import { utcToZonedTime } from "date-fns-tz";
+import React, { useEffect, useState } from 'react';
+import { useAuth } from '../../../auth-provider';
+import { calculatePoints } from '../../../../../utils/pointCalculator';
 
-const LiveStats = ({ playerId, lastUpdated }) => {
-  const [liveStats, setLiveStats] = useState(null);
-  const [isOpen, setIsOpen] = useState(true);
+const LiveStats = ({ datagolfId, tournamentId, className, isWaiting }) => {
   const { user } = useAuth();
+  const [liveStats, setLiveStats] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [hasAttemptedFetch, setHasAttemptedFetch] = useState(false);
+
+  console.log('LiveStats mounted with:', { datagolfId, tournamentId });
 
   useEffect(() => {
     const fetchLiveStats = async () => {
+      if (!user || !datagolfId || !tournamentId) {
+        console.log('Missing required data:', { user: !!user, datagolfId, tournamentId });
+        setIsLoading(false);
+        setHasAttemptedFetch(true);
+        return;
+      }
+
+      setIsLoading(true);
+      setError(null);
+
       try {
         const token = await user.getIdToken();
-        const response = await fetch('/api/live_results/live', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const response = await fetch('/api/live_results/big_fetch', {
+          headers: { Authorization: `Bearer ${token}` },
         });
-
+        
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-
+        
         const data = await response.json();
-        const playerStats = data.live_stats.find(player => player.dg_id === playerId);
-        setLiveStats(playerStats);
+        console.log('Full API response:', data);
+
+        const golferStats = data.tournament_stats?.live_stats?.[datagolfId]?.info;
+        if (golferStats) {
+          console.log('Setting golfer stats:', golferStats);
+          setLiveStats(golferStats);
+        } else {
+          console.log('No stats found for golfer:', datagolfId);
+          setError('No stats available');
+        }
       } catch (error) {
-        console.error("Error fetching live stats:", error);
+        console.error('Error fetching live stats:', error);
+        setError(error.message);
+      } finally {
+        setIsLoading(false);
+        setHasAttemptedFetch(true);
       }
     };
 
-    if (playerId && user && !liveStats) {
+    if (user) {
       fetchLiveStats();
+      const pollInterval = setInterval(fetchLiveStats, 10 * 60 * 1000);
+      return () => clearInterval(pollInterval);
     }
-  }, [playerId, user, liveStats]);
+  }, [datagolfId, tournamentId, user]);
 
-  if (!liveStats) {
+  if (!hasAttemptedFetch || isLoading) {
+    return (
+      <div className={`${className} animate-pulse bg-white/10 rounded px-3 py-1`}>
+        <div className="h-4 w-16"></div>
+      </div>
+    );
+  }
+
+  if (error || !liveStats) {
     return null;
   }
 
-  const formatNumber = (num) => {
-    if (num === null || num === undefined) return '-';
-    return num.toFixed(2);
+  const getScoreDisplay = () => {
+    if (isWaiting) {
+      const points = calculatePoints(liveStats.position);
+      return `${points}pts`;
+    }
+    const score = liveStats.total;
+    if (score === 0) return 'E';
+    if (score > 0) return `+${score}`;
+    return score.toString();
   };
 
-  const formatPercentage = (num) => {
-    if (num === null || num === undefined) return '-';
-    return `${(num * 100).toFixed(1)}%`;
+  const getScoreClass = () => {
+    if (isWaiting) {
+      return 'bg-white/10 text-white/90';
+    }
+    const score = liveStats.total;
+    if (score === 0) return 'bg-black text-white/90';
+    if (score > 0) return 'bg-black text-white/90';
+    return 'bg-red-600 text-white';
   };
-
-  const formatDistance = (num) => {
-    if (num === null || num === undefined) return '-';
-    return num.toFixed(1);
-  };
-
-  const getStatStyle = (value) => ({
-    color: value > 0 ? '#BFFF00' : 'red',
-  });
-
-  const sgCategories = [
-    { key: 'sg_ott', label: 'OTT', tooltip: 'Off the Tee' },
-    { key: 'sg_t2g', label: 'T2G', tooltip: 'Tee to Green' },
-    { key: 'sg_app', label: 'APP', tooltip: 'Approach' },
-    { key: 'sg_arg', label: 'ARG', tooltip: 'Around the Green' },
-    { key: 'sg_putt', label: 'PUTT', tooltip: 'Putting' },
-    { key: 'sg_total', label: 'TOTAL', tooltip: 'Total' },
-  ];
-
-  // Format the last updated timestamp
-  const formattedLastUpdated = lastUpdated ? format(utcToZonedTime(parseISO(lastUpdated), Intl.DateTimeFormat().resolvedOptions().timeZone), "PPpp") : "N/A";
 
   return (
-    <div className="live-stats">
-      <button onClick={() => setIsOpen(!isOpen)} className="toggle-button">
-        {isOpen ? "Hide Live Stats" : "Show Live Stats"}
-      </button>
-      {isOpen && (
-        <div className="stats-content overflow-auto">
-          <table className="w-full table-fixed text-sm text-gray-500 font-medium text-left text-xs tracking-wide uppercase border-collapse">
-            <thead>
-              <tr className="bg-black/40 backdrop-blur border-b border-gray-500">
-                <th className="px-2 py-2 border-r border-gray-500" colSpan={3}></th>
-                <th className="px-2 py-2 border-r border-gray-500" colSpan={sgCategories.length} style={{ textAlign: 'center' }}>Strokes Gained</th>
-                <th className="px-2 py-2 border-r border-gray-500" colSpan="2" style={{ textAlign: 'center' }}>Driving</th>
-              </tr>
-              <tr className="bg-black/40 backdrop-blur border-b border-gray-500 text-xs">
-                <th className="px-2 py-1 border-r border-gray-500">Pos.</th>
-                <th className="px-2 py-1 border-r border-gray-500">Score</th>
-                <th className="px-2 py-1 border-r border-gray-500">Thru</th>
-                {sgCategories.map((category) => (
-                  <th key={category.key} className="px-2 py-1 border-r border-gray-500">
-                    <span title={category.tooltip}>{category.label}</span>
-                  </th>
-                ))}
-                <th className="px-2 py-1 border-r border-gray-500">Acc.</th>
-                <th className="px-2 py-1">Dist.</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="divide-y divide-white/10">
-                <td className="px-2 py-2 border-r border-gray-500">{liveStats.position}</td>
-                <td className="px-2 py-2 border-r border-gray-500" style={getStatStyle(liveStats.total)}>{Math.round(liveStats.total)}</td>
-                <td className="px-2 py-2 border-r border-gray-500">{liveStats.thru}</td>
-                {sgCategories.map((category) => (
-                  <td key={category.key} className="px-2 py-2 border-r border-gray-500" style={getStatStyle(liveStats[category.key])}>
-                    {formatNumber(liveStats[category.key])}
-                  </td>
-                ))}
-                <td className="px-2 py-2 border-r border-gray-500" style={getStatStyle(liveStats.accuracy)}>{formatPercentage(liveStats.accuracy)}</td>
-                <td className="px-2 py-2" style={getStatStyle(liveStats.distance)}>{formatDistance(liveStats.distance)}</td>
-              </tr>
-            </tbody>
-          </table>
-          <div className="text-gray-400 text-xs mt-2">
-            Last updated: {formattedLastUpdated}
-          </div>
-        </div>
-      )}
+    <div className={`${className} flex items-center gap-2 font-mono`}>
+      <div className="bg-white/10 rounded px-2 py-1 text-sm text-white/90">
+        {liveStats.position}
+      </div>
+      <div className={`${getScoreClass()} rounded px-2 py-1 text-sm min-w-[40px] text-center`}>
+        {getScoreDisplay()}
+      </div>
     </div>
   );
 };
 
-export default LiveStats;
+export default LiveStats; 

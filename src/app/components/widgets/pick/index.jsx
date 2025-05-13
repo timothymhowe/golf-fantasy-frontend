@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import PickForm from "../../forms/pick-form";
+import PickTableForm from "../../forms/pick-table-form";
 import FormModal from "../../form-modal";
 import SquircleImage from "../../avatar/squircle-image";
 
@@ -11,6 +11,8 @@ import { zonedTimeToUtc, utcToZonedTime, format } from "date-fns-tz";
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
 
 import { formatTournamentName } from "../../../utils/formatTournamentName";
+
+
 
 const Pick = ({ setTitle, onChangePick }) => {
   const { user } = useAuth();
@@ -256,7 +258,14 @@ const Pick = ({ setTitle, onChangePick }) => {
       onClick={() => !isRecentTournament && setIsOpen(true)}
       disabled={isRecentTournament}
     >
-      {isRecentTournament ? "Locked" : "Change Pick"}
+      {isRecentTournament ? (
+        <span className="flex items-center">
+          <span>Locked</span>
+          <span className="ml-1"><LockIcon /></span>
+        </span>
+      ) : (
+        "Change Pick"
+      )}
     </button>
   );
 
@@ -294,7 +303,7 @@ const Pick = ({ setTitle, onChangePick }) => {
                 setIsOpen={setIsOpen}
                 onClose={() => setIsOpen(false)}
               >
-                <PickForm
+                <PickTableForm
                   weekData={weekData}
                   setIsOpen={setIsOpen}
                   triggerSubmit={() => setSubmitTrigger(!submitTrigger)}
@@ -329,7 +338,7 @@ const Pick = ({ setTitle, onChangePick }) => {
               setIsOpen={setIsOpen}
               onClose={() => setIsOpen(false)}
             >
-              <PickForm
+              <PickTableForm
                 weekData={weekData}
                 setIsOpen={setIsOpen}
                 triggerSubmit={() => setSubmitTrigger(!submitTrigger)}
@@ -370,3 +379,13 @@ const Pick = ({ setTitle, onChangePick }) => {
 };
 
 export default Pick;
+
+const LockIcon = () => (
+  <svg 
+    className="inline-block w-4 h-4 mb-1"
+    viewBox="0 0 24 24" 
+    fill="currentColor"
+  >
+    <path d="M12 1C8.676 1 6 3.676 6 7v2H4v14h16V9h-2V7c0-3.324-2.676-6-6-6zm0 2c2.276 0 4 1.724 4 4v2H8V7c0-2.276 1.724-4 4-4z"/>
+  </svg>
+);

@@ -35,34 +35,30 @@ function AutocompleteGolfer({
     console.log("User:", user ? "Present" : "Missing");
     console.log("Selected Tournament:", selectedTournament);
     
-    if (user && selectedTournament?.id) {
-      user.getIdToken().then(token => {
-        const url = `/api/tournament/dd/${selectedLeagueMemberId}?tournament_id=${selectedTournament.id}`;
-        console.log("Fetching from:", url);
-        
-        fetch(url, {
+    if (user && selectedTournament) {
+      setIsLoading(true);
+      user.getIdToken().then((token) => {
+        fetch(`/api/golfers/${selectedTournament}`, {
           headers: {
-            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         })
-        .then(response => {
-          console.log("Response status:", response.status);
-          return response.json();
-        })
-        .then(responseData => {
-          console.log("Raw response data:", responseData);
-          console.log("Setting golfers:", responseData.golfers);
-          setData(responseData.golfers || []);
-          setIsLoading(false);
-        })
-        .catch(error => {
-          console.error("Error fetching golfers:", error);
-          setIsLoading(false);
-        });
+          .then((response) => response.json())
+          .then((result) => {
+            if (result.success) {
+              setData(result.data);
+            } else {
+              console.error("Error in golfer data:", result.error);
+            }
+            setIsLoading(false);
+          })
+          .catch((error) => {
+            console.error("Error fetching golfers:", error);
+            setIsLoading(false);
+          });
       });
     }
-  }, [user, selectedTournament]);
+  }, [user, selectedTournament, selectedLeagueMemberId]);
 
   /**
    * Filters golfers based on search input
