@@ -17,7 +17,7 @@ const PickHistoryTable = ({ picks, isLoading, maxHeight = '300px' }) => {
   return (
     <div style={{ maxHeight }} className="overflow-y-auto">
       <table className="w-full   text-sm relative">
-        <thead className="sticky top-0 bg-black/50 backdrop-blur-sm z-10">
+        <thead className="sticky top-0 bg-black sm:bg-black/40 sm:backdrop-blur-sm z-10">
           <tr className="h-7 uppercase text-white/50">
             <th className="text-center py-0 w-8 text-xs "></th>
             <th className="text-left py-0 w-[60%] text-xs ">Pick</th>

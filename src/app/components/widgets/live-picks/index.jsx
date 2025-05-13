@@ -504,7 +504,7 @@ const TableRow = ({
 
       {/* Projections Group */}
       <ProjectedPointsCell
-        points={golfer?.expectedPoints}
+        points={golfer?.projectedPoints}
         borderRight={false}
       />
       <ProjectionCell value={golfer?.win} thru={golfer?.thru} />
@@ -563,7 +563,7 @@ const TableRow = ({
   );
 };
 
-const calculateExpectedPoints = (predictions) => {
+const calculateProjectedPoints = (predictions) => {
   if (!predictions) return 0;
 
   const { win, top_5, top_10, top_20, make_cut } = predictions;
@@ -585,7 +585,7 @@ const calculateExpectedPoints = (predictions) => {
   const makeCutNotTop20Prob = makeCutProb - top20Prob;
 
   // Calculate expected points
-  const expectedPoints =
+  const projectedPoints =
     winProb * 100 + // Win
     secondProb * 75 + // 2nd
     thirdProb * 60 + // 3rd
@@ -595,7 +595,7 @@ const calculateExpectedPoints = (predictions) => {
     top20NotTop10Prob * 25 + // Top 20 (not top 10)
     makeCutNotTop20Prob * 5; // Made cut (not top 20)
 
-  return expectedPoints;
+  return projectedPoints;
 };
 
 const pivotDataByGolfer = (picks, currentBigFetchData) => {
@@ -638,6 +638,7 @@ const pivotDataByGolfer = (picks, currentBigFetchData) => {
         datagolf_id,
         points,
         country: golfer_country_code,
+        course_code:null
       };
     }
 
@@ -659,6 +660,7 @@ const pivotDataByGolfer = (picks, currentBigFetchData) => {
         const makeCutProb = predictions.make_cut ? 1 / predictions.make_cut : 0;
         const missCutProb = Math.max(0, 1 - makeCutProb);
 
+        golfersMap[golfer_id].course_code = predictions.course;
         golfersMap[golfer_id].win = predictions.win
           ? (1 / predictions.win) * 100
           : null;
@@ -673,8 +675,8 @@ const pivotDataByGolfer = (picks, currentBigFetchData) => {
           : null;
         golfersMap[golfer_id].make_cut = makeCutProb * 100;
         golfersMap[golfer_id].miss_cut = missCutProb * 100;
-        golfersMap[golfer_id].expectedPoints =
-          calculateExpectedPoints(predictions);
+        golfersMap[golfer_id].projectedPoints =
+          calculateProjectedPoints(predictions);
         golfersMap[golfer_id].end_hole = predictions.end_hole;
         golfersMap[golfer_id].round_number = predictions.round;
         golfersMap[golfer_id].R1 = predictions.R1;
