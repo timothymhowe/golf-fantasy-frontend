@@ -3,7 +3,7 @@ import React from "react";
 import { useState } from "react";
 import Header, { SkeletonHeader } from "../header";
 import Footer from "../footer";
-import {Logo} from "../logo";
+import { Logo } from "../logo";
 
 import Sidebar from "../sidebar";
 import Pick from "../widgets/pick";
@@ -46,14 +46,14 @@ const PageLayout = ({ header, footer, children }) => {
               <Pick setTitle={setPickTitle} />
             </WidgetContainer>
 
-            <WidgetContainer title="Leaderboard" defaultExpanded={false}>
+            <WidgetContainer title="League Scoreboard" defaultExpanded={false}>
               <Leaderboard />
             </WidgetContainer>
           </div>
 
           {/* Right Column */}
           <div className="flex flex-col gap-2">
-            <WidgetContainer title="Schedule" defaultExpanded={false}>
+            <WidgetContainer title="My Pick History" defaultExpanded={false}>
               <PickHistory />
             </WidgetContainer>
 
@@ -84,10 +84,10 @@ const PageLayout = ({ header, footer, children }) => {
         >
           {header}
         </Header>
-        
+
         <div className="flex-grow flex relative body-container">
           <Sidebar isOpen={isSidebarOpen} />
-          
+
           {/* Main content */}
           <div className="flex-grow overflow-x-hidden">
             <main className="pt-1 px-2 pb-4 w-full max-w-[1200px] mx-auto relative z-10">
@@ -96,9 +96,7 @@ const PageLayout = ({ header, footer, children }) => {
           </div>
         </div>
 
-        <Footer className="bg-gray-200 p-4 w-full z-10">
-          {footer}
-        </Footer>
+        <Footer className="bg-gray-200 p-4 w-full z-10">{footer}</Footer>
       </div>
     </LeagueProvider>
   );
@@ -109,7 +107,7 @@ export function SkeletonLayout({ children }) {
     <div className="min-h-screen flex flex-col">
       {/* Header */}
       <SkeletonHeader />
-      
+
       <div className="flex-grow flex relative body-container">
         {/* Main content */}
         <div className="flex-grow overflow-x-hidden">

@@ -1,0 +1,229 @@
+import React, { useState } from 'react';
+import html2canvas from 'html2canvas';
+import { FiDownload } from 'react-icons/fi';
+import { formatTournamentName } from '../../../../utils/formatTournamentName';
+
+
+
+/**
+ * Component for generating and downloading a PNG image of the league picks
+ */
+export const LeaguePicksImageGenerator = ({ 
+  picksData,
+  tableRef,
+  showButton = false,
+  buttonClassName = "flex items-center gap-1 text-xs bg-white/10 hover:bg-white/20 text-white/80 rounded px-2 py-1 transition-colors"
+}) => {
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  
+  const generateImage = async () => {
+    if (!tableRef.current || !picksData) return null;
+    
+    setIsGeneratingImage(true);
+    try {
+      // Create a clone of the table for better image rendering
+      const cloneContainer = document.createElement('div');
+      cloneContainer.className = 'picks-image-container';
+      cloneContainer.style.position = 'absolute';
+      cloneContainer.style.left = '-9999px';
+      cloneContainer.style.backgroundColor = '#121212';
+      cloneContainer.style.padding = '16px';
+      cloneContainer.style.borderRadius = '12px';
+      cloneContainer.style.width = '500px'; // Slightly narrower for better mobile viewing
+      cloneContainer.style.maxWidth = '100vw';
+      
+      // Add title to the image
+      const titleDiv = document.createElement('div');
+      titleDiv.className = 'picks-image-title';
+      titleDiv.style.marginBottom = '16px';
+      titleDiv.style.color = 'white';
+      titleDiv.style.fontWeight = 'bold';
+      titleDiv.style.fontSize = '20px';
+      titleDiv.style.textAlign = 'center';
+      titleDiv.textContent = `${formatTournamentName(picksData.tournament.name)} - League Picks`;
+      cloneContainer.appendChild(titleDiv);
+      
+      // Clone the table and its container
+      const tableContainer = document.createElement('div');
+      tableContainer.style.width = '100%';
+      tableContainer.style.overflow = 'visible';
+      
+      const tableClone = tableRef.current.cloneNode(true);
+      // Remove any max-height constraints
+      tableClone.style.maxHeight = 'none';
+      tableClone.style.height = 'auto';
+      tableClone.style.overflow = 'visible';
+      tableClone.style.width = '100%';
+      tableClone.style.fontSize = '14px';
+      
+      // Remove any scroll containers
+      const scrollContainers = tableClone.querySelectorAll('[class*="overflow-y-auto"]');
+      scrollContainers.forEach(container => {
+        container.style.overflow = 'visible';
+        container.style.maxHeight = 'none';
+      });
+      
+      // Ensure all rows are visible
+      const rows = tableClone.querySelectorAll('tr');
+      rows.forEach(row => {
+        row.style.display = 'table-row';
+        row.style.visibility = 'visible';
+        row.style.height = 'auto';
+      });
+      
+      tableContainer.appendChild(tableClone);
+      cloneContainer.appendChild(tableContainer);
+      
+      // Fix Next.js Image components in the clone
+      const nextImgElements = tableClone.querySelectorAll('img');
+      const imageLoadPromises = [];
+      
+      nextImgElements.forEach(imgElement => {
+        const parentDiv = imgElement.closest('div[class*="w-6 h-6"]');
+        if (parentDiv) {
+          const imgPromise = new Promise((resolve) => {
+            const regularImg = document.createElement('img');
+            const src = imgElement.getAttribute('src');
+            const alt = imgElement.getAttribute('alt') || '';
+            
+            regularImg.onload = () => resolve();
+            regularImg.onerror = () => {
+              regularImg.src = createInitialsAvatar(alt, 28);
+              resolve();
+            };
+            
+            regularImg.width = 28;
+            regularImg.height = 28;
+            regularImg.className = 'rounded object-cover bg-black/20';
+            regularImg.style.width = '28px';
+            regularImg.style.height = '28px';
+            regularImg.style.aspectRatio = '1/1';
+            regularImg.title = alt;
+            regularImg.alt = alt;
+            
+            if (src === '/portrait_placeholder_75.png') {
+              regularImg.src = createInitialsAvatar(alt, 28);
+            } else {
+              regularImg.src = src.startsWith('/') 
+                ? window.location.origin + src
+                : src;
+            }
+            
+            parentDiv.innerHTML = '';
+            parentDiv.appendChild(regularImg);
+            
+            imageLoadPromises.push(imgPromise);
+          });
+        }
+      });
+      
+      // Make sure all images are given a chance to load
+      await Promise.all(imageLoadPromises);
+      
+      // Add watermark
+      const watermark = document.createElement('div');
+      watermark.style.marginTop = '10px';
+      watermark.style.color = 'rgba(255,255,255,0.4)';
+      watermark.style.fontSize = '12px';
+      watermark.style.textAlign = 'center';
+      watermark.textContent = 'Generated by Golf Fantasy App';
+      cloneContainer.appendChild(watermark);
+      
+      document.body.appendChild(cloneContainer);
+      
+      // Wait for any remaining rendering and calculate final height
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      // Force a reflow to ensure all content is properly laid out
+      cloneContainer.offsetHeight;
+      
+      // Calculate the actual height needed
+      const actualHeight = cloneContainer.scrollHeight;
+      
+      const canvas = await html2canvas(cloneContainer, {
+        backgroundColor: '#121212',
+        scale: 2,
+        logging: false,
+        useCORS: true,
+        allowTaint: true,
+        width: 500, // Match container width
+        height: actualHeight,
+        windowWidth: 500,
+        windowHeight: actualHeight,
+        onclone: (clonedDoc) => {
+          // Ensure all content is visible in the clone
+          const clonedContainer = clonedDoc.querySelector('.picks-image-container');
+          if (clonedContainer) {
+            clonedContainer.style.height = 'auto';
+            clonedContainer.style.overflow = 'visible';
+          }
+        }
+      });
+      
+      document.body.removeChild(cloneContainer);
+      
+      // Return canvas URL for external use
+      const imageUrl = canvas.toDataURL('image/png');
+      
+      // If called directly from this component, trigger download
+      if (showButton) {
+        const link = document.createElement('a');
+        link.download = `${picksData.tournament.name.replace(/\s+/g, '-').toLowerCase()}-picks.png`;
+        link.href = imageUrl;
+        link.click();
+      }
+      
+      return imageUrl;
+    } catch (err) {
+      console.error('Error generating image:', err);
+      return null;
+    } finally {
+      setIsGeneratingImage(false);
+    }
+  };
+  
+  // Standalone function for external use
+  const generateAndDownloadImage = async () => {
+    const imageUrl = await generateImage();
+    if (imageUrl) {
+      const link = document.createElement('a');
+      link.download = `${picksData.tournament.name.replace(/\s+/g, '-').toLowerCase()}-picks.png`;
+      link.href = imageUrl;
+      link.click();
+      return true;
+    }
+    return false;
+  };
+  
+  // If we don't need to show the button, just expose the functionality
+  if (!showButton) {
+    return null;
+  }
+  
+  // Otherwise render the button
+  return (
+    <div className="flex justify-end mb-2 px-2">
+      <button
+        onClick={generateImage}
+        disabled={isGeneratingImage}
+        className={buttonClassName}
+      >
+        <FiDownload size={14} />
+        {isGeneratingImage ? 'Generating...' : 'Download Image'}
+      </button>
+    </div>
+  );
+};
+
+// Utility function to use the image generator without a component instance
+export const generatePicksImage = async (picksData, tableRef) => {
+  if (!tableRef.current || !picksData) return null;
+  
+  const generator = new LeaguePicksImageGenerator({ 
+    picksData, 
+    tableRef,
+    showButton: false
+  });
+  
+  return generator.generateImage();
+}; 

@@ -1,8 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { app } from "../../../config/firebaseConfig";
+import { onAuthStateChanged } from "firebase/auth";
 import { useFirebase } from "../firebase-provider";
 import LoadingScreen from "../loading-screen";
 /**
@@ -22,28 +21,43 @@ export const useAuth = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [leagues, setLeagues] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
           const token = await user.getIdToken();
-          const response = await fetch('/api/user/leagues', {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-            },
-          });
-          const data = await response.json();
-          if (data.success) {
-            setLeagues(data.data);
+          
+          // Fetch both profile and leagues data
+          const [profileResponse, leaguesResponse] = await Promise.all([
+            fetch('/api/user/profile', {
+              headers: { 'Authorization': `Bearer ${token}` },
+            }),
+            fetch('/api/user/leagues', {
+              headers: { 'Authorization': `Bearer ${token}` },
+            })
+          ]);
+
+          const [profileData, leaguesData] = await Promise.all([
+            profileResponse.json(),
+            leaguesResponse.json()
+          ]);
+
+          if (profileData.success) {
+            setUserProfile(profileData.data);
+          }
+          if (leaguesData.success) {
+            setLeagues(leaguesData.data);
           }
         } catch (error) {
-          console.error('Error fetching user leagues:', error);
+          console.error('Error fetching user data:', error);
           setLeagues([]);
         }
         setUser(user);
       } else {
         setUser(null);
+        setUserProfile(null);
         setLeagues(null);
       }
       setLoading(false);
@@ -52,26 +66,18 @@ export const useAuth = () => {
     return () => unsubscribe();
   }, [auth]);
 
-  return { user, loading, auth, leagues };
+  return { user, loading, auth, leagues, userProfile };
 };
 
-/**
- * Provider component for the authentication context.
- * Manages user authentication state and provides it to child components.
- * 
- * @param {Object} props - The component props.
- * @param {React.ReactNode} props.children - The child components.
- * @returns {JSX.Element} The authentication provider component.
- */
 export const AuthProvider = ({ children }) => {
-  const { user, loading, leagues } = useAuth();
+  const { user, loading, auth, leagues, userProfile } = useAuth();
 
   if (loading) {
     return <LoadingScreen />;
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, leagues }}>
+    <AuthContext.Provider value={{ user, loading, leagues, auth, userProfile }}>
       {children}
     </AuthContext.Provider>
   );

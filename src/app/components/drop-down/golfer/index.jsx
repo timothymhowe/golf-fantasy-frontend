@@ -95,13 +95,8 @@ function AutocompleteGolfer({
           {!isLoading && filteredGolfers.length > 0 && displayOptions && (
             <Combobox.Options static className={optionsContainerClassName}>
               <div className={headerClasses}>
-                <span title="">Name</span>
-                <span title="Is this golfer registered to play this week?">
-                  Entered?
-                </span>
-                <span title="Have you picked this golfer previously?">
-                  Picked?
-                </span>
+                <span title="">{"     "}Name</span>
+                <span title=""></span>
               </div>
               {filteredGolfers.map((item) => (
                 <DropdownItem key={item.id} item={item} />
@@ -118,7 +113,7 @@ export default AutocompleteGolfer;
 
 // Style constants
 const optionsContainerClassName =
-  "absolute top-25 left-auto w-auto z-8 bg-white shadow-lg max-h-60 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm md:left-auto md:mx-auto lg:left-0 lg:mx-0 font-verdana";
+  "absolute top-25 left-auto w-auto z-8 bg-black shadow-lg max-h-60 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm md:left-auto md:mx-auto lg:left-0 lg:mx-0 font-verdana";
 
 const headerClasses =
-  "px-1 py-1 font-bold text-sm bg-gray-400 sticky top-0 grid grid-cols-3 border border-black z-10 width-auto shadow-md";
+  "px-1 py-1 font-bold text-sm text-white bg-grey-200/90 sticky top-0 grid grid-cols-3 border border-black z-10 width-auto shadow-md";

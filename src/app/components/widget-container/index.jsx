@@ -21,9 +21,8 @@ const WidgetContainer = ({ title, children, defaultExpanded = true }) => {
       
         ${showBorder ? 'border-b border-white/10' : ''} 
         rounded-t-md px-2 py-1
-        flex items-center justify-between h-[53px]  'h-[53px]'} 
-      `}>
-        <h2 className="text-white/90 font-medium text-xl">
+        flex items-center justify-between h-[53px]`}>
+        <h2 className="text-white/90 font-medium text-xl flex-grow">
           {title}
         </h2>
         <motion.button

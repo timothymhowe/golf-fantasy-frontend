@@ -1,0 +1,28 @@
+.live-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .live-text {
+    color: #BFFF00;
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .live-pulse {
+    width: 51px;
+    height: 1.5px;
+    background: #BFFF00;
+    opacity: 0.35;
+    animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 0.35;
+    }
+    65% {
+      opacity: 0.65;
+    }
+  }
