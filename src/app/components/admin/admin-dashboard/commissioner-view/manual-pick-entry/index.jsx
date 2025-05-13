@@ -21,40 +21,49 @@ export const ManualPickEntry = () => {
   const [golferSearchTerm, setGolferSearchTerm] = useState('');
 
   useEffect(() => {
+    console.log('Effect triggered with:', {
+      hasUser: !!user,
+      selectedLeagueId,
+      hasLeagues: !!leagues
+    });
+
+    if (!user || !selectedLeagueId) {
+      return;
+    }
+
     const fetchData = async () => {
-      if (!selectedLeagueId || !user) return;
-      
-      setLoading(true);
-      setError(null);
-      
       try {
+        setLoading(true);
+        setError(null);
+        
         const token = await user.getIdToken();
-        const response = await fetch(`/api/commish/league-data/${selectedLeagueId}`, {
+        const url = `/api/commish/manual-pick-data/${selectedLeagueId}`;
+        console.log('Fetching from:', url);
+
+        const response = await fetch(url, {
           headers: {
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         });
 
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          throw new Error('Failed to fetch pick data');
         }
 
         const result = await response.json();
-        if (result.success) {
-          setData(result.data);
-        } else {
-          setError(result.message || 'Failed to fetch league data');
-        }
+        console.log('Data received:', result);
+        setData(result);
       } catch (err) {
-        console.error('Error fetching league data:', err);
-        setError('Failed to load league data');
+        console.error('Error fetching manual pick data:', err);
+        setError(err.message);
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [selectedLeagueId, user, leagues]);
+  }, [selectedLeagueId, leagues, user]);
 
   // Filter golfers based on search term
   const filteredGolfers = data.golfers.filter(golfer => 
