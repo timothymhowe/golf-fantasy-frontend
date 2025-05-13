@@ -3,6 +3,8 @@ import html2canvas from 'html2canvas';
 import { FiDownload } from 'react-icons/fi';
 import { formatTournamentName } from '../../../../utils/formatTournamentName';
 
+
+
 /**
  * Component for generating and downloading a PNG image of the league picks
  */
@@ -25,25 +27,52 @@ export const LeaguePicksImageGenerator = ({
       cloneContainer.style.position = 'absolute';
       cloneContainer.style.left = '-9999px';
       cloneContainer.style.backgroundColor = '#121212';
-      cloneContainer.style.padding = '20px';
-      cloneContainer.style.borderRadius = '8px';
-      cloneContainer.style.width = '800px'; // Fixed width for better layout
+      cloneContainer.style.padding = '16px';
+      cloneContainer.style.borderRadius = '12px';
+      cloneContainer.style.width = '500px'; // Slightly narrower for better mobile viewing
+      cloneContainer.style.maxWidth = '100vw';
       
       // Add title to the image
       const titleDiv = document.createElement('div');
       titleDiv.className = 'picks-image-title';
-      titleDiv.style.marginBottom = '12px';
+      titleDiv.style.marginBottom = '16px';
       titleDiv.style.color = 'white';
       titleDiv.style.fontWeight = 'bold';
-      titleDiv.style.fontSize = '18px';
+      titleDiv.style.fontSize = '20px';
+      titleDiv.style.textAlign = 'center';
       titleDiv.textContent = `${formatTournamentName(picksData.tournament.name)} - League Picks`;
       cloneContainer.appendChild(titleDiv);
       
-      // Clone the table
+      // Clone the table and its container
+      const tableContainer = document.createElement('div');
+      tableContainer.style.width = '100%';
+      tableContainer.style.overflow = 'visible';
+      
       const tableClone = tableRef.current.cloneNode(true);
-      tableClone.style.width = '100%';
+      // Remove any max-height constraints
       tableClone.style.maxHeight = 'none';
+      tableClone.style.height = 'auto';
       tableClone.style.overflow = 'visible';
+      tableClone.style.width = '100%';
+      tableClone.style.fontSize = '14px';
+      
+      // Remove any scroll containers
+      const scrollContainers = tableClone.querySelectorAll('[class*="overflow-y-auto"]');
+      scrollContainers.forEach(container => {
+        container.style.overflow = 'visible';
+        container.style.maxHeight = 'none';
+      });
+      
+      // Ensure all rows are visible
+      const rows = tableClone.querySelectorAll('tr');
+      rows.forEach(row => {
+        row.style.display = 'table-row';
+        row.style.visibility = 'visible';
+        row.style.height = 'auto';
+      });
+      
+      tableContainer.appendChild(tableClone);
+      cloneContainer.appendChild(tableContainer);
       
       // Fix Next.js Image components in the clone
       const nextImgElements = tableClone.querySelectorAll('img');
@@ -52,27 +81,34 @@ export const LeaguePicksImageGenerator = ({
       nextImgElements.forEach(imgElement => {
         const parentDiv = imgElement.closest('div[class*="w-6 h-6"]');
         if (parentDiv) {
-          // Create a promise for this image loading
           const imgPromise = new Promise((resolve) => {
-            // Create a regular img element
             const regularImg = document.createElement('img');
             const src = imgElement.getAttribute('src');
+            const alt = imgElement.getAttribute('alt') || '';
             
             regularImg.onload = () => resolve();
-            regularImg.onerror = () => resolve(); // Continue even if image fails
-            regularImg.width = 24;
-            regularImg.height = 24;
-            regularImg.className = 'rounded object-cover bg-black/20';
-            regularImg.style.width = '24px';
-            regularImg.style.height = '24px';
-            regularImg.style.aspectRatio = '1/1';
-            regularImg.title = imgElement.getAttribute('alt');
-            regularImg.alt = imgElement.getAttribute('alt');
-            regularImg.src = src.startsWith('/') 
-              ? window.location.origin + src // Handle relative paths
-              : src;
+            regularImg.onerror = () => {
+              regularImg.src = createInitialsAvatar(alt, 28);
+              resolve();
+            };
             
-            // Replace Next.js Image with regular img
+            regularImg.width = 28;
+            regularImg.height = 28;
+            regularImg.className = 'rounded object-cover bg-black/20';
+            regularImg.style.width = '28px';
+            regularImg.style.height = '28px';
+            regularImg.style.aspectRatio = '1/1';
+            regularImg.title = alt;
+            regularImg.alt = alt;
+            
+            if (src === '/portrait_placeholder_75.png') {
+              regularImg.src = createInitialsAvatar(alt, 28);
+            } else {
+              regularImg.src = src.startsWith('/') 
+                ? window.location.origin + src
+                : src;
+            }
+            
             parentDiv.innerHTML = '';
             parentDiv.appendChild(regularImg);
             
@@ -83,8 +119,6 @@ export const LeaguePicksImageGenerator = ({
       
       // Make sure all images are given a chance to load
       await Promise.all(imageLoadPromises);
-      
-      cloneContainer.appendChild(tableClone);
       
       // Add watermark
       const watermark = document.createElement('div');
@@ -97,16 +131,33 @@ export const LeaguePicksImageGenerator = ({
       
       document.body.appendChild(cloneContainer);
       
-      // Wait a brief moment for any remaining rendering
+      // Wait for any remaining rendering and calculate final height
       await new Promise(resolve => setTimeout(resolve, 200));
+      
+      // Force a reflow to ensure all content is properly laid out
+      cloneContainer.offsetHeight;
+      
+      // Calculate the actual height needed
+      const actualHeight = cloneContainer.scrollHeight;
       
       const canvas = await html2canvas(cloneContainer, {
         backgroundColor: '#121212',
-        scale: 2, // Higher resolution
+        scale: 2,
         logging: false,
         useCORS: true,
         allowTaint: true,
-        width: 800, // Fixed width for consistency
+        width: 500, // Match container width
+        height: actualHeight,
+        windowWidth: 500,
+        windowHeight: actualHeight,
+        onclone: (clonedDoc) => {
+          // Ensure all content is visible in the clone
+          const clonedContainer = clonedDoc.querySelector('.picks-image-container');
+          if (clonedContainer) {
+            clonedContainer.style.height = 'auto';
+            clonedContainer.style.overflow = 'visible';
+          }
+        }
       });
       
       document.body.removeChild(cloneContainer);

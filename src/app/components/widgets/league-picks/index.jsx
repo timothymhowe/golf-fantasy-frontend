@@ -5,6 +5,65 @@ import Image from 'next/image';
 import { formatTournamentName } from '../../../utils/formatTournamentName';
 import { LeaguePicksImageGenerator, generatePicksImage } from './image-generator';
 
+const stringToColor = (str) => {
+  // Darker versions of Google's color palette for better contrast with white text
+  const colors = [
+    '#1a73e8', // Darker Google Blue
+    '#188038', // Darker Google Green
+    '#b06000', // Darker Google Yellow
+    '#c5221f', // Darker Google Red
+    '#185abc', // Dark Blue
+    '#137333', // Dark Green
+    '#b06000', // Dark Yellow
+    '#a50e0e', // Dark Red
+    '#1a73e8', // Dark Blue
+    '#188038', // Dark Green
+    '#b06000', // Dark Yellow
+    '#c5221f', // Dark Red
+  ];
+  
+  // Generate a consistent index from the string
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return colors[Math.abs(hash) % colors.length];
+};
+
+// Function to get initials from a name
+const getInitials = (name) => {
+  if (!name) return '?';
+  return name
+    .split(' ')
+    .map(part => part[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+};
+
+// Function to create an initials avatar
+const createInitialsAvatar = (name, size) => {
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  
+  // Fill background with the user's color
+  ctx.fillStyle = stringToColor(name);
+  ctx.fillRect(0, 0, size, size);
+  
+  // Add initials with Google's style
+  ctx.fillStyle = 'white';
+  // Use a larger, thinner font size (Google uses Roboto)
+  ctx.font = `400 ${size * 0.5}px 'Roboto', 'Arial', sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(getInitials(name), size / 2, size / 2);
+  
+  return canvas.toDataURL();
+};
+
+
 const LeaguePicks = forwardRef(({setTitle, showDownloadButton = false}, ref) => {
   const { user } = useAuth();
   const { selectedLeagueId } = useLeague();
@@ -194,27 +253,32 @@ const LeaguePicks = forwardRef(({setTitle, showDownloadButton = false}, ref) => 
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-white/80">
                       {golfer.golfer_first_name} {golfer.golfer_last_name}
-                    </span>
-                    <span className="text-xs text-white/50">
-                      ({users.length})
+                      {users.length > 1 && (
+                        <span className="text-xs text-white/50 ml-1">
+                          x{users.length}
+                        </span>
+                      )}
                     </span>
                   </div>
                 </td>
                 <td className="px-2 py-1">
                   <div className="flex items-center gap-1 flex-wrap">
-                    {users.map((user) => (
-                      <div key={user.id} className="w-6 h-6 relative flex-shrink-0">
-                        <Image
-                          src={user.avatar_url || "/portrait_placeholder_75.png"}
-                          alt={user.name}
-                          width={24}
-                          height={24}
-                          className="rounded object-cover bg-black/20"
-                          style={{ aspectRatio: '1/1' }}
-                          title={user.name}
-                        />
-                      </div>
-                    ))}
+                    {users.map((user) => {
+                      const avatarUrl = user.avatar_url || createInitialsAvatar(user.name, 75); // Slightly larger for better readability
+                      return (
+                        <div key={user.id} className="w-6 h-6 relative flex-shrink-0">
+                          <Image
+                            src={avatarUrl}
+                            alt={user.name}
+                            width={24}
+                            height={24}
+                            className="rounded object-cover bg-black/20"
+                            style={{ aspectRatio: '1/1' }}
+                            title={user.name}
+                          />
+                        </div>
+                      );
+                    })}
                   </div>
                 </td>
                 <td className="hidden sm:table-cell px-2 py-1 text-center whitespace-nowrap">
