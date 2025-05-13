@@ -11,8 +11,7 @@ export const CommissionerView = () => {
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [tournamentName, setTournamentName] = useState('');
-  const [showComponents, setShowComponents] = useState(false);
-  
+
   const handleImageDownload = async (canvas, filename) => {
     try {
       // Check if running on mobile and if Web Share API is available
@@ -536,11 +535,7 @@ export const CommissionerView = () => {
       <div className="bg-white rounded-lg shadow p-4">
         <h2 className="text-lg font-semibold text-blue-600 mb-4">Commissioner Controls</h2>
         <ManualPickEntry />
-      </div>
-      
-      <div className="admin-controls mb-6 mt-4">
-        <h3 className="text-lg font-medium mb-3">Admin Actions</h3>
-        <div className="flex flex-wrap gap-3">
+        <div className="mt-4 flex flex-wrap gap-3">
           <button 
             type="button"
             onClick={downloadPicksImage}
@@ -560,15 +555,6 @@ export const CommissionerView = () => {
             <FiDownload size={16} />
             <span>{isGeneratingImage ? 'Generating...' : 'Download Standings Image'}</span>
           </button>
-
-          <button 
-            type="button"
-            onClick={() => setShowComponents(!showComponents)}
-            className="flex items-center gap-2 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded transition-colors"
-          >
-            {showComponents ? <FiEyeOff size={16} /> : <FiEye size={16} />}
-            <span>{showComponents ? 'Hide Components' : 'Show Components'}</span>
-          </button>
         </div>
         
         {/* Error display */}
@@ -579,8 +565,8 @@ export const CommissionerView = () => {
         )}
       </div>
       
-      {/* Components section - hidden by default */}
-      <div className={`components-section space-y-4 ${showComponents ? 'block' : 'hidden'}`}>
+      {/* Components section - always hidden */}
+      <div className="components-section space-y-4 hidden">
         {/* Add the LeaguePicks component with the ref */}
         <div className="picks-section bg-gray-800 rounded-lg p-4">
           <h3 className="text-lg font-medium mb-3 text-white">League Picks</h3>
