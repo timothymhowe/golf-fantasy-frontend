@@ -53,7 +53,7 @@ const PageLayout = ({ header, footer, children }) => {
 
           {/* Right Column */}
           <div className="flex flex-col gap-2">
-            <WidgetContainer title="Schedule" defaultExpanded={false}>
+            <WidgetContainer title="My Pick History" defaultExpanded={false}>
               <PickHistory />
             </WidgetContainer>
 
