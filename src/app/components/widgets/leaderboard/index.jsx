@@ -180,12 +180,19 @@ const Leaderboard = () => {
                             }}
                           />
                         </div>
-                        <span className={`
-                          ${item.medalRank === 1 ? 'text-yellow-500' :
-                            item.medalRank === 2 ? 'text-slate-400' :
-                            item.medalRank === 3 ? 'text-amber-700' :
-                            'text-white/90'}
-                        `}>
+                        <span 
+                          className={`
+                            ${item.medalRank === 1 ? 'text-yellow-500' :
+                              item.medalRank === 2 ? 'text-slate-400' :
+                              item.medalRank === 3 ? 'text-amber-700' :
+                              'text-white/90'}
+                            cursor-pointer hover:underline
+                          `}
+                          onClick={() => setSelectedMember({
+                            leagueMemberId: item.leagueMemberId,
+                            name: item.name
+                          })}
+                        >
                           {item.name}
                         </span>
                       </div>
