@@ -5,6 +5,40 @@ import Leaderboard from '../../../widgets/leaderboard';
 import { FiDownload, FiEye, FiEyeOff } from 'react-icons/fi';
 import { formatTournamentName } from '../../../../utils/formatTournamentName';
 
+// Avatar generation helpers (shared with leaderboard)
+const stringToColor = (str) => {
+  const colors = [
+    '#1a73e8', '#188038', '#b06000', '#c5221f',
+    '#185abc', '#137333', '#b06000', '#a50e0e',
+    '#1a73e8', '#188038', '#b06000', '#c5221f',
+  ];
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return colors[Math.abs(hash) % colors.length];
+};
+
+const getInitials = (name) => {
+  if (!name) return '?';
+  return name.split(' ').map(part => part[0]).join('').toUpperCase().slice(0, 2);
+};
+
+const createInitialsAvatar = (name, size) => {
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = stringToColor(name);
+  ctx.fillRect(0, 0, size, size);
+  ctx.fillStyle = 'white';
+  ctx.font = `400 ${size * 0.5}px 'Roboto', 'Arial', sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(getInitials(name), size / 2, size / 2);
+  return canvas.toDataURL();
+};
+
 export const CommissionerView = () => {
   const leaguePicksRef = useRef(null);
   const leaderboardRef = useRef(null);
@@ -297,197 +331,232 @@ export const CommissionerView = () => {
 
   const downloadStandingsImage = async (e) => {
     if (e) e.preventDefault();
-    
+
     setIsGeneratingImage(true);
     setErrorMessage(null);
-    
+
     try {
       // Get the table element directly from the document
-      const tableElement = document.querySelector('.leaderboard');
+      const tableElement = document.querySelector('.leaderboard table');
       if (!tableElement) {
         throw new Error('Could not find standings table element');
       }
 
+      // Extract row data from the DOM
+      const originalRows = tableElement.querySelectorAll('tbody tr');
+      const standings = [];
+      originalRows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length < 5) return;
+
+        const rankEl = cells[0].querySelector('span');
+        const rank = rankEl ? rankEl.textContent.trim() : '';
+
+        const userCell = cells[1];
+        const nameEl = userCell.querySelector('span');
+        const name = nameEl ? nameEl.textContent.trim() : '';
+
+        const imgEl = userCell.querySelector('img');
+        let avatarSrc = null;
+        if (imgEl) {
+          const src = imgEl.getAttribute('src');
+          if (src && src !== '/portrait_placeholder_75.png') {
+            avatarSrc = src.startsWith('/') ? window.location.origin + src : src;
+          }
+        }
+
+        const points = cells[2].textContent.trim();
+        const wins = cells[3].textContent.trim();
+        const noPick = cells[4].textContent.trim();
+
+        // Detect medal rank from row classes
+        const classList = row.className;
+        let medalRank = 0;
+        if (classList.includes('yellow-500')) medalRank = 1;
+        else if (classList.includes('slate-400')) medalRank = 2;
+        else if (classList.includes('amber-700')) medalRank = 3;
+
+        standings.push({ rank, name, avatarSrc, points, wins, noPick, medalRank });
+      });
+
+      // Remove players with 0 or fewer points
+      const filtered = standings.filter(s => parseFloat(s.points) > 0);
+      // Use filtered list, but fall back to full list if everyone would be culled
+      const displayStandings = filtered.length > 0 ? filtered : standings;
+
+      if (displayStandings.length === 0) {
+        throw new Error('No standings data found');
+      }
+
+      // Split into two columns (top half left, bottom half right)
+      const midpoint = Math.ceil(displayStandings.length / 2);
+      const leftCol = displayStandings.slice(0, midpoint);
+      const rightCol = displayStandings.slice(midpoint);
+
+      // Container width to fit two mini-tables
+      const containerWidth = 750;
+
       // Create a container for the image
       const container = document.createElement('div');
-      container.style.position = 'absolute';
-      container.style.left = '-9999px';
-      container.style.backgroundColor = '#121212';
-      container.style.padding = '16px';
-      container.style.borderRadius = '12px';
-      container.style.width = '500px'; // Fixed width for mobile-friendly view
-      container.style.maxWidth = '100vw';
+      container.style.cssText = `
+        position: absolute; left: -9999px;
+        background-color: #121212; padding: 16px;
+        border-radius: 12px; width: ${containerWidth}px;
+        font-family: Verdana, sans-serif; color: white;
+      `;
 
-      // Add title for standings
-      const titleDiv = document.createElement('div');
-      titleDiv.style.marginBottom = '16px';
-      titleDiv.style.color = 'white';
-      titleDiv.style.fontWeight = 'bold';
-      titleDiv.style.fontSize = '18px';
-      titleDiv.style.textAlign = 'center';
-      titleDiv.style.padding = '4px 8px';
-      titleDiv.style.lineHeight = '1.4';
-      
-      // Format today's date as "Month Day, Year"
+      // Add title
       const today = new Date();
-      const dateStr = today.toLocaleDateString('en-US', { 
-        month: 'long', 
-        day: 'numeric', 
-        year: 'numeric' 
+      const dateStr = today.toLocaleDateString('en-US', {
+        month: 'long', day: 'numeric', year: 'numeric'
       });
+      const titleDiv = document.createElement('div');
+      titleDiv.style.cssText = `
+        margin-bottom: 16px; color: white; font-weight: bold;
+        font-size: 18px; text-align: center; padding: 4px 8px; line-height: 1.4;
+      `;
       titleDiv.textContent = `League Standings - ${dateStr}`;
       container.appendChild(titleDiv);
 
-      // Clone the table and its container
-      const tableContainer = document.createElement('div');
-      tableContainer.style.width = '100%';
-      tableContainer.style.overflow = 'visible';
+      // Create the two-column flex container
+      const columnsDiv = document.createElement('div');
+      columnsDiv.style.cssText = 'display: flex; gap: 12px; width: 100%;';
 
-      const clone = tableElement.cloneNode(true);
-      
-      // Style the cloned table
-      clone.style.width = '100%';
-      clone.style.maxHeight = 'none';
-      clone.style.height = 'auto';
-      clone.style.overflow = 'visible';
-      clone.style.fontSize = '14px';
-      clone.style.backgroundColor = '#121212';
-      clone.style.color = 'white';
+      // Helper to build a mini-table for one column
+      const buildMiniTable = (entries) => {
+        const table = document.createElement('table');
+        table.style.cssText = `
+          width: 100%; border-collapse: collapse;
+          background-color: #121212; color: white; font-size: 13px;
+        `;
 
-      // Style the header row to ensure it's not cut off
-      const headerRow = clone.querySelector('thead tr');
-      if (headerRow) {
-        headerRow.style.height = '36px';
-        headerRow.style.backgroundColor = '#000000';
-        headerRow.style.backdropFilter = 'blur(8px)';
-      }
+        // Header
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+        headerRow.style.cssText = 'height: 32px; background-color: #000000;';
 
-      // Style header cells
-      const headerCells = clone.querySelectorAll('thead th');
-      headerCells.forEach(cell => {
-        cell.style.padding = '4px 8px';
-        cell.style.verticalAlign = 'middle';
-        cell.style.height = '36px';
-        cell.style.boxSizing = 'border-box';
-      });
-
-      // Remove any scroll containers and ensure all rows are visible
-      const scrollContainers = clone.querySelectorAll('[class*="overflow-y-auto"]');
-      scrollContainers.forEach(container => {
-        container.style.overflow = 'visible';
-        container.style.maxHeight = 'none';
-      });
-
-      // Ensure all rows are visible
-      const rows = clone.querySelectorAll('tr');
-      rows.forEach(row => {
-        row.style.display = 'table-row';
-        row.style.visibility = 'visible';
-        row.style.height = 'auto';
-        row.style.verticalAlign = 'middle';
-      });
-
-      // Style all cells to ensure vertical centering
-      const cells = clone.querySelectorAll('td');
-      cells.forEach(cell => {
-        // Reset any existing styles that might interfere
-        cell.style.cssText = '';
-        // Apply new styles
-        cell.style.verticalAlign = 'middle';
-        cell.style.padding = '4px 8px';
-        cell.style.height = '28px';
-        cell.style.boxSizing = 'border-box';
-        cell.style.display = 'table-cell';
-        cell.style.textAlign = 'center';
-        
-        // Find any text nodes and wrap them in spans
-        Array.from(cell.childNodes).forEach(node => {
-          if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
-            const span = document.createElement('span');
-            span.style.cssText = `
-              display: inline-block;
-              vertical-align: middle;
-              line-height: 28px;
-            `;
-            span.textContent = node.textContent;
-            node.replaceWith(span);
-          }
-        });
-      });
-
-      // Fix images in the clone
-      const nextImgElements = clone.querySelectorAll('img');
-      nextImgElements.forEach(imgElement => {
-        const parentDiv = imgElement.closest('div[class*="w-8 h-8"]');
-        if (parentDiv) {
-          // Reset parent div styles
-          parentDiv.style.cssText = '';
-          parentDiv.style.display = 'inline-flex';
-          parentDiv.style.alignItems = 'center';
-          parentDiv.style.justifyContent = 'center';
-          parentDiv.style.verticalAlign = 'middle';
-          parentDiv.style.height = '28px';
-          
-          const src = imgElement.getAttribute('src');
-          const alt = imgElement.getAttribute('alt') || '';
-          
-          // Create a regular img element
-          const regularImg = document.createElement('img');
-          regularImg.width = 24;
-          regularImg.height = 24;
-          regularImg.className = 'rounded object-cover bg-black/20';
-          regularImg.style.cssText = `
-            width: 24px;
-            height: 24px;
-            aspect-ratio: 1/1;
-            vertical-align: middle;
-            display: inline-block;
+        const headers = [
+          { text: 'Rk', width: '30px', align: 'center' },
+          { text: 'User', width: 'auto', align: 'left' },
+          { text: 'Pts', width: '50px', align: 'center' },
+          { text: 'W', width: '30px', align: 'center' },
+          { text: 'NP', width: '30px', align: 'center' },
+        ];
+        headers.forEach(h => {
+          const th = document.createElement('th');
+          th.textContent = h.text;
+          th.style.cssText = `
+            padding: 4px 6px; vertical-align: middle; text-align: ${h.align};
+            font-size: 11px; text-transform: uppercase; color: rgba(255,255,255,0.5);
+            ${h.width !== 'auto' ? `width: ${h.width};` : ''}
           `;
-          regularImg.title = alt;
-          regularImg.alt = alt;
-          
-          // Handle image source
-          if (src === '/portrait_placeholder_75.png') {
-            regularImg.src = createInitialsAvatar(alt, 24);
-          } else {
-            regularImg.src = src.startsWith('/') 
-              ? window.location.origin + src
-              : src;
-          }
-          
-          parentDiv.innerHTML = '';
-          parentDiv.appendChild(regularImg);
-        }
-      });
+          headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
 
-      tableContainer.appendChild(clone);
-      container.appendChild(tableContainer);
+        // Body
+        const tbody = document.createElement('tbody');
+        const cellBase = 'padding: 4px 6px; vertical-align: middle; line-height: 22px; font-size: 13px; position: relative; top: -7px;';
+
+        entries.forEach(entry => {
+          const tr = document.createElement('tr');
+          const rowBg = entry.medalRank === 1 ? 'background-color: rgba(234,179,8,0.05);' :
+            entry.medalRank === 2 ? 'background-color: rgba(148,163,184,0.05);' :
+            entry.medalRank === 3 ? 'background-color: rgba(180,83,9,0.05);' : '';
+          tr.style.cssText = `border-bottom: 1px solid rgba(255,255,255,0.1); ${rowBg}`;
+
+          // Medal color
+          const medalColor = entry.medalRank === 1 ? '#eab308' :
+            entry.medalRank === 2 ? '#94a3b8' :
+            entry.medalRank === 3 ? '#b45309' : 'rgba(255,255,255,0.5)';
+          const nameColor = entry.medalRank === 1 ? '#eab308' :
+            entry.medalRank === 2 ? '#94a3b8' :
+            entry.medalRank === 3 ? '#b45309' : 'rgba(255,255,255,0.9)';
+
+          // Rank cell
+          const rankTd = document.createElement('td');
+          rankTd.style.cssText = `${cellBase} text-align: center; color: ${medalColor};`;
+          rankTd.textContent = entry.rank;
+          tr.appendChild(rankTd);
+
+          // User cell (avatar + name) — use inline layout instead of flex for html2canvas compatibility
+          const userTd = document.createElement('td');
+          userTd.style.cssText = `${cellBase} text-align: left; white-space: nowrap;`;
+
+          const avatar = document.createElement('img');
+          avatar.width = 22;
+          avatar.height = 22;
+          avatar.style.cssText = 'width: 22px; height: 22px; min-width: 22px; border-radius: 4px; object-fit: cover; vertical-align: middle; margin-right: 6px; display: inline-block; position: relative; top: 7px;';
+          avatar.src = entry.avatarSrc || createInitialsAvatar(entry.name, 22);
+          avatar.alt = entry.name;
+
+          const nameSpan = document.createElement('span');
+          nameSpan.textContent = entry.name;
+          nameSpan.style.cssText = `color: ${nameColor}; vertical-align: middle; display: inline;`;
+
+          userTd.appendChild(avatar);
+          userTd.appendChild(nameSpan);
+          tr.appendChild(userTd);
+
+          // Points cell
+          const ptsTd = document.createElement('td');
+          ptsTd.style.cssText = `${cellBase} text-align: center; color: rgba(255,255,255,0.7);`;
+          ptsTd.textContent = entry.points;
+          tr.appendChild(ptsTd);
+
+          // Wins cell
+          const winsTd = document.createElement('td');
+          winsTd.style.cssText = `${cellBase} text-align: center; color: rgba(255,255,255,0.7);`;
+          winsTd.textContent = entry.wins;
+          tr.appendChild(winsTd);
+
+          // No Pick cell
+          const npTd = document.createElement('td');
+          npTd.style.cssText = `${cellBase} text-align: center; color: rgba(255,255,255,0.7);`;
+          npTd.textContent = entry.noPick;
+          tr.appendChild(npTd);
+
+          tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        return table;
+      };
+
+      // Build left and right columns
+      const leftWrapper = document.createElement('div');
+      leftWrapper.style.cssText = 'flex: 1; min-width: 0;';
+      leftWrapper.appendChild(buildMiniTable(leftCol));
+
+      const rightWrapper = document.createElement('div');
+      rightWrapper.style.cssText = 'flex: 1; min-width: 0;';
+      rightWrapper.appendChild(buildMiniTable(rightCol));
+
+      columnsDiv.appendChild(leftWrapper);
+      columnsDiv.appendChild(rightWrapper);
+      container.appendChild(columnsDiv);
 
       // Add to document temporarily
       document.body.appendChild(container);
 
-      // Wait for any remaining rendering
+      // Wait for rendering
       await new Promise(resolve => setTimeout(resolve, 200));
-
-      // Force a reflow to ensure all content is properly laid out
       container.offsetHeight;
 
-      // Calculate the actual height needed
       const actualHeight = container.scrollHeight;
 
       // Import html2canvas dynamically
       const html2canvas = (await import('html2canvas')).default;
-      
-      // Capture the container
+
       const canvas = await html2canvas(container, {
         backgroundColor: '#121212',
         scale: 2,
         logging: false,
         useCORS: true,
         allowTaint: true,
-        width: 500,
+        width: containerWidth,
         height: actualHeight,
-        windowWidth: 500,
+        windowWidth: containerWidth,
         windowHeight: actualHeight,
         onclone: (clonedDoc) => {
           const clonedContainer = clonedDoc.querySelector('div');
@@ -497,16 +566,14 @@ export const CommissionerView = () => {
           }
         }
       });
-      
-      // Remove the container
+
       document.body.removeChild(container);
-      
-      // Replace the download code with the new handler
+
       await handleImageDownload(
         canvas,
         `league-standings-${today.toISOString().split('T')[0]}.png`
       );
-      
+
     } catch (error) {
       console.error('Error generating image:', error);
       setErrorMessage(error.message);
