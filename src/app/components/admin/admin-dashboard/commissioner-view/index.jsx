@@ -46,6 +46,15 @@ export const CommissionerView = () => {
   const [errorMessage, setErrorMessage] = useState(null);
   const [tournamentName, setTournamentName] = useState('');
 
+  // Stable callback to avoid re-renders in LeaguePicks when parent state changes
+  const handleSetTitle = React.useCallback((title) => {
+    if (typeof title === 'string') {
+      setTournamentName(title);
+    } else if (title?.props?.children?.[0]?.props?.children) {
+      setTournamentName(title.props.children[0].props.children);
+    }
+  }, []);
+
   const handleImageDownload = async (canvas, filename) => {
     try {
       // Check if running on mobile and if Web Share API is available
@@ -623,16 +632,9 @@ export const CommissionerView = () => {
         {/* Add the LeaguePicks component with the ref */}
         <div className="picks-section bg-gray-800 rounded-lg p-4">
           <h3 className="text-lg font-medium mb-3 text-white">League Picks</h3>
-          <LeaguePicks 
-            ref={leaguePicksRef} 
-            setTitle={(title) => {
-              // Extract tournament name from the title if it's a string
-              if (typeof title === 'string') {
-                setTournamentName(title);
-              } else if (title?.props?.children?.[0]?.props?.children) {
-                setTournamentName(title.props.children[0].props.children);
-              }
-            }} 
+          <LeaguePicks
+            ref={leaguePicksRef}
+            setTitle={handleSetTitle}
           />
         </div>
 
