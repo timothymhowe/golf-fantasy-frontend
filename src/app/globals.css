@@ -5,3 +5,66 @@
 .font-verdana{
   font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
+
+@keyframes rainbow-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+/* driver.js dark theme overrides */
+.demo-tour-popover.driver-popover {
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.demo-tour-popover .driver-popover-title {
+  color: #BFFF00;
+  font-size: 1.1rem;
+}
+
+.demo-tour-popover .driver-popover-description {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.demo-tour-popover .driver-popover-progress-text {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.demo-tour-popover .driver-popover-next-btn,
+.demo-tour-popover .driver-popover-close-btn {
+  background: #BFFF00;
+  color: black;
+  border: none;
+  font-weight: 600;
+  text-shadow: none;
+}
+
+.demo-tour-popover .driver-popover-next-btn:hover,
+.demo-tour-popover .driver-popover-close-btn:hover {
+  background: #9FDF00;
+}
+
+.demo-tour-popover .driver-popover-prev-btn {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.demo-tour-popover .driver-popover-prev-btn:hover {
+  color: white;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.demo-tour-popover .driver-popover-arrow-side-left .driver-popover-arrow,
+.demo-tour-popover .driver-popover-arrow-side-right .driver-popover-arrow,
+.demo-tour-popover .driver-popover-arrow-side-top .driver-popover-arrow,
+.demo-tour-popover .driver-popover-arrow-side-bottom .driver-popover-arrow {
+  border-color: #1a1a1a;
+}
+
+/* Ensure pick history modal renders above driver.js overlay when highlighted */
+#pick-history-modal {
+  z-index: 100002 !important;
+}

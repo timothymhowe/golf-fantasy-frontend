@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { motion } from "framer-motion";
 
-const WidgetContainer = ({ title, children, defaultExpanded = true }) => {
+const WidgetContainer = ({ id, title, children, defaultExpanded = true }) => {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const [showBorder, setShowBorder] = useState(defaultExpanded);
 
   return (
-    <div className="
+    <div id={id} className="
       rounded-md bg-[#1a1a1a]
       border border-white/10
       backdrop-blur-sm

@@ -8,23 +8,25 @@ const GuardedPage = ({ children }) => {
   const { user, loading } = useAuth();
   const router = useRouter();
 
+  const isDemoUser = user?.email === "ailettedemo@gmail.com";
+
   useEffect(() => {
     if (!loading && !user) {
-      console.log("User not authenticated, redirecting to login.");
       router.push("/login");
+    } else if (!loading && isDemoUser) {
+      router.replace("/demo");
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, isDemoUser]);
 
   if (loading) {
-    return (
-      <LoadingScreen />
-      // <div className="min-h-screen flex items-center justify-center">
-      //   <div className="animate-pulse">Loading...</div>
-      // </div>
-    );
+    return <LoadingScreen />;
   }
 
-  return user ? children : null;
+  if (!user || isDemoUser) {
+    return null;
+  }
+
+  return children;
 };
 
 export default GuardedPage;

@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Link from "next/link";
 import LogInForm from "../components/forms/log-in";
 import HeroContainer from '../components/hero-container';
 import FloatingText from "../components/floating-text";
@@ -24,16 +25,34 @@ const LoginPage = () => {
   return (
     <div className="min-h-screen bg-black flex flex-col items-center justify-top px-6 pb-[env(safe-area-inset-bottom,24px)]">
       <div className="w-full max-w-[1000px]">
-        <div className="flex flex-row items-center mt-10">
-          <Logo className="mb-4 z-10" logoSize={100} />
-          <div className="flex flex-col mb-4">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-[0.9] tracking-tighter bg-gradient-to-t from-gray-400 to-white bg-clip-text text-transparent pb-2 md:pb-3 lg:pb-4">
-              pick.golf<span className="text-sm text-gray-500 tracking-tight">(beta)</span>
-            </h1>
+        <div className="flex flex-row items-center justify-between mt-10">
+          <div className="flex flex-row items-center">
+            <Logo className="mb-4 z-10" logoSize={100} />
+            <div className="flex flex-col mb-4">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-[0.9] tracking-tighter bg-gradient-to-t from-gray-400 to-white bg-clip-text text-transparent pb-2 md:pb-3 lg:pb-4">
+                pick.golf
+              </h1>
+            </div>
           </div>
+          <Link
+            href="/demo"
+            className="mb-4 px-5 py-2 rounded-xl border border-white/20 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-[#BFFF00]/40 transition-all duration-300 group relative overflow-hidden"
+          >
+            <span
+              className="absolute inset-0 w-1/2"
+              style={{
+                background: "linear-gradient(90deg, transparent, rgba(255,0,0,0.08), rgba(255,165,0,0.08), rgba(255,255,0,0.08), rgba(0,255,0,0.08), rgba(0,150,255,0.08), rgba(128,0,255,0.08), transparent)",
+                animation: "rainbow-shimmer 3s ease-in-out infinite",
+              }}
+            />
+            <span className="relative text-white/70 group-hover:text-white text-sm font-medium transition-colors">
+              Try the demo
+            </span>
+            <span className="relative ml-2 text-white/40 group-hover:text-[#BFFF00] transition-colors">&rarr;</span>
+          </Link>
         </div>
       </div>
-      
+
       <HeroContainer>
         <div className="flex flex-col items-center w-full gap-4">
           <FloatingText>
@@ -49,7 +68,7 @@ const LoginPage = () => {
       </HeroContainer>
 
       <p className="text-gray-300 mt-8 mb-8 text-sm italic">
-        Need help? Email jmonahan@pgatour.com
+        Need help? Email help@ailette.io
       </p>
     </div>
   );
