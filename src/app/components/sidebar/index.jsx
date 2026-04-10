@@ -24,15 +24,6 @@ const menuItems = [
       </svg>
     )
   },
-  { 
-    label: 'Legacy Form',
-    href: 'https://docs.google.com/forms/d/e/1FAIpQLScqFE9p85yilbw00gtHi2-aKgXakE8GYg-W2borVuPaXvGapQ/viewform',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-        <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" />
-      </svg>
-    )
-  }
 ];
 
 const Sidebar = ({ isOpen }) => {
