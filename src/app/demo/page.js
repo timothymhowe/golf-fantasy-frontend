@@ -108,6 +108,11 @@ const TOUR_STEPS = [
       title: "That's the tour!",
       description: "Go ahead and explore — make a pick, check the leaderboard. When you're ready, hit 'Sign Up Free' to create your own league.",
     },
+    onHighlightStarted: () => {
+      if (window.innerWidth < 1024) {
+        expandWidget("#widget-pick");
+      }
+    },
   },
 ];
 
