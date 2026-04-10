@@ -36,7 +36,7 @@ const LoginPage = () => {
           </div>
           <Link
             href="/demo"
-            className="mb-4 px-5 py-2 rounded-xl border border-white/20 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-[#BFFF00]/40 transition-all duration-300 group relative overflow-hidden"
+            className="mb-4 px-3 py-1.5 md:px-5 md:py-2 rounded-xl border border-white/20 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-[#BFFF00]/40 transition-all duration-300 group relative overflow-hidden flex-shrink-0"
           >
             <span
               className="absolute inset-0 w-1/2"
@@ -45,10 +45,10 @@ const LoginPage = () => {
                 animation: "rainbow-shimmer 3s ease-in-out infinite",
               }}
             />
-            <span className="relative text-white/70 group-hover:text-white text-sm font-medium transition-colors">
+            <span className="relative text-white/70 group-hover:text-white text-xs md:text-sm font-medium transition-colors whitespace-nowrap">
               Try the demo
             </span>
-            <span className="relative ml-2 text-white/40 group-hover:text-[#BFFF00] transition-colors">&rarr;</span>
+            <span className="relative ml-1 md:ml-2 text-white/40 group-hover:text-[#BFFF00] transition-colors">&rarr;</span>
           </Link>
         </div>
       </div>

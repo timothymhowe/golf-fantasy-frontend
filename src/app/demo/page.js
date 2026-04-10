@@ -51,7 +51,7 @@ const TOUR_STEPS = [
   {
     popover: {
       title: "Welcome to pick.golf!",
-      description: "Every week, you pick one golfer to represent you in that week's PGA tournament. Let's walk through the dashboard.",
+      description: "Every week, you pick one golfer to represent you in that week's PGA tournament. But you can only pick a golfer once per season! Let's walk through the dashboard.",
     },
   },
   {

@@ -57,6 +57,19 @@
   border-color: rgba(255, 255, 255, 0.4);
 }
 
+.demo-tour-popover .driver-popover-prev-btn:focus {
+  color: rgba(255, 255, 255, 0.5);
+  background: transparent;
+  outline: 1px solid rgba(255, 255, 255, 0.3);
+  outline-offset: 2px;
+}
+
+.demo-tour-popover .driver-popover-next-btn:focus,
+.demo-tour-popover .driver-popover-close-btn:focus {
+  outline: 1px solid rgba(191, 255, 0, 0.5);
+  outline-offset: 2px;
+}
+
 .demo-tour-popover .driver-popover-arrow-side-left .driver-popover-arrow,
 .demo-tour-popover .driver-popover-arrow-side-right .driver-popover-arrow,
 .demo-tour-popover .driver-popover-arrow-side-top .driver-popover-arrow,
