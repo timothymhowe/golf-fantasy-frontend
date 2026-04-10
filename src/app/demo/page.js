@@ -273,13 +273,18 @@ const DemoPage = () => {
             >
               Exit Demo
             </button>
-            <Link
-              href="/signup"
-              onClick={handleExitDemo}
+            <button
+              onClick={async () => {
+                const auth = getAuth(app);
+                if (auth.currentUser?.email === DEMO_EMAIL) {
+                  await signOut(auth);
+                }
+                router.push("/signup");
+              }}
               className="px-4 py-1.5 rounded-lg bg-[#BFFF00] text-black font-semibold text-sm hover:bg-[#9FDF00] transition-colors"
             >
               Sign Up Free
-            </Link>
+            </button>
           </div>
         </div>
       </div>
