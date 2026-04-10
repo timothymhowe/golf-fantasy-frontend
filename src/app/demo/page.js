@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { getAuth, signInWithEmailAndPassword, signOut, setPersistence, browserSessionPersistence } from "firebase/auth";
+import { getAuth, signInWithCustomToken, signOut, setPersistence, browserSessionPersistence } from "firebase/auth";
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
 import { app } from "../../config/firebaseConfig";
@@ -11,8 +11,18 @@ import PageLayout from "../components/hg-layout";
 import LoadingScreen from "../components/loading-screen";
 import { Logo } from "../components/logo";
 
+/**
+ * Demo Authentication Strategy
+ *
+ * Uses server-side custom token minting via /api/demo/token. The Next.js API route
+ * calls Firebase Admin SDK to generate a custom auth token for the demo user.
+ * No credentials are exposed to the client — the service account key stays
+ * server-side. The endpoint is rate-limited (20 req/min per IP).
+ *
+ * The demo session uses browserSessionPersistence (dies on tab close) and is
+ * gatekept from real dashboard routes via GuardedPage.
+ */
 const DEMO_EMAIL = "ailettedemo@gmail.com";
-const DEMO_PASSWORD = process.env.NEXT_PUBLIC_DEMO_PASSWORD;
 
 const WIDGET_IDS = ["#widget-pick", "#widget-leaderboard", "#widget-pick-history", "#widget-league-picks"];
 
@@ -123,7 +133,12 @@ const DemoPage = () => {
         }
 
         await setPersistence(auth, browserSessionPersistence);
-        await signInWithEmailAndPassword(auth, DEMO_EMAIL, DEMO_PASSWORD);
+
+        // Fetch a custom token from the server (no credentials on the client)
+        const res = await fetch("/api/demo/token");
+        if (!res.ok) throw new Error("Failed to get demo token");
+        const { token } = await res.json();
+        await signInWithCustomToken(auth, token);
         setDemoLoading(false);
       } catch (err) {
         console.error("Demo sign-in failed:", err);
