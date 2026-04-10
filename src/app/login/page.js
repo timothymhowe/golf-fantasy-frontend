@@ -45,10 +45,10 @@ const LoginPage = () => {
                 animation: "rainbow-shimmer 3s ease-in-out infinite",
               }}
             />
-            <span className="relative text-white/70 group-hover:text-white text-xs md:text-sm font-medium transition-colors whitespace-nowrap">
-              Try the demo
+            <span className="relative text-white/70 group-hover:text-white text-xs md:text-sm font-medium transition-colors text-center">
+              Try the<br className="md:hidden" /> demo
             </span>
-            <span className="relative ml-1 md:ml-2 text-white/40 group-hover:text-[#BFFF00] transition-colors">&rarr;</span>
+            <span className="relative ml-1 md:ml-2 text-white/40 group-hover:text-[#BFFF00] transition-colors hidden md:inline">&rarr;</span>
           </Link>
         </div>
       </div>
