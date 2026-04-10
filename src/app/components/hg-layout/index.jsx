@@ -29,7 +29,7 @@ import { set } from "date-fns";
  * @param {React.ReactNode} props.children - The child components to be rendered within the layout.
  * @returns {JSX.Element} The rendered PageLayout component.
  */
-const PageLayout = ({ header, footer, children }) => {
+const PageLayout = ({ header, footer, children, disableSidebar = false }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [pickTitle, setPickTitle] = useState(null);
   const [leaguePicksTitle, setLeaguePicksTitle] = useState(null);
@@ -42,22 +42,22 @@ const PageLayout = ({ header, footer, children }) => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
           {/* Left Column */}
           <div className="flex flex-col gap-2">
-            <WidgetContainer title={pickTitle}>
+            <WidgetContainer id="widget-pick" title={pickTitle}>
               <Pick setTitle={setPickTitle} />
             </WidgetContainer>
 
-            <WidgetContainer title="League Scoreboard" defaultExpanded={false}>
+            <WidgetContainer id="widget-leaderboard" title="League Scoreboard" defaultExpanded={false}>
               <Leaderboard />
             </WidgetContainer>
           </div>
 
           {/* Right Column */}
           <div className="flex flex-col gap-2">
-            <WidgetContainer title="My Pick History" defaultExpanded={false}>
+            <WidgetContainer id="widget-pick-history" title="My Pick History" defaultExpanded={false}>
               <PickHistory />
             </WidgetContainer>
 
-            <WidgetContainer title={leaguePicksTitle} defaultExpanded={false}>
+            <WidgetContainer id="widget-league-picks" title={leaguePicksTitle} defaultExpanded={false}>
               <LeaguePicks setTitle={setLeaguePicksTitle} />
             </WidgetContainer>
           </div>
@@ -80,13 +80,14 @@ const PageLayout = ({ header, footer, children }) => {
         <Header
           className="bg-gray-200 px-2 w-full z-10"
           isSidebarOpen={isSidebarOpen}
-          setIsSidebarOpen={setIsSidebarOpen}
+          setIsSidebarOpen={disableSidebar ? undefined : setIsSidebarOpen}
+          disableSidebar={disableSidebar}
         >
           {header}
         </Header>
 
         <div className="flex-grow flex relative body-container">
-          <Sidebar isOpen={isSidebarOpen} />
+          {!disableSidebar && <Sidebar isOpen={isSidebarOpen} />}
 
           {/* Main content */}
           <div className="flex-grow overflow-x-hidden">

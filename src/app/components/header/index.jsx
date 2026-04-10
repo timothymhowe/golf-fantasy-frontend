@@ -16,31 +16,28 @@ import "./header-styles.css";
  * @param {function} setIsSidebarOpen - Function to set the state of the sidebar.
  * @returns {JSX.Element} The rendered header component.
  */
-const Header = ({ isSidebarOpen, setIsSidebarOpen }) => {
+const Header = ({ isSidebarOpen, setIsSidebarOpen, disableSidebar = false }) => {
   const { user } = useAuth();
 
   return (
     <>
       {/* Spacer div with margin for the floating header */}
       <div className="h-18 px-2 pb-2 pt-3 bg-[#2d2d2d] relative">
-        <header 
+        <header
           className="h-14 rounded-md relative mx-auto shadow-md"
           style={{
             background: 'linear-gradient(to bottom, #1a1a1a 0%, black 100%)'
           }}
         >
-          {/* Gradient fade at bottom */}
-          {/* <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-b from-black to-transparent" /> */}
-
           {/* Header content */}
           <div className="relative flex items-center h-full px-4 z-[100]">
             {/* Left: Menu Button */}
             <button
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="pancake-button p-2 rounded-lg hover:bg-white/5 transition-colors"
+              onClick={() => !disableSidebar && setIsSidebarOpen(!isSidebarOpen)}
+              className={`pancake-button p-2 rounded-lg transition-colors ${disableSidebar ? 'opacity-30 cursor-default' : 'hover:bg-white/5'}`}
               aria-label="Toggle menu"
             >
-              {isSidebarOpen ? (
+              {isSidebarOpen && !disableSidebar ? (
                 <XMarkIcon className="h-5 w-5 text-gray-400" />
               ) : (
                 <Bars3Icon className="h-5 w-5 text-gray-400" />

@@ -88,7 +88,7 @@ const PickHistoryModal = ({ isOpen, onClose, memberId, memberName }) => {
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <Dialog.Panel className="w-full max-w-2xl transform rounded-xl bg-[#1a1a1a] shadow-2xl transition-all relative">
+            <Dialog.Panel id="pick-history-modal" className="w-full max-w-2xl transform rounded-xl bg-[#1a1a1a] shadow-2xl transition-all relative">
               <button
                 onClick={handleClose}
                 className="absolute top-4 right-4 p-1 rounded-full hover:bg-white/5 transition-colors duration-200"
