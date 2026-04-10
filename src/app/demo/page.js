@@ -54,8 +54,8 @@ const expandWidget = (id) => {
   }
 };
 
-const LEADERBOARD_STEP_INDEX = 2;
-const MODAL_STEP_INDEX = 3;
+const LEADERBOARD_STEP_INDEX = 3;
+const MODAL_STEP_INDEX = 4;
 
 const TOUR_STEPS = [
   {
@@ -73,6 +73,14 @@ const TOUR_STEPS = [
     onHighlightStarted: () => expandWidget("#widget-pick"),
   },
   {
+    element: "#widget-pick-history",
+    popover: {
+      title: "My Pick History",
+      description: "Your full season at a glance — every pick, every result, every point. Wins are highlighted in gold. Missed picks cost you points, so don't forget!",
+    },
+    onHighlightStarted: () => expandWidget("#widget-pick-history"),
+  },
+  {
     element: "#widget-leaderboard",
     popover: {
       title: "League Scoreboard",
@@ -86,14 +94,6 @@ const TOUR_STEPS = [
       title: "Pick History Modal",
       description: "Here's a member's full season — toggle between table and graph view. Every pick, result, and point total at a glance.",
     },
-  },
-  {
-    element: "#widget-pick-history",
-    popover: {
-      title: "Pick History",
-      description: "Your full season at a glance — every pick, every result, every point. Wins are highlighted in gold. Missed picks cost you points, so don't forget!",
-    },
-    onHighlightStarted: () => expandWidget("#widget-pick-history"),
   },
   {
     element: "#widget-league-picks",
